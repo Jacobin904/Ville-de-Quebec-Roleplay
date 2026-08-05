@@ -1,7 +1,7 @@
 {
   "name": "vqc-discord-bot",
-  "version": "1.0.0",
-  "description": "Bot Discord pour Ville de Québec Roleplay",
+  "version": "2.0.0",
+  "description": "Bot tout-en-un pour Ville de Québec Roleplay - Remplace Carl-bot, Bloxlink, etc.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -10,7 +10,8 @@
     "discord.js": "^14.14.1",
     "axios": "^1.6.7",
     "express": "^4.18.2",
-    "dotenv": "^16.4.1"
+    "dotenv": "^16.4.1",
+    "canvas": "^0.11.7"
   },
   "engines": {
     "node": ">=18.0.0"
