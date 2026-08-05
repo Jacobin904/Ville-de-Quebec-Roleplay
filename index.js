@@ -10,7 +10,7 @@ const {
 // 1. Serveur web pour Render
 const app = express();
 const port = process.env.PORT || 3000;
-app.get('/', (req, res) => res.send(' Bot VQC en ligne !'));
+app.get('/', (req, res) => res.send('🚀 Bot VQC en ligne !'));
 app.listen(port, () => console.log(`Serveur actif sur le port ${port}`));
 
 // 2. Client Discord
@@ -145,7 +145,6 @@ client.on('interactionCreate', async interaction => {
     }
 
     if (interaction.commandName === 'embed') {
-        // Créer un embed vide de prévisualisation
         const previewEmbed = new EmbedBuilder()
             .setTitle('📝 Prévisualisation de l\'embed')
             .setDescription('Utilise les boutons ci-dessous pour personnaliser ton embed.')
@@ -153,28 +152,27 @@ client.on('interactionCreate', async interaction => {
             .setFooter({ text: 'Créé par ' + interaction.user.username })
             .setTimestamp();
         
-        // Boutons de modification (5 par ligne)
+        // ✅ CORRECTION : Tous les emojis sont maintenant valides
         const row1 = new ActionRowBuilder().addComponents(
             new ButtonBuilder().setCustomId('edit_title').setLabel('Titre').setStyle(ButtonStyle.Primary).setEmoji('📝'),
             new ButtonBuilder().setCustomId('edit_description').setLabel('Description').setStyle(ButtonStyle.Primary).setEmoji('📄'),
             new ButtonBuilder().setCustomId('edit_color').setLabel('Couleur').setStyle(ButtonStyle.Primary).setEmoji('🎨'),
             new ButtonBuilder().setCustomId('edit_author').setLabel('Auteur').setStyle(ButtonStyle.Primary).setEmoji('👤'),
-            new ButtonBuilder().setCustomId('edit_footer').setLabel('Footer').setStyle(ButtonStyle.Primary).setEmoji('')
+            new ButtonBuilder().setCustomId('edit_footer').setLabel('Footer').setStyle(ButtonStyle.Primary).setEmoji('📌')
         );
         
         const row2 = new ActionRowBuilder().addComponents(
             new ButtonBuilder().setCustomId('edit_image').setLabel('Image').setStyle(ButtonStyle.Primary).setEmoji('🖼️'),
-            new ButtonBuilder().setCustomId('edit_thumbnail').setLabel('Miniature').setStyle(ButtonStyle.Primary).setEmoji(''),
-            new ButtonBuilder().setCustomId('edit_author_icon').setLabel('Icône Auteur').setStyle(ButtonStyle.Secondary).setEmoji('🖼️'),
+            new ButtonBuilder().setCustomId('edit_thumbnail').setLabel('Miniature').setStyle(ButtonStyle.Primary).setEmoji('🔲'),
+            new ButtonBuilder().setCustomId('edit_author_icon').setLabel('Icône Auteur').setStyle(ButtonStyle.Secondary).setEmoji('👤'),
             new ButtonBuilder().setCustomId('edit_footer_icon').setLabel('Icône Footer').setStyle(ButtonStyle.Secondary).setEmoji('🖼️'),
             new ButtonBuilder().setCustomId('send_embed').setLabel('Envoyer').setStyle(ButtonStyle.Success).setEmoji('✅')
         );
         
         const row3 = new ActionRowBuilder().addComponents(
-            new ButtonBuilder().setCustomId('cancel_embed').setLabel('Annuler').setStyle(ButtonStyle.Danger).setEmoji('')
+            new ButtonBuilder().setCustomId('cancel_embed').setLabel('Annuler').setStyle(ButtonStyle.Danger).setEmoji('❌')
         );
         
-        // Stocker l'embed en cours de création
         const embedData = {
             authorId: interaction.user.id,
             channelId: interaction.channel.id,
@@ -200,7 +198,6 @@ client.on('interactionCreate', async interaction => {
             fetchReply: true 
         });
         
-        // Stocker l'ID du message pour pouvoir le modifier
         embedData.messageId = message.id;
     }
 
@@ -248,7 +245,7 @@ client.on('interactionCreate', async interaction => {
         
         const embed = new EmbedBuilder()
             .setColor('#D97706')
-            .setTitle('️ Avertissement')
+            .setTitle('⚠️ Avertissement')
             .addFields(
                 { name: 'Membre', value: `${target.tag} (${target.id})`, inline: true },
                 { name: 'Modérateur', value: interaction.user.tag, inline: true },
@@ -267,7 +264,7 @@ client.on('interactionCreate', async interaction => {
     if (interaction.commandName === 'clear') {
         const amount = interaction.options.getInteger('nombre');
         await interaction.channel.bulkDelete(amount, true);
-        const msg = await interaction.reply({ content: `️ ${amount} messages supprimés.`, ephemeral: true, fetchReply: true });
+        const msg = await interaction.reply({ content: `🗑️ ${amount} messages supprimés.`, ephemeral: true, fetchReply: true });
         setTimeout(async () => { if (msg.deletable) await msg.delete(); }, 3000);
     }
 
@@ -315,200 +312,96 @@ client.on('interactionCreate', async interaction => {
     
     const embedData = client.pendingEmbeds.get(interaction.user.id);
     if (!embedData) {
-        return interaction.reply({ content: '❌ Aucune prévisualisation d\'embed en cours. Utilise `/embed` pour en créer une.', ephemeral: true });
+        return interaction.reply({ content: '❌ Aucune prévisualisation en cours. Utilise `/embed`.', ephemeral: true });
     }
     
-    // Vérifier que c'est bien l'auteur
     if (interaction.user.id !== embedData.authorId) {
         return interaction.reply({ content: '❌ Tu ne peux modifier que tes propres embeds.', ephemeral: true });
     }
     
-    // === BOUTON TITRE ===
     if (interaction.customId === 'edit_title') {
-        const modal = new ModalBuilder()
-            .setCustomId('modal_title')
-            .setTitle('Modifier le titre');
-        
-        const input = new TextInputBuilder()
-            .setCustomId('title_input')
-            .setLabel('Titre de l\'embed')
-            .setStyle(TextInputStyle.Short)
-            .setPlaceholder('Entre le titre...')
-            .setMaxLength(256)
-            .setRequired(true);
-        
-        modal.addComponents(new ActionRowBuilder().addComponents(input));
+        const modal = new ModalBuilder().setCustomId('modal_title').setTitle('Modifier le titre');
+        modal.addComponents(new ActionRowBuilder().addComponents(
+            new TextInputBuilder().setCustomId('title_input').setLabel('Titre').setStyle(TextInputStyle.Short).setPlaceholder('Entre le titre...').setMaxLength(256).setRequired(true)
+        ));
         await interaction.showModal(modal);
     }
     
-    // === BOUTON DESCRIPTION ===
     if (interaction.customId === 'edit_description') {
-        const modal = new ModalBuilder()
-            .setCustomId('modal_description')
-            .setTitle('Modifier la description');
-        
-        const input = new TextInputBuilder()
-            .setCustomId('description_input')
-            .setLabel('Description de l\'embed')
-            .setStyle(TextInputStyle.Paragraph)
-            .setPlaceholder('Entre la description...')
-            .setMaxLength(4000)
-            .setRequired(false);
-        
-        modal.addComponents(new ActionRowBuilder().addComponents(input));
+        const modal = new ModalBuilder().setCustomId('modal_description').setTitle('Modifier la description');
+        modal.addComponents(new ActionRowBuilder().addComponents(
+            new TextInputBuilder().setCustomId('description_input').setLabel('Description').setStyle(TextInputStyle.Paragraph).setPlaceholder('Entre la description...').setMaxLength(4000).setRequired(false)
+        ));
         await interaction.showModal(modal);
     }
     
-    // === BOUTON COULEUR ===
     if (interaction.customId === 'edit_color') {
-        const modal = new ModalBuilder()
-            .setCustomId('modal_color')
-            .setTitle('Modifier la couleur');
-        
-        const input = new TextInputBuilder()
-            .setCustomId('color_input')
-            .setLabel('Couleur (hex ou nom)')
-            .setStyle(TextInputStyle.Short)
-            .setPlaceholder('#003DA5, blue, red, green...')
-            .setMaxLength(50)
-            .setRequired(true);
-        
-        modal.addComponents(new ActionRowBuilder().addComponents(input));
+        const modal = new ModalBuilder().setCustomId('modal_color').setTitle('Modifier la couleur');
+        modal.addComponents(new ActionRowBuilder().addComponents(
+            new TextInputBuilder().setCustomId('color_input').setLabel('Couleur').setStyle(TextInputStyle.Short).setPlaceholder('#003DA5, blue, red...').setMaxLength(50).setRequired(true)
+        ));
         await interaction.showModal(modal);
     }
     
-    // === BOUTON AUTEUR ===
     if (interaction.customId === 'edit_author') {
-        const modal = new ModalBuilder()
-            .setCustomId('modal_author')
-            .setTitle('Modifier l\'auteur');
-        
-        const input = new TextInputBuilder()
-            .setCustomId('author_input')
-            .setLabel('Nom de l\'auteur')
-            .setStyle(TextInputStyle.Short)
-            .setPlaceholder('Nom de l\'auteur...')
-            .setMaxLength(256)
-            .setRequired(true);
-        
-        modal.addComponents(new ActionRowBuilder().addComponents(input));
+        const modal = new ModalBuilder().setCustomId('modal_author').setTitle('Modifier l\'auteur');
+        modal.addComponents(new ActionRowBuilder().addComponents(
+            new TextInputBuilder().setCustomId('author_input').setLabel('Nom de l\'auteur').setStyle(TextInputStyle.Short).setPlaceholder('Nom...').setMaxLength(256).setRequired(true)
+        ));
         await interaction.showModal(modal);
     }
     
-    // === BOUTON FOOTER ===
     if (interaction.customId === 'edit_footer') {
-        const modal = new ModalBuilder()
-            .setCustomId('modal_footer')
-            .setTitle('Modifier le footer');
-        
-        const input = new TextInputBuilder()
-            .setCustomId('footer_input')
-            .setLabel('Texte du footer')
-            .setStyle(TextInputStyle.Short)
-            .setPlaceholder('Texte du footer...')
-            .setMaxLength(2048)
-            .setRequired(true);
-        
-        modal.addComponents(new ActionRowBuilder().addComponents(input));
+        const modal = new ModalBuilder().setCustomId('modal_footer').setTitle('Modifier le footer');
+        modal.addComponents(new ActionRowBuilder().addComponents(
+            new TextInputBuilder().setCustomId('footer_input').setLabel('Texte du footer').setStyle(TextInputStyle.Short).setPlaceholder('Texte...').setMaxLength(2048).setRequired(true)
+        ));
         await interaction.showModal(modal);
     }
     
-    // === BOUTON IMAGE ===
     if (interaction.customId === 'edit_image') {
-        const modal = new ModalBuilder()
-            .setCustomId('modal_image')
-            .setTitle('Modifier l\'image');
-        
-        const input = new TextInputBuilder()
-            .setCustomId('image_input')
-            .setLabel('URL de l\'image')
-            .setStyle(TextInputStyle.Short)
-            .setPlaceholder('https://...')
-            .setMaxLength(2048)
-            .setRequired(true);
-        
-        modal.addComponents(new ActionRowBuilder().addComponents(input));
+        const modal = new ModalBuilder().setCustomId('modal_image').setTitle('Modifier l\'image');
+        modal.addComponents(new ActionRowBuilder().addComponents(
+            new TextInputBuilder().setCustomId('image_input').setLabel('URL de l\'image').setStyle(TextInputStyle.Short).setPlaceholder('https://...').setMaxLength(2048).setRequired(true)
+        ));
         await interaction.showModal(modal);
     }
     
-    // === BOUTON MINIATURE ===
     if (interaction.customId === 'edit_thumbnail') {
-        const modal = new ModalBuilder()
-            .setCustomId('modal_thumbnail')
-            .setTitle('Modifier la miniature');
-        
-        const input = new TextInputBuilder()
-            .setCustomId('thumbnail_input')
-            .setLabel('URL de la miniature')
-            .setStyle(TextInputStyle.Short)
-            .setPlaceholder('https://...')
-            .setMaxLength(2048)
-            .setRequired(true);
-        
-        modal.addComponents(new ActionRowBuilder().addComponents(input));
+        const modal = new ModalBuilder().setCustomId('modal_thumbnail').setTitle('Modifier la miniature');
+        modal.addComponents(new ActionRowBuilder().addComponents(
+            new TextInputBuilder().setCustomId('thumbnail_input').setLabel('URL de la miniature').setStyle(TextInputStyle.Short).setPlaceholder('https://...').setMaxLength(2048).setRequired(true)
+        ));
         await interaction.showModal(modal);
     }
     
-    // === BOUTON ICÔNE AUTEUR ===
     if (interaction.customId === 'edit_author_icon') {
-        const modal = new ModalBuilder()
-            .setCustomId('modal_author_icon')
-            .setTitle('Modifier l\'icône de l\'auteur');
-        
-        const input = new TextInputBuilder()
-            .setCustomId('author_icon_input')
-            .setLabel('URL de l\'icône')
-            .setStyle(TextInputStyle.Short)
-            .setPlaceholder('https://...')
-            .setMaxLength(2048)
-            .setRequired(true);
-        
-        modal.addComponents(new ActionRowBuilder().addComponents(input));
+        const modal = new ModalBuilder().setCustomId('modal_author_icon').setTitle('Icône de l\'auteur');
+        modal.addComponents(new ActionRowBuilder().addComponents(
+            new TextInputBuilder().setCustomId('author_icon_input').setLabel('URL de l\'icône').setStyle(TextInputStyle.Short).setPlaceholder('https://...').setMaxLength(2048).setRequired(true)
+        ));
         await interaction.showModal(modal);
     }
     
-    // === BOUTON ICÔNE FOOTER ===
     if (interaction.customId === 'edit_footer_icon') {
-        const modal = new ModalBuilder()
-            .setCustomId('modal_footer_icon')
-            .setTitle('Modifier l\'icône du footer');
-        
-        const input = new TextInputBuilder()
-            .setCustomId('footer_icon_input')
-            .setLabel('URL de l\'icône')
-            .setStyle(TextInputStyle.Short)
-            .setPlaceholder('https://...')
-            .setMaxLength(2048)
-            .setRequired(true);
-        
-        modal.addComponents(new ActionRowBuilder().addComponents(input));
+        const modal = new ModalBuilder().setCustomId('modal_footer_icon').setTitle('Icône du footer');
+        modal.addComponents(new ActionRowBuilder().addComponents(
+            new TextInputBuilder().setCustomId('footer_icon_input').setLabel('URL de l\'icône').setStyle(TextInputStyle.Short).setPlaceholder('https://...').setMaxLength(2048).setRequired(true)
+        ));
         await interaction.showModal(modal);
     }
     
-    // === BOUTON ENVOYER ===
     if (interaction.customId === 'send_embed') {
-        const modal = new ModalBuilder()
-            .setCustomId('modal_send')
-            .setTitle('Envoyer l\'embed');
-        
-        const input = new TextInputBuilder()
-            .setCustomId('channel_input')
-            .setLabel('ID ou nom du salon')
-            .setStyle(TextInputStyle.Short)
-            .setPlaceholder('Ex: annonces ou 123456789')
-            .setMaxLength(100)
-            .setRequired(true);
-        
-        modal.addComponents(new ActionRowBuilder().addComponents(input));
+        const modal = new ModalBuilder().setCustomId('modal_send').setTitle('Envoyer l\'embed');
+        modal.addComponents(new ActionRowBuilder().addComponents(
+            new TextInputBuilder().setCustomId('channel_input').setLabel('ID ou nom du salon').setStyle(TextInputStyle.Short).setPlaceholder('Ex: annonces ou 123456789').setMaxLength(100).setRequired(true)
+        ));
         await interaction.showModal(modal);
     }
     
-    // === BOUTON ANNULER ===
     if (interaction.customId === 'cancel_embed') {
         client.pendingEmbeds.delete(interaction.user.id);
-        await interaction.reply({ content: '❌ Création de l\'embed annulée.', ephemeral: true });
-        
-        // Supprimer le message de prévisualisation
+        await interaction.reply({ content: '❌ Création annulée.', ephemeral: true });
         try {
             const message = await interaction.channel.messages.fetch(embedData.messageId);
             await message.delete();
@@ -523,79 +416,47 @@ client.on('interactionCreate', async interaction => {
     const embedData = client.pendingEmbeds.get(interaction.user.id);
     if (!embedData) return;
     
-    // === MODAL TITRE ===
     if (interaction.customId === 'modal_title') {
-        const title = interaction.fields.getTextInputValue('title_input');
-        embedData.embed.title = title;
+        embedData.embed.title = interaction.fields.getTextInputValue('title_input');
         await updatePreview(interaction, embedData);
     }
-    
-    // === MODAL DESCRIPTION ===
     if (interaction.customId === 'modal_description') {
-        const description = interaction.fields.getTextInputValue('description_input');
-        embedData.embed.description = description || null;
+        embedData.embed.description = interaction.fields.getTextInputValue('description_input') || null;
         await updatePreview(interaction, embedData);
     }
-    
-    // === MODAL COULEUR ===
     if (interaction.customId === 'modal_color') {
-        const color = interaction.fields.getTextInputValue('color_input');
-        try {
-            embedData.embed.color = color;
-            await updatePreview(interaction, embedData);
-        } catch (e) {
-            await interaction.reply({ content: '❌ Couleur invalide. Utilise un format hex (#003DA5) ou un nom (blue, red, green).', ephemeral: true });
-        }
+        embedData.embed.color = interaction.fields.getTextInputValue('color_input');
+        await updatePreview(interaction, embedData);
     }
-    
-    // === MODAL AUTEUR ===
     if (interaction.customId === 'modal_author') {
-        const author = interaction.fields.getTextInputValue('author_input');
-        embedData.embed.author = author;
+        embedData.embed.author = interaction.fields.getTextInputValue('author_input');
         await updatePreview(interaction, embedData);
     }
-    
-    // === MODAL FOOTER ===
     if (interaction.customId === 'modal_footer') {
-        const footer = interaction.fields.getTextInputValue('footer_input');
-        embedData.embed.footer = footer;
+        embedData.embed.footer = interaction.fields.getTextInputValue('footer_input');
         await updatePreview(interaction, embedData);
     }
-    
-    // === MODAL IMAGE ===
     if (interaction.customId === 'modal_image') {
-        const image = interaction.fields.getTextInputValue('image_input');
-        embedData.embed.image = image;
+        embedData.embed.image = interaction.fields.getTextInputValue('image_input');
         await updatePreview(interaction, embedData);
     }
-    
-    // === MODAL MINIATURE ===
     if (interaction.customId === 'modal_thumbnail') {
-        const thumbnail = interaction.fields.getTextInputValue('thumbnail_input');
-        embedData.embed.thumbnail = thumbnail;
+        embedData.embed.thumbnail = interaction.fields.getTextInputValue('thumbnail_input');
         await updatePreview(interaction, embedData);
     }
-    
-    // === MODAL ICÔNE AUTEUR ===
     if (interaction.customId === 'modal_author_icon') {
-        const authorIcon = interaction.fields.getTextInputValue('author_icon_input');
-        embedData.embed.authorIcon = authorIcon;
+        embedData.embed.authorIcon = interaction.fields.getTextInputValue('author_icon_input');
         await updatePreview(interaction, embedData);
     }
-    
-    // === MODAL ICÔNE FOOTER ===
     if (interaction.customId === 'modal_footer_icon') {
-        const footerIcon = interaction.fields.getTextInputValue('footer_icon_input');
-        embedData.embed.footerIcon = footerIcon;
+        embedData.embed.footerIcon = interaction.fields.getTextInputValue('footer_icon_input');
         await updatePreview(interaction, embedData);
     }
     
-    // === MODAL ENVOI ===
     if (interaction.customId === 'modal_send') {
         const channelInput = interaction.fields.getTextInputValue('channel_input');
-        
-        // Trouver le salon
         let targetChannel;
+        
         if (channelInput.match(/^\d+$/)) {
             targetChannel = await interaction.client.channels.fetch(channelInput).catch(() => null);
         } else {
@@ -606,44 +467,26 @@ client.on('interactionCreate', async interaction => {
             return interaction.reply({ content: '❌ Salon introuvable. Vérifie l\'ID ou le nom.', ephemeral: true });
         }
         
-        // Construire l'embed final
         const finalEmbed = new EmbedBuilder();
-        
         if (embedData.embed.title) finalEmbed.setTitle(embedData.embed.title);
         if (embedData.embed.description) finalEmbed.setDescription(embedData.embed.description);
         finalEmbed.setColor(embedData.embed.color || '#003DA5');
         
         if (embedData.embed.author) {
-            finalEmbed.setAuthor({
-                name: embedData.embed.author,
-                iconURL: embedData.embed.authorIcon || undefined
-            });
+            finalEmbed.setAuthor({ name: embedData.embed.author, iconURL: embedData.embed.authorIcon || undefined });
         }
-        
         if (embedData.embed.footer) {
-            finalEmbed.setFooter({
-                text: embedData.embed.footer,
-                iconURL: embedData.embed.footerIcon || undefined
-            });
+            finalEmbed.setFooter({ text: embedData.embed.footer, iconURL: embedData.embed.footerIcon || undefined });
         }
-        
         if (embedData.embed.image) finalEmbed.setImage(embedData.embed.image);
         if (embedData.embed.thumbnail) finalEmbed.setThumbnail(embedData.embed.thumbnail);
-        
         finalEmbed.setTimestamp();
         
-        // Envoyer dans le salon cible
         await targetChannel.send({ embeds: [finalEmbed] });
-        
-        // Nettoyer
         client.pendingEmbeds.delete(interaction.user.id);
         
-        await interaction.reply({ 
-            content: `✅ Embed envoyé dans ${targetChannel} !`, 
-            ephemeral: true 
-        });
+        await interaction.reply({ content: `✅ Embed envoyé dans ${targetChannel} !`, ephemeral: true });
         
-        // Supprimer le message de prévisualisation
         try {
             const message = await interaction.channel.messages.fetch(embedData.messageId);
             await message.delete();
@@ -660,36 +503,27 @@ async function updatePreview(interaction, embedData) {
     previewEmbed.setColor(embedData.embed.color || '#003DA5');
     
     if (embedData.embed.author) {
-        previewEmbed.setAuthor({
-            name: embedData.embed.author,
-            iconURL: embedData.embed.authorIcon || undefined
-        });
+        previewEmbed.setAuthor({ name: embedData.embed.author, iconURL: embedData.embed.authorIcon || undefined });
     }
-    
     if (embedData.embed.footer) {
-        previewEmbed.setFooter({
-            text: embedData.embed.footer,
-            iconURL: embedData.embed.footerIcon || undefined
-        });
+        previewEmbed.setFooter({ text: embedData.embed.footer, iconURL: embedData.embed.footerIcon || undefined });
     }
-    
     if (embedData.embed.image) previewEmbed.setImage(embedData.embed.image);
     if (embedData.embed.thumbnail) previewEmbed.setThumbnail(embedData.embed.thumbnail);
-    
     previewEmbed.setTimestamp();
     
     const row1 = new ActionRowBuilder().addComponents(
         new ButtonBuilder().setCustomId('edit_title').setLabel('Titre').setStyle(ButtonStyle.Primary).setEmoji('📝'),
         new ButtonBuilder().setCustomId('edit_description').setLabel('Description').setStyle(ButtonStyle.Primary).setEmoji('📄'),
         new ButtonBuilder().setCustomId('edit_color').setLabel('Couleur').setStyle(ButtonStyle.Primary).setEmoji('🎨'),
-        new ButtonBuilder().setCustomId('edit_author').setLabel('Auteur').setStyle(ButtonStyle.Primary).setEmoji(''),
+        new ButtonBuilder().setCustomId('edit_author').setLabel('Auteur').setStyle(ButtonStyle.Primary).setEmoji('👤'),
         new ButtonBuilder().setCustomId('edit_footer').setLabel('Footer').setStyle(ButtonStyle.Primary).setEmoji('📌')
     );
     
     const row2 = new ActionRowBuilder().addComponents(
         new ButtonBuilder().setCustomId('edit_image').setLabel('Image').setStyle(ButtonStyle.Primary).setEmoji('🖼️'),
         new ButtonBuilder().setCustomId('edit_thumbnail').setLabel('Miniature').setStyle(ButtonStyle.Primary).setEmoji('🔲'),
-        new ButtonBuilder().setCustomId('edit_author_icon').setLabel('Icône Auteur').setStyle(ButtonStyle.Secondary).setEmoji('️'),
+        new ButtonBuilder().setCustomId('edit_author_icon').setLabel('Icône Auteur').setStyle(ButtonStyle.Secondary).setEmoji('👤'),
         new ButtonBuilder().setCustomId('edit_footer_icon').setLabel('Icône Footer').setStyle(ButtonStyle.Secondary).setEmoji('🖼️'),
         new ButtonBuilder().setCustomId('send_embed').setLabel('Envoyer').setStyle(ButtonStyle.Success).setEmoji('✅')
     );
