@@ -214,15 +214,10 @@
 
 <script>
 // ============================================================
-//  ⚙️  CONFIGURATION — À MODIFIER AVANT DE METTRE EN LIGNE
+//  ⚙️  CONFIGURATION
 // ============================================================
-// Remplace VOTRE_CLIENT_ID par le Client ID de ton application Discord
-// (crée une app sur https://discord.com/developers/applications → OAuth2 → Client ID)
-const DISCORD_CLIENT_ID = "VOTRE_CLIENT_ID";
-
-// Le serveur Discord vers lequel rediriger le candidat après
+const DISCORD_CLIENT_ID = "1533811111923552317";
 const DISCORD_SERVER_INVITE = "https://discord.gg/UEf3epPwXS";
-
 // ============================================================
 
 const STORAGE_KEY = "vqc_discord_user";
@@ -243,15 +238,10 @@ function showToast(msg, type = "success", duration = 3500) {
 
 // --------- OAuth2 Discord ---------
 function getRedirectUri() {
-    // URL courante sans le fragment
     return window.location.href.split("#")[0];
 }
 
 function connectDiscord() {
-    if (DISCORD_CLIENT_ID === "1533811111923552317") {
-        showToast("Configure ton DISCORD_CLIENT_ID dans le script !", "error", 5000);
-        return;
-    }
     const redirectUri = encodeURIComponent(getRedirectUri());
     const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=token&scope=identify`;
     window.location.href = authUrl;
@@ -311,7 +301,6 @@ async function handleOAuthReturn() {
     const token = params.get("access_token");
     if (!token) return;
 
-    // Nettoyer l'URL
     window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
     localStorage.setItem(TOKEN_KEY, token);
 
@@ -345,7 +334,6 @@ const QUESTIONS = [
 document.getElementById("candForm").addEventListener("submit", (e) => {
     e.preventDefault();
 
-    // Récupération user Discord
     let user = null;
     try { user = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch {}
 
@@ -354,7 +342,6 @@ document.getElementById("candForm").addEventListener("submit", (e) => {
         return;
     }
 
-    // Validation
     for (const q of QUESTIONS) {
         const val = document.getElementById(q.id).value.trim();
         if (val.length < 15) {
@@ -364,7 +351,6 @@ document.getElementById("candForm").addEventListener("submit", (e) => {
         }
     }
 
-    // Construire le résumé
     let summaryHtml = `
         <div class="summary-item">
             <div class="q">Candidat (Discord)</div>
@@ -373,7 +359,7 @@ document.getElementById("candForm").addEventListener("submit", (e) => {
     `;
     let summaryText = `📋 CANDIDATURE MODÉRATEUR — VILLE DE QUÉBEC ROLEPLAY\n`;
     summaryText += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-    summaryText += ` Candidat Discord : ${user.username} (${user.globalName})\n\n`;
+    summaryText += `👤 Candidat Discord : ${user.username} (${user.globalName})\n\n`;
 
     QUESTIONS.forEach((q, i) => {
         const val = document.getElementById(q.id).value.trim();
@@ -392,7 +378,6 @@ document.getElementById("candForm").addEventListener("submit", (e) => {
     document.getElementById("summaryContent").innerHTML = summaryHtml;
     document.getElementById("summaryModal").classList.add("open");
 
-    // Handler copie
     const copyBtn = document.getElementById("copySummaryBtn");
     copyBtn.onclick = async () => {
         try {
