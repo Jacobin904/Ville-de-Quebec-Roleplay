@@ -214,10 +214,11 @@
 
 <script>
 // ============================================================
-//  ⚙️  CONFIGURATION
+//  ⚙️  CONFIGURATION (URL FORCÉE POUR ÉVITER LES ERREURS)
 // ============================================================
 const DISCORD_CLIENT_ID = "1533811111923552317";
-const DISCORD_SERVER_INVITE = "https://discord.gg/UEf3epPwXS";
+// On force l'URL exacte avec le slash à la fin, comme dans Discord
+const REDIRECT_URI = "https://jacobin904.github.io/Ville-de-Quebec-Roleplay/Candidature/"; 
 // ============================================================
 
 const STORAGE_KEY = "vqc_discord_user";
@@ -227,7 +228,6 @@ const discordAvatar = document.getElementById("discordAvatar");
 const discordUsername = document.getElementById("discordUsername");
 const discordConnectBtn = document.getElementById("discordConnectBtn");
 
-// --------- Affichage toast ---------
 function showToast(msg, type = "success", duration = 3500) {
     const toast = document.getElementById("toast");
     toast.className = `toast ${type}`;
@@ -236,14 +236,11 @@ function showToast(msg, type = "success", duration = 3500) {
     setTimeout(() => toast.classList.remove("show"), duration);
 }
 
-// --------- OAuth2 Discord ---------
-function getRedirectUri() {
-    return window.location.href.split("#")[0];
-}
-
 function connectDiscord() {
-    const redirectUri = encodeURIComponent(getRedirectUri());
-    const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=token&scope=identify`;
+    // On encode l'URL forcée pour être 100% sûr qu'elle matche Discord
+    const encodedRedirect = encodeURIComponent(REDIRECT_URI);
+    const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodedRedirect}&response_type=token&scope=identify`;
+    console.log("Tentative de connexion avec l'URL :", authUrl);
     window.location.href = authUrl;
 }
 
@@ -263,7 +260,7 @@ async function fetchDiscordUser(token) {
         if (!res.ok) throw new Error("Erreur API");
         const data = await res.json();
         const avatarUrl = data.avatar
-            ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=256`
+            ? `https://cdn.discordapp.comAvatars/${data.id}/${data.avatar}.png?size=256`
             : `https://cdn.discordapp.com/embed/avatars/${(BigInt(data.id) >> 22n) % 6n}.png`;
         return {
             id: data.id,
@@ -293,7 +290,6 @@ function updateDiscordUI(user) {
     }
 }
 
-// --------- Gestion du token au retour d'OAuth2 ---------
 async function handleOAuthReturn() {
     const hash = window.location.hash.substring(1);
     if (!hash) return;
@@ -301,6 +297,7 @@ async function handleOAuthReturn() {
     const token = params.get("access_token");
     if (!token) return;
 
+    // Nettoyer l'URL pour enlever le token visible
     window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
     localStorage.setItem(TOKEN_KEY, token);
 
@@ -321,7 +318,6 @@ function loadStoredUser() {
     } catch {}
 }
 
-// --------- Gestion formulaire ---------
 const QUESTIONS = [
     { id: "q1", label: "Pourquoi veux-tu devenir modérateur dans notre communauté ?" },
     { id: "q2", label: "As-tu déjà été modérateur ou staff ailleurs ?" },
@@ -333,7 +329,6 @@ const QUESTIONS = [
 
 document.getElementById("candForm").addEventListener("submit", (e) => {
     e.preventDefault();
-
     let user = null;
     try { user = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch {}
 
@@ -351,35 +346,20 @@ document.getElementById("candForm").addEventListener("submit", (e) => {
         }
     }
 
-    let summaryHtml = `
-        <div class="summary-item">
-            <div class="q">Candidat (Discord)</div>
-            <div class="a"><i class="fab fa-discord" style="color:#5865F2"></i> ${user.username} (${user.globalName})</div>
-        </div>
-    `;
-    let summaryText = `📋 CANDIDATURE MODÉRATEUR — VILLE DE QUÉBEC ROLEPLAY\n`;
-    summaryText += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-    summaryText += `👤 Candidat Discord : ${user.username} (${user.globalName})\n\n`;
+    let summaryHtml = `<div class="summary-item"><div class="q">Candidat (Discord)</div><div class="a"><i class="fab fa-discord" style="color:#5865F2"></i> ${user.username} (${user.globalName})</div></div>`;
+    let summaryText = `📋 CANDIDATURE MODÉRATEUR — VILLE DE QUÉBEC ROLEPLAY\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n👤 Candidat Discord : ${user.username} (${user.globalName})\n\n`;
 
     QUESTIONS.forEach((q, i) => {
         const val = document.getElementById(q.id).value.trim();
-        summaryHtml += `
-            <div class="summary-item">
-                <div class="q">Question ${i + 1} — ${q.label}</div>
-                <div class="a">${val.replace(/</g, "&lt;")}</div>
-            </div>
-        `;
-        summaryText += `❓ Q${i + 1} — ${q.label}\n`;
-        summaryText += `💬 ${val}\n\n`;
+        summaryHtml += `<div class="summary-item"><div class="q">Question ${i + 1} — ${q.label}</div><div class="a">${val.replace(/</g, "&lt;")}</div></div>`;
+        summaryText += `❓ Q${i + 1} — ${q.label}\n💬 ${val}\n\n`;
     });
-    summaryText += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-    summaryText += `Envoyé le ${new Date().toLocaleString("fr-CA")}`;
+    summaryText += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nEnvoyé le ${new Date().toLocaleString("fr-CA")}`;
 
     document.getElementById("summaryContent").innerHTML = summaryHtml;
     document.getElementById("summaryModal").classList.add("open");
 
-    const copyBtn = document.getElementById("copySummaryBtn");
-    copyBtn.onclick = async () => {
+    document.getElementById("copySummaryBtn").onclick = async () => {
         try {
             await navigator.clipboard.writeText(summaryText);
             showToast("Candidature copiée ! Colle-la dans le salon #support.", "success", 4000);
@@ -399,11 +379,8 @@ document.getElementById("summaryModal").addEventListener("click", (e) => {
     }
 });
 
-// --------- Init ---------
 (async function init() {
     await handleOAuthReturn();
     loadStoredUser();
 })();
 </script>
-</body>
-</html>
