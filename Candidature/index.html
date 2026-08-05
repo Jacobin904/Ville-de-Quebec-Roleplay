@@ -62,9 +62,11 @@
         .discord-info .label{font-size:.8rem;color:var(--taupe);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-weight:600}
         .discord-info .username{font-size:1.2rem;font-weight:800;color:var(--cream);font-family:'JetBrains Mono',monospace}
         .discord-info .placeholder{font-size:1rem;color:var(--taupe);font-style:italic}
-        .discord-btn{padding:12px 25px;border-radius:50px;background:var(--grad-btn);color:#fff;border:2px solid var(--gold);text-decoration:none;font-weight:700;font-size:.9rem;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:all .3s;text-transform:uppercase;letter-spacing:1px;box-shadow:0 10px 25px rgba(0,61,165,.3)}
+        
+        /* MODIFICATION ICI : C'est maintenant un vrai lien <a> au lieu d'un bouton JS */
+        .discord-btn{padding:12px 25px;border-radius:50px;background:var(--grad-btn);color:#fff;border:2px solid var(--gold);text-decoration:none;font-weight:700;font-size:.9rem;display:inline-flex;align-items:center;gap:10px;transition:all .3s;text-transform:uppercase;letter-spacing:1px;box-shadow:0 10px 25px rgba(0,61,165,.3)}
         .discord-btn:hover{transform:translateY(-2px);box-shadow:0 15px 35px rgba(0,61,165,.5);background:var(--gold-light)}
-        .discord-btn.logout{background:transparent;color:var(--gold);box-shadow:none}
+        .discord-btn.logout{background:transparent;color:var(--gold);box-shadow:none;cursor:pointer;border:2px solid var(--gold)}
         .discord-btn.logout:hover{background:rgba(77,141,255,.15);box-shadow:none}
 
         .form-group{margin-bottom:30px}
@@ -138,14 +140,17 @@
                 <p>Connecte-toi avec <strong>Discord</strong> pour pré-remplir automatiquement ton nom d'utilisateur. Les autres questions sont à répondre manuellement. Tu pourras ensuite copier ton résumé de candidature et l'envoyer au staff.</p>
             </div>
 
-            <!-- Section Discord OAuth2 -->
+            <!-- Section Discord OAuth2 (MODIFIÉE : Lien direct infaillible) -->
             <div class="discord-section" id="discordSection">
                 <div class="discord-avatar" id="discordAvatar"><i class="fab fa-discord"></i></div>
                 <div class="discord-info">
                     <div class="label">Nom d'utilisateur Discord</div>
                     <div class="username" id="discordUsername"><span class="placeholder">Non connecté</span></div>
                 </div>
-                <button type="button" class="discord-btn" id="discordConnectBtn"><i class="fab fa-discord"></i> Se connecter</button>
+                <!-- Ce lien est codé en dur pour garantir qu'il fonctionne toujours -->
+                <a href="https://discord.com/oauth2/authorize?client_id=1533811111923552317&redirect_uri=https%3A%2F%2Fjacobin904.github.io%2FVille-de-Quebec-Roleplay%2FCandidature%2F&response_type=token&scope=identify" class="discord-btn" id="discordConnectBtn">
+                    <i class="fab fa-discord"></i> Se connecter
+                </a>
             </div>
 
             <form id="candForm" novalidate>
@@ -213,17 +218,7 @@
     </footer>
 
 <script>
-// ============================================================
-//  ⚙️  CONFIGURATION (URL FORCÉE POUR ÉVITER LES ERREURS)
-// ============================================================
-const DISCORD_CLIENT_ID = "1533811111923552317";
-// On force l'URL exacte avec le slash à la fin, comme dans Discord
-const REDIRECT_URI = "https://jacobin904.github.io/Ville-de-Quebec-Roleplay/Candidature/"; 
-// ============================================================
-
 const STORAGE_KEY = "vqc_discord_user";
-const TOKEN_KEY = "vqc_discord_token";
-
 const discordAvatar = document.getElementById("discordAvatar");
 const discordUsername = document.getElementById("discordUsername");
 const discordConnectBtn = document.getElementById("discordConnectBtn");
@@ -236,17 +231,8 @@ function showToast(msg, type = "success", duration = 3500) {
     setTimeout(() => toast.classList.remove("show"), duration);
 }
 
-function connectDiscord() {
-    // On encode l'URL forcée pour être 100% sûr qu'elle matche Discord
-    const encodedRedirect = encodeURIComponent(REDIRECT_URI);
-    const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodedRedirect}&response_type=token&scope=identify`;
-    console.log("Tentative de connexion avec l'URL :", authUrl);
-    window.location.href = authUrl;
-}
-
 function disconnectDiscord() {
     localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(TOKEN_KEY);
     window.location.hash = "";
     updateDiscordUI(null);
     showToast("Déconnecté de Discord", "success");
@@ -260,7 +246,7 @@ async function fetchDiscordUser(token) {
         if (!res.ok) throw new Error("Erreur API");
         const data = await res.json();
         const avatarUrl = data.avatar
-            ? `https://cdn.discordapp.comAvatars/${data.id}/${data.avatar}.png?size=256`
+            ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=256`
             : `https://cdn.discordapp.com/embed/avatars/${(BigInt(data.id) >> 22n) % 6n}.png`;
         return {
             id: data.id,
@@ -278,15 +264,19 @@ function updateDiscordUI(user) {
     if (user) {
         discordAvatar.innerHTML = `<img src="${user.avatar}" alt="${user.username}">`;
         discordUsername.innerHTML = `<i class="fab fa-discord" style="color:#5865F2;margin-right:8px"></i> ${user.username}`;
+        // On transforme le lien en bouton de déconnexion une fois connecté
+        discordConnectBtn.className = "discord-btn logout";
+        discordConnectBtn.href = "#";
         discordConnectBtn.innerHTML = `<i class="fas fa-right-from-bracket"></i> Déconnecter`;
-        discordConnectBtn.classList.add("logout");
-        discordConnectBtn.onclick = disconnectDiscord;
+        discordConnectBtn.onclick = (e) => { e.preventDefault(); disconnectDiscord(); };
     } else {
         discordAvatar.innerHTML = `<i class="fab fa-discord"></i>`;
         discordUsername.innerHTML = `<span class="placeholder">Non connecté</span>`;
+        // On remet le lien de connexion d'origine
+        discordConnectBtn.className = "discord-btn";
+        discordConnectBtn.href = "https://discord.com/oauth2/authorize?client_id=1533811111923552317&redirect_uri=https%3A%2F%2Fjacobin904.github.io%2FVille-de-Quebec-Roleplay%2FCandidature%2F&response_type=token&scope=identify";
         discordConnectBtn.innerHTML = `<i class="fab fa-discord"></i> Se connecter`;
-        discordConnectBtn.classList.remove("logout");
-        discordConnectBtn.onclick = connectDiscord;
+        discordConnectBtn.onclick = null;
     }
 }
 
@@ -297,10 +287,7 @@ async function handleOAuthReturn() {
     const token = params.get("access_token");
     if (!token) return;
 
-    // Nettoyer l'URL pour enlever le token visible
     window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
-    localStorage.setItem(TOKEN_KEY, token);
-
     const user = await fetchDiscordUser(token);
     if (user) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
@@ -384,3 +371,5 @@ document.getElementById("summaryModal").addEventListener("click", (e) => {
     loadStoredUser();
 })();
 </script>
+</body>
+</html>
