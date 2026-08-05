@@ -32,6 +32,31 @@ const VQC_LOGO = 'https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2
 const VQC_FOOTER_TEXT = 'Ville de Quebec Roleplay (VQC)';
 const VQC_COLOR = '#003DA5';
 
+// FONCTION POUR RESOUDRE LES EMOJIS (Personnalises ou Unicode)
+function resolveEmoji(emojiInput, guild) {
+    if (!emojiInput || emojiInput.trim() === '') return null;
+    
+    // Si c'est deja un ID ou un format d'emoji personnalise complet
+    if (/<a?:\w+:\d+>/.test(emojiInput) || /^\d{17,20}$/.test(emojiInput)) {
+        return emojiInput;
+    }
+    
+    // Si c'est au format :nom:
+    const nameMatch = emojiInput.match(/^:(\w+):$/);
+    if (nameMatch && guild) {
+        const emojiName = nameMatch[1].toLowerCase();
+        const customEmoji = guild.emojis.cache.find(e => e.name.toLowerCase() === emojiName);
+        if (customEmoji) {
+            return customEmoji.id; // Retourne l'ID que Discord.js accepte
+        }
+        // Si le format est :nom: mais qu'il n'existe pas, on retourne null pour eviter un crash
+        return null; 
+    }
+    
+    // Sinon, on suppose que c'est un emoji unicode standard (🔥, ✅, etc.)
+    return emojiInput;
+}
+
 // 3. Commandes Slash
 const commands = [
     new SlashCommandBuilder().setName('ping').setDescription('Verifie la latence du bot.'),
@@ -90,7 +115,7 @@ client.on('interactionCreate', async interaction => {
     if (interaction.commandName === 'embed') {
         const previewEmbed = new EmbedBuilder()
             .setTitle('Previsualisation de l\'embed')
-            .setDescription('Utilise les boutons ci-dessous pour personnaliser ton embed.\n\nLe footer, la miniature et la couleur sont verrouilles sur l\'identite de VQC.')
+            .setDescription('Utilise les boutons ci-dessous pour personnaliser ton embed.\n\nPour les emojis de bouton, utilise le format :nom: (ex: :feu:) ou un emoji standard.')
             .setColor(VQC_COLOR)
             .setFooter({ text: VQC_FOOTER_TEXT, iconURL: VQC_LOGO })
             .setThumbnail(VQC_LOGO)
@@ -114,11 +139,14 @@ client.on('interactionCreate', async interaction => {
             channelId: interaction.channel.id,
             guildId: interaction.guild.id,
             embed: { title: null, description: null, image: null },
-            buttons: [] // Liste des boutons personnalisés
+            buttons: []
         };
         
         client.pendingEmbeds.set(interaction.user.id, embedData);
-        const message = await interaction.reply({ embeds: [previewEmbed], components: [row1, row2], fetchReply: true });
+        
+        // CORRECTION DE L'AVERTISSEMENT fetchReply
+        await interaction.reply({ embeds: [previewEmbed], components: [row1, row2] });
+        const message = await interaction.fetchReply();
         embedData.messageId = message.id;
     }
 
@@ -157,7 +185,7 @@ client.on('interactionCreate', async interaction => {
     if (interaction.commandName === 'clear') {
         const amount = interaction.options.getInteger('nombre');
         await interaction.channel.bulkDelete(amount, true);
-        const msg = await interaction.reply({ content: `${amount} messages supprimes.`, ephemeral: true, fetchReply: true });
+        const msg = await interaction.reply({ content: `${amount} messages supprimes.`, ephemeral: true, fetchReply: true }); // fetchReply est encore ok ici car c'est une reponse simple, mais on peut le changer si tu veux
         setTimeout(async () => { if (msg.deletable) await msg.delete(); }, 3000);
     }
 
@@ -196,7 +224,6 @@ client.on('interactionCreate', async interaction => {
         await interaction.showModal(modal);
     }
     
-    // AJOUTER UN BOUTON PERSONNALISE
     if (interaction.customId === 'add_button') {
         if (embedData.buttons.length >= 5) {
             return interaction.reply({ content: 'Maximum 5 boutons par embed atteint.', ephemeral: true });
@@ -204,13 +231,12 @@ client.on('interactionCreate', async interaction => {
         const modal = new ModalBuilder().setCustomId('modal_add_button').setTitle('Ajouter un bouton');
         modal.addComponents(
             new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('button_label').setLabel('Texte du bouton').setStyle(TextInputStyle.Short).setPlaceholder('Ex: Rejoindre le Discord').setMaxLength(80).setRequired(true)),
-            new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('button_emoji').setLabel('Emoji (optionnel, laisse vide si aucun)').setStyle(TextInputStyle.Short).setPlaceholder('Ex: 🔗 ou laisse vide').setMaxLength(10).setRequired(false)),
+            new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('button_emoji').setLabel('Emoji (ex: :feu: ou 🔗)').setStyle(TextInputStyle.Short).setPlaceholder(':nom_de_l_emoji: ou vide').setMaxLength(50).setRequired(false)),
             new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('button_url').setLabel('URL du lien').setStyle(TextInputStyle.Short).setPlaceholder('https://...').setMaxLength(2048).setRequired(true))
         );
         await interaction.showModal(modal);
     }
     
-    // RETIRER LE DERNIER BOUTON
     if (interaction.customId === 'remove_button') {
         if (embedData.buttons.length === 0) {
             return interaction.reply({ content: 'Aucun bouton a retirer.', ephemeral: true });
@@ -241,13 +267,15 @@ client.on('interactionCreate', async interaction => {
     if (interaction.customId === 'modal_description') { embedData.embed.description = interaction.fields.getTextInputValue('description_input') || null; await updatePreview(interaction, embedData); }
     if (interaction.customId === 'modal_image') { embedData.embed.image = interaction.fields.getTextInputValue('image_input'); await updatePreview(interaction, embedData); }
     
-    // MODAL AJOUT BOUTON
     if (interaction.customId === 'modal_add_button') {
         const label = interaction.fields.getTextInputValue('button_label');
-        const emoji = interaction.fields.getTextInputValue('button_emoji').trim() || null;
+        const rawEmoji = interaction.fields.getTextInputValue('button_emoji');
         const url = interaction.fields.getTextInputValue('button_url');
         
-        embedData.buttons.push({ label, emoji, url });
+        // RESOLUTION DE L'EMOJI ICI
+        const resolvedEmoji = resolveEmoji(rawEmoji, interaction.guild);
+        
+        embedData.buttons.push({ label, emoji: resolvedEmoji, url });
         await updatePreview(interaction, embedData);
     }
     
@@ -269,7 +297,6 @@ client.on('interactionCreate', async interaction => {
         finalEmbed.setThumbnail(VQC_LOGO);
         finalEmbed.setTimestamp();
         
-        // Construire les boutons
         const components = [];
         if (embedData.buttons.length > 0) {
             const buttonRow = new ActionRowBuilder();
@@ -316,16 +343,15 @@ async function updatePreview(interaction, embedData) {
         new ButtonBuilder().setCustomId('cancel_embed').setLabel('Annuler').setStyle(ButtonStyle.Danger)
     );
     
-    // Ajouter les boutons personnalisés en aperçu
     const buttonRows = [];
     if (embedData.buttons.length > 0) {
         const btnRow = new ActionRowBuilder();
-        embedData.buttons.forEach((btn, index) => {
+        embedData.buttons.forEach((btn) => {
             const button = new ButtonBuilder()
                 .setLabel(btn.label)
                 .setURL(btn.url)
                 .setStyle(ButtonStyle.Link)
-                .setDisabled(true); // Désactivé en aperçu
+                .setDisabled(true); // Desactive en apercu
             if (btn.emoji) button.setEmoji(btn.emoji);
             btnRow.addComponents(button);
         });
