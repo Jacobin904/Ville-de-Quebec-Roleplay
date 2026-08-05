@@ -1,7 +1,7 @@
 {
   "name": "vqc-discord-bot",
-  "version": "2.2.0",
-  "description": "Bot tout-en-un pour VQC",
+  "version": "3.0.0",
+  "description": "Bot tout-en-un pour VQC avec embed interactif",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
