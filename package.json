@@ -1,7 +1,7 @@
 {
   "name": "vqc-discord-bot",
-  "version": "2.0.2",
-  "description": "Bot tout-en-un pour Ville de Québec Roleplay",
+  "version": "2.1.0",
+  "description": "Bot tout-en-un pour VQC",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
