@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const { Client, GatewayIntentBits, EmbedBuilder, SlashCommandBuilder, REST, Routes, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, PermissionFlagsBits } = require('discord.js');
 const axios = require('axios');
-const { createCanvas, loadImage, registerFont } = require('canvas');
 
 // 1. Serveur web pour garder le bot en vie sur Render
 const app = express();
@@ -100,7 +99,7 @@ client.once('clientReady', async () => {
         );
         console.log('✅ Commandes enregistrées avec succès !');
     } catch (error) {
-        console.error('❌ Erreur commandes:', error);
+        console.error(' Erreur commandes:', error);
     }
 });
 
@@ -157,7 +156,7 @@ client.on('messageDelete', async message => {
     await logsChannel.send({ embeds: [embed] });
 });
 
-// 6. Système de citations (remplace Carl-bot)
+// 6. Système de citations (remplace Carl-bot) - VERSION EMBED SANS CANVAS
 client.on('messageCreate', async message => {
     // Si on mentionne le bot en répondant à un message
     if (message.mentions.has(client.user) && message.reference && message.reference.messageId) {
@@ -165,65 +164,19 @@ client.on('messageCreate', async message => {
             const repliedMessage = await message.channel.messages.fetch(message.reference.messageId);
             const author = repliedMessage.author;
             
-            // Créer le canvas pour la citation
-            const canvas = createCanvas(600, 300);
-            const ctx = canvas.getContext('2d');
+            // Créer un Embed stylisé qui imite une citation
+            const embed = new EmbedBuilder()
+                .setColor('#003DA5')
+                .setAuthor({
+                    name: author.username,
+                    iconURL: author.displayAvatarURL({ size: 128 })
+                })
+                .setDescription(`> ${repliedMessage.content.substring(0, 2000)}`)
+                .setFooter({ text: `Cité par ${message.author.username}` })
+                .setTimestamp()
+                .setThumbnail(author.displayAvatarURL({ size: 256 }));
             
-            // Fond
-            ctx.fillStyle = '#0a0e1a';
-            ctx.fillRect(0, 0, 600, 300);
-            
-            // Bordure gauche bleue
-            ctx.fillStyle = '#003DA5';
-            ctx.fillRect(0, 0, 10, 300);
-            
-            // Avatar
-            try {
-                const avatar = await loadImage(author.displayAvatarURL({ extension: 'png', size: 256 }));
-                ctx.drawImage(avatar, 30, 30, 100, 100);
-            } catch (e) {
-                // Si l'avatar ne charge pas, on dessine un cercle gris
-                ctx.fillStyle = '#4d8dff';
-                ctx.beginPath();
-                ctx.arc(80, 80, 50, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            
-            // Nom d'utilisateur
-            ctx.fillStyle = '#4d8dff';
-            ctx.font = 'bold 24px Inter';
-            ctx.fillText(author.username, 150, 50);
-            
-            // Texte de la citation
-            ctx.fillStyle = '#e2e8f0';
-            ctx.font = '18px Inter';
-            const text = repliedMessage.content;
-            const words = text.split(' ');
-            let line = '';
-            let y = 120;
-            
-            for (let n = 0; n < words.length; n++) {
-                const testLine = line + words[n] + ' ';
-                const metrics = ctx.measureText(testLine);
-                const testWidth = metrics.width;
-                if (testWidth > 420 && n > 0) {
-                    ctx.fillText(line, 150, y);
-                    line = words[n] + ' ';
-                    y += 30;
-                } else {
-                    line = testLine;
-                }
-            }
-            ctx.fillText(line, 150, y);
-            
-            // Guillemets décoratifs
-            ctx.fillStyle = 'rgba(77, 141, 255, 0.2)';
-            ctx.font = 'bold 150px Inter';
-            ctx.fillText('"', 480, 250);
-            
-            // Envoyer l'image
-            const attachment = { attachment: canvas.toBuffer(), name: 'citation.png' };
-            await message.channel.send({ files: [attachment] });
+            await message.channel.send({ embeds: [embed] });
             
         } catch (error) {
             console.error('Erreur citation:', error);
@@ -247,9 +200,6 @@ client.on('interactionCreate', async interaction => {
 
         try {
             // ⚠️ REMPLACE CETTE URL PAR LA VRAIE URL DE L'API MELONLY
-            // Exemples possibles: 
-            // - https://api.melonly.xyz/v1/users/roblox/${robloxName}
-            // - https://api.melonly.xyz/v1/players/${robloxName}
             const response = await axios.get(`https://api.melonly.xyz/v1/player/${robloxName}`, {
                 headers: {
                     'Authorization': `Bearer ${melonlyToken}`,
