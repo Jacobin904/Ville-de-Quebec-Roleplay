@@ -27,10 +27,10 @@ const client = new Client({
 // Stockage des embeds en cours de creation
 client.pendingEmbeds = new Map();
 
-// CONSTANTES VERROUILLEES (Identite visuelle VQC)
+// CONSTANTES VERROUILLEES
 const VQC_LOGO = 'https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024';
 const VQC_FOOTER_TEXT = 'Ville de Quebec Roleplay (VQC)';
-const VQC_COLOR = '#003DA5'; // Couleur verrouillee
+const VQC_COLOR = '#003DA5';
 
 // 3. Commandes Slash
 const commands = [
@@ -59,7 +59,7 @@ client.once('clientReady', async () => {
     } catch (error) { console.error('Erreur:', error); }
 });
 
-// 5. Systeme de logs (SANS EMOJIS)
+// 5. Systeme de logs
 client.on('guildMemberAdd', async member => {
     const logsChannel = member.guild.channels.cache.find(c => c.name === 'logs' || c.name === 'journaux');
     if (!logsChannel) return;
@@ -79,7 +79,7 @@ client.on('messageDelete', async message => {
     await logsChannel.send({ embeds: [new EmbedBuilder().setColor(VQC_COLOR).setTitle('Message supprime').addFields({ name: 'Auteur', value: `${message.author.tag} (${message.author.id})`, inline: true }, { name: 'Canal', value: `<#${message.channel.id}>`, inline: true }, { name: 'Contenu', value: message.content.substring(0, 1000) || 'Message sans texte' }).setFooter({ text: VQC_FOOTER_TEXT, iconURL: VQC_LOGO }).setTimestamp()] });
 });
 
-// 6. Commande /embed - Creation de la previsualisation
+// 6. Commande /embed
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
@@ -96,13 +96,12 @@ client.on('interactionCreate', async interaction => {
             .setThumbnail(VQC_LOGO)
             .setTimestamp();
         
-        // BOUTONS SANS EMOJIS
         const row1 = new ActionRowBuilder().addComponents(
             new ButtonBuilder().setCustomId('edit_title').setLabel('Titre').setStyle(ButtonStyle.Primary),
             new ButtonBuilder().setCustomId('edit_description').setLabel('Description').setStyle(ButtonStyle.Primary),
-            new ButtonBuilder().setCustomId('edit_author').setLabel('Auteur').setStyle(ButtonStyle.Primary),
             new ButtonBuilder().setCustomId('edit_image').setLabel('Image').setStyle(ButtonStyle.Primary),
-            new ButtonBuilder().setCustomId('edit_author_icon').setLabel('Icone Auteur').setStyle(ButtonStyle.Secondary)
+            new ButtonBuilder().setCustomId('add_button').setLabel('Ajouter Bouton').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('remove_button').setLabel('Retirer Bouton').setStyle(ButtonStyle.Secondary)
         );
         
         const row2 = new ActionRowBuilder().addComponents(
@@ -114,7 +113,8 @@ client.on('interactionCreate', async interaction => {
             authorId: interaction.user.id,
             channelId: interaction.channel.id,
             guildId: interaction.guild.id,
-            embed: { title: null, description: null, author: null, authorIcon: null, image: null }
+            embed: { title: null, description: null, image: null },
+            buttons: [] // Liste des boutons personnalisés
         };
         
         client.pendingEmbeds.set(interaction.user.id, embedData);
@@ -172,7 +172,7 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-// 7. Gestion des boutons d'embed
+// 7. Gestion des boutons
 client.on('interactionCreate', async interaction => {
     if (!interaction.isButton()) return;
     
@@ -190,21 +190,35 @@ client.on('interactionCreate', async interaction => {
         modal.addComponents(new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('description_input').setLabel('Description').setStyle(TextInputStyle.Paragraph).setPlaceholder('Entre la description...').setMaxLength(4000).setRequired(false)));
         await interaction.showModal(modal);
     }
-    if (interaction.customId === 'edit_author') {
-        const modal = new ModalBuilder().setCustomId('modal_author').setTitle('Modifier l\'auteur');
-        modal.addComponents(new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('author_input').setLabel('Nom de l\'auteur').setStyle(TextInputStyle.Short).setPlaceholder('Nom...').setMaxLength(256).setRequired(true)));
-        await interaction.showModal(modal);
-    }
     if (interaction.customId === 'edit_image') {
         const modal = new ModalBuilder().setCustomId('modal_image').setTitle('Modifier l\'image');
         modal.addComponents(new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('image_input').setLabel('URL de l\'image').setStyle(TextInputStyle.Short).setPlaceholder('https://...').setMaxLength(2048).setRequired(true)));
         await interaction.showModal(modal);
     }
-    if (interaction.customId === 'edit_author_icon') {
-        const modal = new ModalBuilder().setCustomId('modal_author_icon').setTitle('Icone de l\'auteur');
-        modal.addComponents(new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('author_icon_input').setLabel('URL de l\'icone').setStyle(TextInputStyle.Short).setPlaceholder('https://...').setMaxLength(2048).setRequired(true)));
+    
+    // AJOUTER UN BOUTON PERSONNALISE
+    if (interaction.customId === 'add_button') {
+        if (embedData.buttons.length >= 5) {
+            return interaction.reply({ content: 'Maximum 5 boutons par embed atteint.', ephemeral: true });
+        }
+        const modal = new ModalBuilder().setCustomId('modal_add_button').setTitle('Ajouter un bouton');
+        modal.addComponents(
+            new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('button_label').setLabel('Texte du bouton').setStyle(TextInputStyle.Short).setPlaceholder('Ex: Rejoindre le Discord').setMaxLength(80).setRequired(true)),
+            new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('button_emoji').setLabel('Emoji (optionnel, laisse vide si aucun)').setStyle(TextInputStyle.Short).setPlaceholder('Ex: 🔗 ou laisse vide').setMaxLength(10).setRequired(false)),
+            new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('button_url').setLabel('URL du lien').setStyle(TextInputStyle.Short).setPlaceholder('https://...').setMaxLength(2048).setRequired(true))
+        );
         await interaction.showModal(modal);
     }
+    
+    // RETIRER LE DERNIER BOUTON
+    if (interaction.customId === 'remove_button') {
+        if (embedData.buttons.length === 0) {
+            return interaction.reply({ content: 'Aucun bouton a retirer.', ephemeral: true });
+        }
+        embedData.buttons.pop();
+        await updatePreview(interaction, embedData);
+    }
+    
     if (interaction.customId === 'send_embed') {
         const modal = new ModalBuilder().setCustomId('modal_send').setTitle('Envoyer l\'embed');
         modal.addComponents(new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('channel_input').setLabel('ID ou nom du salon').setStyle(TextInputStyle.Short).setPlaceholder('Ex: annonces ou 123456789').setMaxLength(100).setRequired(true)));
@@ -225,9 +239,17 @@ client.on('interactionCreate', async interaction => {
     
     if (interaction.customId === 'modal_title') { embedData.embed.title = interaction.fields.getTextInputValue('title_input'); await updatePreview(interaction, embedData); }
     if (interaction.customId === 'modal_description') { embedData.embed.description = interaction.fields.getTextInputValue('description_input') || null; await updatePreview(interaction, embedData); }
-    if (interaction.customId === 'modal_author') { embedData.embed.author = interaction.fields.getTextInputValue('author_input'); await updatePreview(interaction, embedData); }
     if (interaction.customId === 'modal_image') { embedData.embed.image = interaction.fields.getTextInputValue('image_input'); await updatePreview(interaction, embedData); }
-    if (interaction.customId === 'modal_author_icon') { embedData.embed.authorIcon = interaction.fields.getTextInputValue('author_icon_input'); await updatePreview(interaction, embedData); }
+    
+    // MODAL AJOUT BOUTON
+    if (interaction.customId === 'modal_add_button') {
+        const label = interaction.fields.getTextInputValue('button_label');
+        const emoji = interaction.fields.getTextInputValue('button_emoji').trim() || null;
+        const url = interaction.fields.getTextInputValue('button_url');
+        
+        embedData.buttons.push({ label, emoji, url });
+        await updatePreview(interaction, embedData);
+    }
     
     if (interaction.customId === 'modal_send') {
         const channelInput = interaction.fields.getTextInputValue('channel_input');
@@ -240,16 +262,29 @@ client.on('interactionCreate', async interaction => {
         const finalEmbed = new EmbedBuilder();
         if (embedData.embed.title) finalEmbed.setTitle(embedData.embed.title);
         if (embedData.embed.description) finalEmbed.setDescription(embedData.embed.description);
-        
-        // VERROUILLAGE STRICT
-        finalEmbed.setColor(VQC_COLOR);
-        if (embedData.embed.author) finalEmbed.setAuthor({ name: embedData.embed.author, iconURL: embedData.embed.authorIcon || undefined });
         if (embedData.embed.image) finalEmbed.setImage(embedData.embed.image);
+        
+        finalEmbed.setColor(VQC_COLOR);
         finalEmbed.setFooter({ text: VQC_FOOTER_TEXT, iconURL: VQC_LOGO });
         finalEmbed.setThumbnail(VQC_LOGO);
         finalEmbed.setTimestamp();
         
-        await targetChannel.send({ embeds: [finalEmbed] });
+        // Construire les boutons
+        const components = [];
+        if (embedData.buttons.length > 0) {
+            const buttonRow = new ActionRowBuilder();
+            embedData.buttons.forEach(btn => {
+                const button = new ButtonBuilder()
+                    .setLabel(btn.label)
+                    .setURL(btn.url)
+                    .setStyle(ButtonStyle.Link);
+                if (btn.emoji) button.setEmoji(btn.emoji);
+                buttonRow.addComponents(button);
+            });
+            components.push(buttonRow);
+        }
+        
+        await targetChannel.send({ embeds: [finalEmbed], components: components });
         client.pendingEmbeds.delete(interaction.user.id);
         await interaction.reply({ content: `Embed envoye dans ${targetChannel}`, ephemeral: true });
         
@@ -262,10 +297,8 @@ async function updatePreview(interaction, embedData) {
     const previewEmbed = new EmbedBuilder();
     if (embedData.embed.title) previewEmbed.setTitle(embedData.embed.title);
     if (embedData.embed.description) previewEmbed.setDescription(embedData.embed.description);
-    if (embedData.embed.author) previewEmbed.setAuthor({ name: embedData.embed.author, iconURL: embedData.embed.authorIcon || undefined });
     if (embedData.embed.image) previewEmbed.setImage(embedData.embed.image);
     
-    // VERROUILLAGE STRICT
     previewEmbed.setColor(VQC_COLOR);
     previewEmbed.setFooter({ text: VQC_FOOTER_TEXT, iconURL: VQC_LOGO });
     previewEmbed.setThumbnail(VQC_LOGO);
@@ -274,19 +307,35 @@ async function updatePreview(interaction, embedData) {
     const row1 = new ActionRowBuilder().addComponents(
         new ButtonBuilder().setCustomId('edit_title').setLabel('Titre').setStyle(ButtonStyle.Primary),
         new ButtonBuilder().setCustomId('edit_description').setLabel('Description').setStyle(ButtonStyle.Primary),
-        new ButtonBuilder().setCustomId('edit_author').setLabel('Auteur').setStyle(ButtonStyle.Primary),
         new ButtonBuilder().setCustomId('edit_image').setLabel('Image').setStyle(ButtonStyle.Primary),
-        new ButtonBuilder().setCustomId('edit_author_icon').setLabel('Icone Auteur').setStyle(ButtonStyle.Secondary)
+        new ButtonBuilder().setCustomId('add_button').setLabel('Ajouter Bouton').setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder().setCustomId('remove_button').setLabel('Retirer Bouton').setStyle(ButtonStyle.Secondary)
     );
     const row2 = new ActionRowBuilder().addComponents(
         new ButtonBuilder().setCustomId('send_embed').setLabel('Envoyer').setStyle(ButtonStyle.Success),
         new ButtonBuilder().setCustomId('cancel_embed').setLabel('Annuler').setStyle(ButtonStyle.Danger)
     );
     
+    // Ajouter les boutons personnalisés en aperçu
+    const buttonRows = [];
+    if (embedData.buttons.length > 0) {
+        const btnRow = new ActionRowBuilder();
+        embedData.buttons.forEach((btn, index) => {
+            const button = new ButtonBuilder()
+                .setLabel(btn.label)
+                .setURL(btn.url)
+                .setStyle(ButtonStyle.Link)
+                .setDisabled(true); // Désactivé en aperçu
+            if (btn.emoji) button.setEmoji(btn.emoji);
+            btnRow.addComponents(button);
+        });
+        buttonRows.push(btnRow);
+    }
+    
     try {
         const message = await interaction.channel.messages.fetch(embedData.messageId);
-        await message.edit({ embeds: [previewEmbed], components: [row1, row2] });
-        await interaction.reply({ content: 'Previsualisation mise a jour', ephemeral: true });
+        await message.edit({ embeds: [previewEmbed], components: [row1, ...buttonRows, row2] });
+        await interaction.reply({ content: `Previsualisation mise a jour (${embedData.buttons.length} bouton(s))`, ephemeral: true });
     } catch (e) { await interaction.reply({ content: 'Erreur lors de la mise a jour.', ephemeral: true }); }
 }
 
