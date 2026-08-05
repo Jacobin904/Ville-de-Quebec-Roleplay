@@ -7,6 +7,10 @@ const {
     TextInputBuilder, TextInputStyle
 } = require('discord.js');
 
+// URL du logo VQC (utilisé pour le footer et la miniature)
+const VQC_LOGO_URL = 'https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024';
+const VQC_FOOTER_TEXT = 'Ville de Québec Roleplay (VQC)';
+
 // 1. Serveur web pour Render
 const app = express();
 const port = process.env.PORT || 3000;
@@ -149,23 +153,22 @@ client.on('interactionCreate', async interaction => {
             .setTitle('📝 Prévisualisation de l\'embed')
             .setDescription('Utilise les boutons ci-dessous pour personnaliser ton embed.')
             .setColor('#003DA5')
-            .setFooter({ text: 'Créé par ' + interaction.user.username })
+            // ✅ FOOTER ET THUMBNAIL VERROUILLÉS ICI
+            .setFooter({ text: VQC_FOOTER_TEXT, iconURL: VQC_LOGO_URL })
+            .setThumbnail(VQC_LOGO_URL)
             .setTimestamp();
         
-        // ✅ CORRECTION : Tous les emojis sont maintenant valides
+        // ✅ BOUTONS SANS FOOTER NI THUMBNAIL
         const row1 = new ActionRowBuilder().addComponents(
             new ButtonBuilder().setCustomId('edit_title').setLabel('Titre').setStyle(ButtonStyle.Primary).setEmoji('📝'),
             new ButtonBuilder().setCustomId('edit_description').setLabel('Description').setStyle(ButtonStyle.Primary).setEmoji('📄'),
             new ButtonBuilder().setCustomId('edit_color').setLabel('Couleur').setStyle(ButtonStyle.Primary).setEmoji('🎨'),
-            new ButtonBuilder().setCustomId('edit_author').setLabel('Auteur').setStyle(ButtonStyle.Primary).setEmoji('👤'),
-            new ButtonBuilder().setCustomId('edit_footer').setLabel('Footer').setStyle(ButtonStyle.Primary).setEmoji('📌')
+            new ButtonBuilder().setCustomId('edit_author').setLabel('Auteur').setStyle(ButtonStyle.Primary).setEmoji('👤')
         );
         
         const row2 = new ActionRowBuilder().addComponents(
             new ButtonBuilder().setCustomId('edit_image').setLabel('Image').setStyle(ButtonStyle.Primary).setEmoji('🖼️'),
-            new ButtonBuilder().setCustomId('edit_thumbnail').setLabel('Miniature').setStyle(ButtonStyle.Primary).setEmoji('🔲'),
             new ButtonBuilder().setCustomId('edit_author_icon').setLabel('Icône Auteur').setStyle(ButtonStyle.Secondary).setEmoji('👤'),
-            new ButtonBuilder().setCustomId('edit_footer_icon').setLabel('Icône Footer').setStyle(ButtonStyle.Secondary).setEmoji('🖼️'),
             new ButtonBuilder().setCustomId('send_embed').setLabel('Envoyer').setStyle(ButtonStyle.Success).setEmoji('✅')
         );
         
@@ -183,10 +186,7 @@ client.on('interactionCreate', async interaction => {
                 color: '#003DA5',
                 author: null,
                 authorIcon: null,
-                footer: null,
-                footerIcon: null,
-                image: null,
-                thumbnail: null
+                image: null
             }
         };
         
@@ -222,7 +222,7 @@ client.on('interactionCreate', async interaction => {
             .setTitle('🎫 Nouveau ticket')
             .setDescription(`Bonjour ${interaction.user} !\n\nDécris ton problème ci-dessous. Un membre du staff te répondra.`)
             .setColor('#003DA5')
-            .setFooter({ text: 'Utilise /close pour fermer' })
+            .setFooter({ text: VQC_FOOTER_TEXT, iconURL: VQC_LOGO_URL })
             .setTimestamp();
         
         await ticketChannel.send({ content: `${interaction.user}`, embeds: [embed] });
@@ -281,7 +281,7 @@ client.on('interactionCreate', async interaction => {
                 { name: 'A rejoint', value: member.joinedTimestamp ? `<t:${Math.floor(member.joinedTimestamp / 1000)}:D>` : 'Inconnu', inline: true },
                 { name: 'Rôles', value: member.roles.cache.filter(r => r.id !== member.guild.id).map(r => r.name).join(', ') || 'Aucun', inline: false }
             )
-            .setFooter({ text: `Demandé par ${interaction.user.tag}` })
+            .setFooter({ text: VQC_FOOTER_TEXT, iconURL: VQC_LOGO_URL })
             .setTimestamp();
         await interaction.reply({ embeds: [embed] });
     }
@@ -300,7 +300,7 @@ client.on('interactionCreate', async interaction => {
                 { name: 'Rôles', value: `${guild.roles.cache.size}`, inline: true },
                 { name: 'Créé le', value: `<t:${Math.floor(guild.createdTimestamp / 1000)}:D>`, inline: false }
             )
-            .setFooter({ text: `Demandé par ${interaction.user.tag}` })
+            .setFooter({ text: VQC_FOOTER_TEXT, iconURL: VQC_LOGO_URL })
             .setTimestamp();
         await interaction.reply({ embeds: [embed] });
     }
@@ -351,14 +351,6 @@ client.on('interactionCreate', async interaction => {
         await interaction.showModal(modal);
     }
     
-    if (interaction.customId === 'edit_footer') {
-        const modal = new ModalBuilder().setCustomId('modal_footer').setTitle('Modifier le footer');
-        modal.addComponents(new ActionRowBuilder().addComponents(
-            new TextInputBuilder().setCustomId('footer_input').setLabel('Texte du footer').setStyle(TextInputStyle.Short).setPlaceholder('Texte...').setMaxLength(2048).setRequired(true)
-        ));
-        await interaction.showModal(modal);
-    }
-    
     if (interaction.customId === 'edit_image') {
         const modal = new ModalBuilder().setCustomId('modal_image').setTitle('Modifier l\'image');
         modal.addComponents(new ActionRowBuilder().addComponents(
@@ -367,26 +359,10 @@ client.on('interactionCreate', async interaction => {
         await interaction.showModal(modal);
     }
     
-    if (interaction.customId === 'edit_thumbnail') {
-        const modal = new ModalBuilder().setCustomId('modal_thumbnail').setTitle('Modifier la miniature');
-        modal.addComponents(new ActionRowBuilder().addComponents(
-            new TextInputBuilder().setCustomId('thumbnail_input').setLabel('URL de la miniature').setStyle(TextInputStyle.Short).setPlaceholder('https://...').setMaxLength(2048).setRequired(true)
-        ));
-        await interaction.showModal(modal);
-    }
-    
     if (interaction.customId === 'edit_author_icon') {
         const modal = new ModalBuilder().setCustomId('modal_author_icon').setTitle('Icône de l\'auteur');
         modal.addComponents(new ActionRowBuilder().addComponents(
             new TextInputBuilder().setCustomId('author_icon_input').setLabel('URL de l\'icône').setStyle(TextInputStyle.Short).setPlaceholder('https://...').setMaxLength(2048).setRequired(true)
-        ));
-        await interaction.showModal(modal);
-    }
-    
-    if (interaction.customId === 'edit_footer_icon') {
-        const modal = new ModalBuilder().setCustomId('modal_footer_icon').setTitle('Icône du footer');
-        modal.addComponents(new ActionRowBuilder().addComponents(
-            new TextInputBuilder().setCustomId('footer_icon_input').setLabel('URL de l\'icône').setStyle(TextInputStyle.Short).setPlaceholder('https://...').setMaxLength(2048).setRequired(true)
         ));
         await interaction.showModal(modal);
     }
@@ -432,24 +408,12 @@ client.on('interactionCreate', async interaction => {
         embedData.embed.author = interaction.fields.getTextInputValue('author_input');
         await updatePreview(interaction, embedData);
     }
-    if (interaction.customId === 'modal_footer') {
-        embedData.embed.footer = interaction.fields.getTextInputValue('footer_input');
-        await updatePreview(interaction, embedData);
-    }
     if (interaction.customId === 'modal_image') {
         embedData.embed.image = interaction.fields.getTextInputValue('image_input');
         await updatePreview(interaction, embedData);
     }
-    if (interaction.customId === 'modal_thumbnail') {
-        embedData.embed.thumbnail = interaction.fields.getTextInputValue('thumbnail_input');
-        await updatePreview(interaction, embedData);
-    }
     if (interaction.customId === 'modal_author_icon') {
         embedData.embed.authorIcon = interaction.fields.getTextInputValue('author_icon_input');
-        await updatePreview(interaction, embedData);
-    }
-    if (interaction.customId === 'modal_footer_icon') {
-        embedData.embed.footerIcon = interaction.fields.getTextInputValue('footer_icon_input');
         await updatePreview(interaction, embedData);
     }
     
@@ -475,11 +439,11 @@ client.on('interactionCreate', async interaction => {
         if (embedData.embed.author) {
             finalEmbed.setAuthor({ name: embedData.embed.author, iconURL: embedData.embed.authorIcon || undefined });
         }
-        if (embedData.embed.footer) {
-            finalEmbed.setFooter({ text: embedData.embed.footer, iconURL: embedData.embed.footerIcon || undefined });
-        }
         if (embedData.embed.image) finalEmbed.setImage(embedData.embed.image);
-        if (embedData.embed.thumbnail) finalEmbed.setThumbnail(embedData.embed.thumbnail);
+        
+        // ✅ FOOTER ET THUMBNAIL VERROUILLÉS À L'ENVOI
+        finalEmbed.setFooter({ text: VQC_FOOTER_TEXT, iconURL: VQC_LOGO_URL });
+        finalEmbed.setThumbnail(VQC_LOGO_URL);
         finalEmbed.setTimestamp();
         
         await targetChannel.send({ embeds: [finalEmbed] });
@@ -505,26 +469,23 @@ async function updatePreview(interaction, embedData) {
     if (embedData.embed.author) {
         previewEmbed.setAuthor({ name: embedData.embed.author, iconURL: embedData.embed.authorIcon || undefined });
     }
-    if (embedData.embed.footer) {
-        previewEmbed.setFooter({ text: embedData.embed.footer, iconURL: embedData.embed.footerIcon || undefined });
-    }
     if (embedData.embed.image) previewEmbed.setImage(embedData.embed.image);
-    if (embedData.embed.thumbnail) previewEmbed.setThumbnail(embedData.embed.thumbnail);
+    
+    // ✅ FOOTER ET THUMBNAIL VERROUILLÉS DANS LA PRÉVISUALISATION
+    previewEmbed.setFooter({ text: VQC_FOOTER_TEXT, iconURL: VQC_LOGO_URL });
+    previewEmbed.setThumbnail(VQC_LOGO_URL);
     previewEmbed.setTimestamp();
     
     const row1 = new ActionRowBuilder().addComponents(
         new ButtonBuilder().setCustomId('edit_title').setLabel('Titre').setStyle(ButtonStyle.Primary).setEmoji('📝'),
         new ButtonBuilder().setCustomId('edit_description').setLabel('Description').setStyle(ButtonStyle.Primary).setEmoji('📄'),
         new ButtonBuilder().setCustomId('edit_color').setLabel('Couleur').setStyle(ButtonStyle.Primary).setEmoji('🎨'),
-        new ButtonBuilder().setCustomId('edit_author').setLabel('Auteur').setStyle(ButtonStyle.Primary).setEmoji('👤'),
-        new ButtonBuilder().setCustomId('edit_footer').setLabel('Footer').setStyle(ButtonStyle.Primary).setEmoji('📌')
+        new ButtonBuilder().setCustomId('edit_author').setLabel('Auteur').setStyle(ButtonStyle.Primary).setEmoji('👤')
     );
     
     const row2 = new ActionRowBuilder().addComponents(
         new ButtonBuilder().setCustomId('edit_image').setLabel('Image').setStyle(ButtonStyle.Primary).setEmoji('🖼️'),
-        new ButtonBuilder().setCustomId('edit_thumbnail').setLabel('Miniature').setStyle(ButtonStyle.Primary).setEmoji('🔲'),
         new ButtonBuilder().setCustomId('edit_author_icon').setLabel('Icône Auteur').setStyle(ButtonStyle.Secondary).setEmoji('👤'),
-        new ButtonBuilder().setCustomId('edit_footer_icon').setLabel('Icône Footer').setStyle(ButtonStyle.Secondary).setEmoji('🖼️'),
         new ButtonBuilder().setCustomId('send_embed').setLabel('Envoyer').setStyle(ButtonStyle.Success).setEmoji('✅')
     );
     
@@ -537,7 +498,7 @@ async function updatePreview(interaction, embedData) {
         await message.edit({ embeds: [previewEmbed], components: [row1, row2, row3] });
         await interaction.reply({ content: '✅ Prévisualisation mise à jour !', ephemeral: true });
     } catch (e) {
-        await interaction.reply({ content: '❌ Erreur lors de la mise à jour.', ephemeral: true });
+        await interaction.reply({ content: ' Erreur lors de la mise à jour.', ephemeral: true });
     }
 }
 
