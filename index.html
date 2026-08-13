@@ -10,524 +10,1002 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Ville de Québec Roleplay">
     <meta property="og:title" content="Ville de Québec Roleplay — Expérience ERLC immersive">
-    <meta property="og:description" content="Serveur ERLC fidèle, immersif et entièrement inspiré de la Ville de Québec. Roleplay structuré, services d'urgence et mises à jour régulières. Rejoins-nous !">
-    <meta property="og:url" content="https://discord.gg/UEf3epPwXS">
-    <meta property="og:locale" content="fr_CA">
+    <meta property="og:description" content="Serveur ERLC fidèle, immersif et entièrement inspiré de la Ville de Québec.">
     <meta property="og:image" content="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024">
-    <meta name="theme-color" content="#003DA5">
+    <meta name="theme-color" content="#5865F2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Cormorant+Garamond:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         :root {
-            --nuit-0:#0a0e1a;--nuit-1:#111827;--nuit-2:#1e293b;--nuit-3:#2d3748;
-            --primary:#003DA5;--primary-dark:#002b75;--primary-light:#1a5fd0;
-            --gold:#4d8dff;--gold-light:#8fb8ff;--gold-dark:#003DA5;
-            --cream:#f8fafc;--cream-2:#e2e8f0;--taupe:#94a3b8;
-            --border:rgba(77,141,255,.3);--border-primary:rgba(0,61,165,.5);
-            --grad-argent:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 45%,#cbd5e1 100%);
-            --grad-primary:linear-gradient(135deg,#003DA5 0%,#002b75 100%);
-            --grad-gold:linear-gradient(135deg,#4d8dff 0%,#8fb8ff 50%,#4d8dff 100%);
-            --grad-btn:linear-gradient(135deg,#003DA5 0%,#1a5fd0 50%,#003DA5 100%);
-            --danger: #dc2626; --warning: #d97706; --success: #059669;
+            --discord-bg: #313338;
+            --discord-dark: #2b2d31;
+            --discord-darker: #1e1f22;
+            --discord-light: #383a40;
+            --discord-blurple: #5865F2;
+            --discord-blurple-hover: #4752C4;
+            --discord-green: #57F287;
+            --discord-yellow: #FEE75C;
+            --discord-red: #ED4245;
+            --discord-white: #ffffff;
+            --discord-gray: #b5bac1;
+            --discord-gray-dark: #949ba4;
+            --discord-text: #dbdee1;
         }
-        *{margin:0;padding:0;box-sizing:border-box}
-        html{scroll-behavior:smooth}
-        body{font-family:'Inter',sans-serif;background:var(--nuit-0);color:var(--cream-2);line-height:1.7;overflow-x:hidden}
-        :focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
-        ::-webkit-scrollbar{width:8px}
-        ::-webkit-scrollbar-track{background:var(--nuit-0)}
-        ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--gold),var(--gold-dark));border-radius:4px}
-        ::-webkit-scrollbar-thumb:hover{background:var(--gold)}
-        .grain{position:fixed;inset:0;z-index:9997;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:128px 128px}
-        .glow-follow{position:fixed;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(77,141,255,.09) 0%,transparent 70%);pointer-events:none;z-index:-1;transform:translate(-50%,-50%)}
-        .mesh-bg{position:fixed;inset:0;z-index:-2;overflow:hidden}
-        .mesh-blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.3;animation:blobFloat 20s ease-in-out infinite}
-        .mesh-blob:nth-child(1){width:500px;height:500px;background:rgba(0,61,165,.5);top:-10%;left:-5%}
-        .mesh-blob:nth-child(2){width:400px;height:400px;background:rgba(77,141,255,.18);bottom:10%;right:-5%;animation-delay:-7s}
-        .mesh-blob:nth-child(3){width:350px;height:350px;background:rgba(0,61,165,.25);top:40%;left:50%;animation-delay:-14s}
-        @keyframes blobFloat{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(30px,-40px) scale(1.1)}50%{transform:translate(-20px,30px) scale(.95)}75%{transform:translate(40px,20px) scale(1.05)}}
-        .preloader{position:fixed;inset:0;background:var(--nuit-0);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;transition:opacity .8s,visibility .8s}
-        .preloader.hidden{opacity:0;visibility:hidden}
-        .preloader-logo{width:90px;height:90px;border-radius:50%;border:3px solid var(--gold);animation:pSpin 2s linear infinite,pPulse 1.5s ease-in-out infinite;box-shadow:0 0 40px rgba(77,141,255,.4);object-fit:cover}
-        @keyframes pSpin{to{transform:rotate(360deg)}}
-        @keyframes pPulse{0%,100%{box-shadow:0 0 40px rgba(77,141,255,.4)}50%{box-shadow:0 0 70px rgba(77,141,255,.6)}}
-        .preloader-bar{width:220px;height:3px;background:rgba(248,250,252,.1);border-radius:3px;overflow:hidden}
-        .preloader-bar i{display:block;height:100%;width:0%;background:var(--grad-gold);border-radius:3px;transition:width .15s linear}
-        .preloader-percent{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--gold);letter-spacing:2px}
-        .preloader-text{font-family:'Playfair Display',serif;font-size:1rem;letter-spacing:4px;background:var(--grad-gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-transform:uppercase}
-        .scroll-progress{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--gold),var(--gold-light));z-index:1001;box-shadow:0 0 10px rgba(77,141,255,.5);transition:width .1s linear}
-        #particleCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none}
-        .container{width:100%;max-width:1400px;margin:0 auto;padding:0 40px}
-        header{background:rgba(10,14,26,.96);backdrop-filter:blur(24px) saturate(180%);border-bottom:2px solid var(--border);color:var(--cream);padding:20px 0;position:fixed;width:100%;top:0;z-index:1000;box-shadow:0 4px 30px rgba(0,0,0,.7);transition:all .3s}
-        header.scrolled{padding:12px 0;background:rgba(10,14,26,.98);border-bottom:2px solid var(--gold)}
-        nav{display:flex;justify-content:space-between;align-items:center}
-        .logo{display:flex;align-items:center;gap:15px;text-decoration:none;color:var(--cream);transition:all .4s}
-        .logo:hover{transform:scale(1.05)}
-        .logo img{height:50px;border-radius:50%;border:2px solid var(--gold);box-shadow:0 0 20px rgba(77,141,255,.4)}
-        .logo h1{font-size:1.8rem;font-weight:900;background:var(--grad-gold);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-family:'Playfair Display',serif;animation:gradShift 4s ease infinite}
-        @keyframes gradShift{0%,100%{background-position:0% center}50%{background-position:100% center}}
-        .nav-links{display:flex;gap:24px;list-style:none}
-        .nav-links a{color:var(--taupe);text-decoration:none;font-weight:600;font-size:.82rem;transition:all .3s;text-transform:uppercase;letter-spacing:.5px;position:relative;padding:5px 0}
-        .nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--grad-gold);transition:width .3s}
-        .nav-links a:hover,.nav-links a.active{color:var(--gold)}
-        .nav-links a:hover::after,.nav-links a.active::after{width:100%}
-        .hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:5px;cursor:pointer}
-        .hamburger span{width:28px;height:3px;background:var(--cream);border-radius:3px;transition:all .3s}
-        .hamburger.active span:nth-child(1){transform:translateY(8px) rotate(45deg)}
-        .hamburger.active span:nth-child(2){opacity:0}
-        .hamburger.active span:nth-child(3){transform:translateY(-8px) rotate(-45deg)}
-        .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:180px 20px 120px;position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(0,61,165,.35) 0%,rgba(10,14,26,0) 100%)}
-        .hero-content{max-width:1100px;z-index:1;position:relative}
-        .hero-badge{display:inline-flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(77,141,255,.25),rgba(0,43,117,.4));backdrop-filter:blur(15px);padding:15px 35px;border-radius:50px;font-size:.95rem;font-weight:700;margin-bottom:35px;border:2px solid var(--gold);color:var(--gold);letter-spacing:2px;text-transform:uppercase;animation:slideDown 1s ease;box-shadow:0 10px 30px rgba(0,61,165,.4)}
-        @keyframes slideDown{from{opacity:0;transform:translateY(-30px)}to{opacity:1;transform:translateY(0)}}
-        .hero h2{font-size:6rem;margin-bottom:25px;font-weight:900;font-family:'Playfair Display',serif;line-height:1.2;display:flex;flex-wrap:wrap;justify-content:center;gap:0 .28em}
-        .hero h2 .word{display:inline-flex;overflow:hidden;padding:.08em 0}
-        .hero h2 .char{display:inline-block;background:var(--grad-gold);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;transform:translateY(115%);animation:charUp .8s cubic-bezier(.5,0,.1,1) forwards,gradShift 4s ease infinite}
-        @keyframes charUp{to{transform:translateY(0)}}
-        .hero h2.done{position:relative}
-        .hero h2.done::after{content:attr(data-text);position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(248,250,252,.9) 50%,transparent 65%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;animation:shine 1.1s ease .2s 1;pointer-events:none;mix-blend-mode:overlay;opacity:0}
-        @keyframes shine{0%{background-position:150% 0;opacity:1}100%{background-position:-50% 0;opacity:0}}
-        .hero-subtitle{font-size:1.8rem;margin-bottom:35px;font-weight:600;color:var(--gold);letter-spacing:5px;text-transform:uppercase;font-family:'Cormorant Garamond',serif;min-height:1.5em}
-        .hero-subtitle .tw-cursor{display:inline-block;width:3px;height:1.4em;background:var(--gold);margin-left:4px;animation:blink .8s step-end infinite;vertical-align:text-bottom}
-        @keyframes blink{50%{opacity:0}}
-        .hero-description{font-size:1.35rem;margin-bottom:50px;line-height:2;max-width:800px;margin-left:auto;margin-right:auto;color:var(--cream-2);opacity:0;animation:fadeUp 1s ease 2.5s forwards}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-        .btn-group{display:flex;gap:25px;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeUp 1s ease 3s forwards}
-        .btn{display:inline-flex;align-items:center;gap:12px;background:var(--grad-btn);color:#fff;padding:18px 45px;border-radius:50px;text-decoration:none;font-weight:700;font-size:1rem;transition:transform .3s,box-shadow .3s,border-color .3s,background .3s;border:2px solid var(--gold);box-shadow:0 15px 40px rgba(0,61,165,.5);text-transform:uppercase;letter-spacing:1px;position:relative;overflow:hidden}
-        .btn:hover{transform:translateY(-3px);box-shadow:0 25px 60px rgba(0,61,165,.6);border-color:var(--gold-light)}
-        .btn-secondary{background:transparent;border:2px solid var(--gold);color:var(--gold)}
-        .btn-secondary:hover{background:rgba(77,141,255,.15);border-color:var(--gold-light);box-shadow:0 15px 40px rgba(0,61,165,.4)}
-        .marquee{background:linear-gradient(90deg,var(--primary-dark),var(--primary),var(--primary-dark));padding:25px 0;overflow:hidden;border-top:2px solid var(--border);border-bottom:2px solid var(--border);position:relative;z-index:5}
-        .marquee-track{display:flex;gap:60px;white-space:nowrap;animation:marqScroll 25s linear infinite;width:max-content}
-        .marquee-item{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--cream);display:flex;align-items:center;gap:60px;letter-spacing:3px}
-        .marquee-item .sep{font-size:1.5rem}
-        .marquee-item .sep:nth-of-type(3n+1){color:var(--gold)}
-        .marquee-item .sep:nth-of-type(3n+2){color:var(--cream)}
-        .marquee-item .sep:nth-of-type(3n+3){color:var(--gold-light)}
-        @keyframes marqScroll{to{transform:translateX(-50%)}}
-        section{padding:120px 0;position:relative}
-        .section-header{text-align:center;margin-bottom:80px}
-        .section-header h2{font-size:3.5rem;background:var(--grad-gold);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:25px;font-weight:900;font-family:'Playfair Display',serif;display:inline-block;position:relative;animation:gradShift 4s ease infinite}
-        .section-header h2::after{content:'';position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:100px;height:4px;background:var(--grad-gold);border-radius:2px;animation:expandW 2s ease infinite}
-        @keyframes expandW{0%,100%{width:100px}50%{width:150px}}
-        .section-header p{color:var(--taupe);max-width:650px;margin:0 auto;font-size:1.2rem;line-height:1.9}
-        .features-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:30px}
-        .feature-card{background:rgba(30,40,58,.5);border-radius:28px;padding:40px;border:2px solid var(--border);backdrop-filter:blur(15px);transition:border-color .5s,box-shadow .5s,transform .5s;position:relative;overflow:hidden;transform-style:preserve-3d}
-        .feature-card .spotlight{position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(77,141,255,.12),transparent 42%);opacity:0;transition:opacity .4s;pointer-events:none}
-        .feature-card:hover .spotlight{opacity:1}
-        .feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--grad-gold);transform:scaleX(0);transform-origin:left;transition:transform .5s}
-        .feature-card:hover{border-color:var(--gold);box-shadow:0 40px 100px rgba(0,0,0,.6);transform:translateY(-5px)}
-        .feature-card:hover::before{transform:scaleX(1)}
-        .feature-icon{width:75px;height:75px;background:var(--grad-btn);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:2rem;color:#fff;margin-bottom:25px;border:2px solid var(--gold);transition:all .5s;box-shadow:0 10px 30px rgba(0,61,165,.5);position:relative;z-index:1}
-        .feature-card:hover .feature-icon{transform:scale(1.15) rotate(10deg);background:var(--cream);color:var(--primary)}
-        .feature-card h3{font-size:1.6rem;margin-bottom:15px;color:var(--cream);font-weight:800;position:relative;z-index:1}
-        .feature-card p{color:var(--taupe);line-height:1.8;font-size:1rem;position:relative;z-index:1}
-        .rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:30px}
-        .rule-card{background:rgba(30,40,58,.5);padding:40px;border-radius:24px;border-left:6px solid var(--gold);border-top:2px solid var(--border);border-right:2px solid var(--border);border-bottom:2px solid var(--border);backdrop-filter:blur(10px);transition:all .5s;position:relative;overflow:hidden}
-        .rule-card .rule-num{position:absolute;top:15px;right:25px;font-family:'Playfair Display',serif;font-size:5rem;font-weight:900;color:rgba(77,141,255,.08);line-height:1;transition:all .5s}
-        .rule-card:hover .rule-num{color:rgba(77,141,255,.2);transform:scale(1.1)}
-        .rule-card:hover{transform:translateX(15px);border-left-color:var(--gold);box-shadow:0 20px 60px rgba(0,61,165,.5)}
-        .rule-card h4{color:var(--cream);margin-bottom:15px;font-size:1.4rem;display:flex;align-items:center;gap:14px;font-weight:800;position:relative;z-index:1}
-        .rule-card h4 i{color:var(--gold)}
-        .rule-card p{color:var(--taupe);font-size:1.05rem;line-height:1.9;position:relative;z-index:1}
         
-        .team-section{background:linear-gradient(180deg,var(--nuit-1),var(--nuit-0));border-top:2px solid var(--border);border-bottom:2px solid var(--border)}
-        .team-grid-centered{display:grid;grid-template-columns:repeat(2, 1fr);gap:30px;max-width:900px;margin:0 auto;justify-content:center}
-        .team-card{background:rgba(30,40,58,.5);border-radius:28px;padding:35px 25px;text-align:center;border:2px solid var(--border);backdrop-filter:blur(15px);transition:all .5s;position:relative;overflow:hidden;height:100%;display:flex;flex-direction:column}
-        .team-card:hover{transform:translateY(-10px);box-shadow:0 30px 80px rgba(0,61,165,.4)}
-        .team-img-wrap{width:120px;height:120px;margin:0 auto 20px;position:relative}
-        .team-img-wrap::after{content:'';position:absolute;inset:-8px;border:2px dashed var(--gold);border-radius:50%;animation:rotate 15s linear infinite}
-        @keyframes rotate{to{transform:rotate(360deg)}}
-        .team-img{width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid var(--gold);transition:all .5s}
-        .team-card:hover .team-img{transform:scale(1.08);border-color:var(--gold-light)}
-        .team-card h3{font-size:1.5rem;background:var(--grad-gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;font-weight:800}
-        .team-role{display:inline-block;padding:5px 15px;border-radius:20px;font-size:.85rem;font-weight:700;margin-bottom:15px;background:var(--grad-btn);color:#fff}
-        .team-card p{color:var(--taupe);line-height:1.7;font-size:.95rem;flex-grow:1}
-        
-        .actions-section{padding-top:0}
-        .actions-grid{display:grid;grid-template-columns:repeat(2, 1fr);gap:30px;max-width:900px;margin:0 auto;justify-content:center}
-        .action-card{background:linear-gradient(135deg,rgba(77,141,255,0.06),rgba(0,61,165,0.25));border:2px dashed var(--gold);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border-radius:28px;padding:35px 25px;transition:all .5s;position:relative;overflow:hidden;height:100%}
-        .action-card:hover{background:linear-gradient(135deg,rgba(77,141,255,0.12),rgba(0,61,165,0.35));border-style:solid;transform:translateY(-5px);box-shadow:0 20px 60px rgba(0,61,165,.3)}
-        .action-card .action-icon{width:80px;height:80px;border-radius:50%;background:var(--nuit-2);display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--gold);margin:0 auto 20px;border:2px solid var(--gold);transition:all .5s}
-        .action-card:hover .action-icon{background:var(--grad-btn);color:#fff;transform:scale(1.1);border-color:var(--gold-light)}
-        .action-card h3{font-size:1.5rem;background:var(--grad-gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;font-weight:800}
-        .action-card .team-role{display:inline-block;padding:5px 15px;border-radius:20px;font-size:.85rem;font-weight:700;margin-bottom:15px;background:var(--grad-btn);color:#fff}
-        .action-card p{color:var(--taupe);line-height:1.7;font-size:.95rem;flex-grow:1;margin-bottom:20px}
-        .action-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 25px;border-radius:20px;background:transparent;border:2px solid var(--gold);color:var(--gold);text-decoration:none;font-size:.9rem;font-weight:700;transition:all .3s;text-transform:uppercase;letter-spacing:1px}
-        .action-btn:hover{background:var(--grad-btn);color:#fff;border-color:var(--gold-light);transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,61,165,.5)}
-
-        .faq-container{max-width:850px;margin:0 auto}
-        .faq-item{background:rgba(30,40,58,.5);border-radius:20px;margin-bottom:25px;border:2px solid var(--border);overflow:hidden;transition:all .5s;backdrop-filter:blur(10px)}
-        .faq-item:hover{border-color:var(--gold);box-shadow:0 15px 50px rgba(0,61,165,.4)}
-        .faq-question{padding:35px;display:flex;justify-content:space-between;align-items:center;font-weight:700;color:var(--cream);transition:all .4s;font-size:1.15rem;cursor:pointer}
-        .faq-question:hover{color:var(--gold)}
-        .faq-question i{transition:transform .5s;color:var(--gold);font-size:1.3rem}
-        .faq-item.active .faq-question i{transform:rotate(180deg)}
-        .faq-answer{max-height:0;overflow:hidden;transition:max-height .6s ease,padding .6s ease;padding:0 35px;color:var(--taupe);line-height:1.9;font-size:1.05rem}
-        .faq-item.active .faq-answer{max-height:500px;padding:0 35px 35px 35px}
-        .cta{background:radial-gradient(ellipse at center,rgba(0,61,165,.45),transparent 70%);text-align:center;padding:150px 0;position:relative;overflow:hidden;border-top:2px solid var(--border)}
-        .cta h2{font-size:4rem;margin-bottom:30px;font-weight:900;font-family:'Playfair Display',serif;background:var(--grad-gold);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:gradShift 4s ease infinite}
-        .cta p{font-size:1.45rem;max-width:800px;margin:0 auto 60px;color:var(--taupe);line-height:2}
-        .cta .btn-pulse{animation:ctaPulse 2.5s ease-in-out infinite}
-        @keyframes ctaPulse{0%,100%{box-shadow:0 15px 40px rgba(0,61,165,.5)}50%{box-shadow:0 15px 70px rgba(0,61,165,.8)}}
-        footer{background:linear-gradient(180deg,var(--nuit-0),var(--nuit-1));color:var(--cream-2);padding:100px 0 50px;border-top:2px solid var(--gold)}
-        .footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:50px;margin-bottom:70px}
-        .footer-col h4{font-size:1.5rem;margin-bottom:35px;color:var(--cream);font-weight:800;position:relative;padding-bottom:15px}
-        .footer-col h4::after{content:'';position:absolute;bottom:0;left:0;width:60px;height:3px;background:var(--grad-gold);border-radius:2px}
-        .footer-col p{color:var(--taupe);line-height:1.9;margin-bottom:30px}
-        .footer-col ul{list-style:none}
-        .footer-col ul li{margin-bottom:18px}
-        .footer-col ul li a{color:var(--taupe);text-decoration:none;transition:all .4s;display:flex;align-items:center;gap:12px}
-        .footer-col ul li a:hover{color:var(--gold);padding-left:10px}
-        .footer-col ul li a i{color:var(--gold)}
-        .social-links{display:flex;gap:18px;margin-top:30px}
-        .social-links a{width:55px;height:55px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:all .4s;font-size:1.5rem;color:#fff;border:2px solid var(--gold);background:var(--grad-btn)}
-        .social-links a:hover{transform:translateY(-8px) scale(1.15);box-shadow:0 15px 40px rgba(0,61,165,.6)}
-        .copyright{text-align:center;padding-top:50px;border-top:2px solid var(--border);color:var(--taupe)}
-        .back-to-top{position:fixed;bottom:30px;right:30px;width:55px;height:55px;background:var(--grad-btn);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;text-decoration:none;box-shadow:0 10px 30px rgba(0,61,165,.5);z-index:999;opacity:0;visibility:hidden;transform:translateY(20px);transition:all .4s;border:2px solid var(--gold)}
-        .back-to-top.visible{opacity:1;visibility:visible;transform:translateY(0)}
-        .back-to-top:hover{transform:translateY(-5px) scale(1.1)}
-        .fab-menu,.quicknav,.quicknav-overlay{display:none}
-        @keyframes fabPulse{0%,100%{box-shadow:0 10px 30px rgba(0,61,165,.4)}50%{box-shadow:0 10px 42px rgba(0,61,165,.7)}}
-        @media(max-width:900px){
-            .team-grid-centered,.actions-grid{grid-template-columns:1fr;max-width:500px}
-            .fab-menu{display:flex;align-items:center;justify-content:center;position:fixed;left:22px;bottom:22px;width:58px;height:58px;border-radius:50%;border:2px solid var(--gold);background:var(--grad-btn);color:#fff;font-size:1.4rem;z-index:1002;animation:fabPulse 2.5s ease-in-out infinite;cursor:pointer}
-            .quicknav-overlay{display:block;position:fixed;inset:0;background:rgba(10,14,26,.7);backdrop-filter:blur(4px);z-index:1003;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
-            .quicknav-overlay.open{opacity:1;visibility:visible}
-            .quicknav{display:flex;flex-direction:column;position:fixed;left:0;right:0;bottom:0;z-index:1004;background:linear-gradient(180deg,var(--nuit-2),var(--nuit-1));border:2px solid var(--gold);border-bottom:none;border-radius:26px 26px 0 0;padding:18px 0 8px;max-height:82vh;transform:translateY(110%);transition:transform .4s cubic-bezier(.4,0,.2,1);box-shadow:0 -20px 60px rgba(0,0,0,.7)}
-            .quicknav.open{transform:translateY(0)}
-            .quicknav-grab{width:46px;height:5px;border-radius:5px;background:var(--gold);margin:0 auto 14px}
-            .quicknav-header{display:flex;align-items:center;justify-content:space-between;padding:0 22px 14px}
-            .quicknav-header span{font-family:'Playfair Display',serif;font-size:1.2rem;background:var(--grad-gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
-            .quicknav-close{background:rgba(77,141,255,.2);border:2px solid var(--gold);color:var(--cream);width:38px;height:38px;border-radius:50%;font-size:1.1rem;display:flex;align-items:center;justify-content:center;cursor:pointer}
-            .quicknav-links{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:6px 22px 24px;overflow-y:auto}
-            .quicknav-links a{display:flex;align-items:center;gap:12px;padding:16px;border-radius:14px;background:rgba(10,14,26,.6);border:2px solid var(--border);color:var(--cream-2);text-decoration:none;font-weight:600;font-size:.95rem;transition:all .25s}
-            .quicknav-links a i{color:var(--gold);width:20px;text-align:center}
-            .quicknav-links .qn-cta{grid-column:1/-1;background:var(--grad-btn);color:#fff;justify-content:center;border:2px solid var(--gold)}
-            .quicknav-links .qn-cta i{color:#fff}
+        html {
+            scroll-behavior: smooth;
         }
-        .reveal{opacity:0;transform:translateY(50px);transition:all .8s cubic-bezier(.4,0,.2,1)}
-        .reveal.active{opacity:1;transform:translateY(0)}
-        .reveal-left{opacity:0;transform:translateX(-60px);transition:all .8s cubic-bezier(.4,0,.2,1)}
-        .reveal-left.active{opacity:1;transform:translateX(0)}
-        .reveal-right{opacity:0;transform:translateX(60px);transition:all .8s cubic-bezier(.4,0,.2,1)}
-        .reveal-right.active{opacity:1;transform:translateX(0)}
-        .reveal-scale{opacity:0;transform:scale(.8);transition:all .8s cubic-bezier(.4,0,.2,1)}
-        .reveal-scale.active{opacity:1;transform:scale(1)}
-        .stagger>*{opacity:0;transform:translateY(40px);transition:all .7s cubic-bezier(.4,0,.2,1)}
-        .stagger.active>*{opacity:1;transform:translateY(0)}
-        .stagger.active>*:nth-child(1){transition-delay:.05s}
-        .stagger.active>*:nth-child(2){transition-delay:.12s}
-        .stagger.active>*:nth-child(3){transition-delay:.19s}
-        .stagger.active>*:nth-child(4){transition-delay:.26s}
-        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}html{scroll-behavior:auto}.hero h2 .char{transform:none}.reveal,.reveal-left,.reveal-right,.reveal-scale,.stagger>*{opacity:1;transform:none}}
-        @media(max-width:900px){.hamburger{display:flex}.nav-links{position:fixed;top:80px;left:0;width:100%;background:rgba(10,14,26,.98);backdrop-filter:blur(20px);flex-direction:column;gap:0;padding:20px 0;transform:translateY(-150%);transition:transform .4s;border-bottom:2px solid var(--gold)}.nav-links.open{transform:translateY(0)}.nav-links li{width:100%;text-align:center}.nav-links a{display:block;padding:15px}}
-        @media(max-width:768px){.container{padding:0 20px}.hero h2{font-size:3rem}.section-header h2{font-size:2.5rem}.cta h2{font-size:2.5rem}.btn-group{flex-direction:column;align-items:center}.features-grid,.rules-grid{grid-template-columns:1fr}.marquee-item{font-size:1.4rem;gap:40px}}
-        @media(max-width:900px){.logo h1{font-size:1.15rem}}
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--discord-bg);
+            color: var(--discord-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--discord-darker);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        
+        .nav-brand img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        
+        .nav-brand h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--discord-white);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--discord-gray);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--discord-white);
+        }
+        
+        .nav-cta {
+            background: var(--discord-blurple);
+            color: var(--discord-white);
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        
+        .nav-cta:hover {
+            background: var(--discord-blurple-hover);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--discord-white);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 20px 80px;
+            background: linear-gradient(180deg, var(--discord-darker) 0%, var(--discord-bg) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(88, 101, 242, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(88, 101, 242, 0.15);
+            border: 1px solid var(--discord-blurple);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--discord-blurple);
+            margin-bottom: 32px;
+            animation: fadeInDown 0.8s ease;
+        }
+        
+        .hero h2 {
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: var(--discord-white);
+            margin-bottom: 24px;
+            line-height: 1.1;
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        .hero h2 span {
+            background: linear-gradient(135deg, var(--discord-blurple) 0%, #7983f5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--discord-gray);
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease 0.2s backwards;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease 0.4s backwards;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--discord-blurple);
+            color: var(--discord-white);
+        }
+        
+        .btn-primary:hover {
+            background: var(--discord-blurple-hover);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: var(--discord-light);
+            color: var(--discord-white);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--discord-dark);
+            transform: translateY(-2px);
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 100px 40px;
+            background: var(--discord-bg);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-header h2 {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--discord-white);
+            margin-bottom: 16px;
+        }
+        
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--discord-gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        
+        .feature-card {
+            background: var(--discord-dark);
+            border-radius: 16px;
+            padding: 32px;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--discord-blurple);
+            box-shadow: 0 8px 30px rgba(88, 101, 242, 0.2);
+        }
+        
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--discord-blurple) 0%, #7983f5 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--discord-white);
+            margin-bottom: 24px;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--discord-white);
+            margin-bottom: 12px;
+        }
+        
+        .feature-card p {
+            color: var(--discord-gray);
+            line-height: 1.7;
+        }
+        
+        /* Team Section */
+        .team {
+            padding: 100px 40px;
+            background: var(--discord-darker);
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .team-card {
+            background: var(--discord-dark);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .team-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+        
+        .team-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            border: 4px solid var(--discord-blurple);
+            overflow: hidden;
+        }
+        
+        .team-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .team-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--discord-white);
+            margin-bottom: 8px;
+        }
+        
+        .team-role {
+            display: inline-block;
+            background: var(--discord-blurple);
+            color: var(--discord-white);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .team-card p {
+            color: var(--discord-gray);
+            line-height: 1.6;
+        }
+        
+        /* Actions Section */
+        .actions {
+            padding: 100px 40px;
+            background: var(--discord-bg);
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .action-card {
+            background: var(--discord-dark);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            border: 2px dashed var(--discord-blurple);
+            transition: all 0.3s;
+        }
+        
+        .action-card:hover {
+            border-style: solid;
+            transform: translateY(-4px);
+        }
+        
+        .action-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--discord-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--discord-blurple);
+            margin: 0 auto 24px;
+        }
+        
+        .action-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--discord-white);
+            margin-bottom: 12px;
+        }
+        
+        .action-card p {
+            color: var(--discord-gray);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+        
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--discord-blurple);
+            color: var(--discord-white);
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            background: var(--discord-blurple-hover);
+            transform: translateY(-2px);
+        }
+        
+        /* FAQ Section */
+        .faq {
+            padding: 100px 40px;
+            background: var(--discord-darker);
+        }
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .faq-item {
+            background: var(--discord-dark);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .faq-question {
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--discord-white);
+            transition: background 0.2s;
+        }
+        
+        .faq-question:hover {
+            background: var(--discord-light);
+        }
+        
+        .faq-question i {
+            transition: transform 0.3s;
+            color: var(--discord-blurple);
+        }
+        
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+        
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 24px;
+            color: var(--discord-gray);
+            line-height: 1.7;
+        }
+        
+        .faq-item.active .faq-answer {
+            max-height: 300px;
+            padding: 0 24px 24px;
+        }
+        
+        /* CTA Section */
+        .cta {
+            padding: 120px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--discord-blurple) 0%, #7983f5 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+        
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .cta h2 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--discord-white);
+            margin-bottom: 24px;
+        }
+        
+        .cta p {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.9);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        
+        .cta .btn {
+            background: var(--discord-white);
+            color: var(--discord-blurple);
+            font-size: 1.1rem;
+            padding: 18px 40px;
+        }
+        
+        .cta .btn:hover {
+            background: var(--discord-gray);
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--discord-darker);
+            padding: 60px 40px 30px;
+            border-top: 1px solid var(--discord-dark);
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto 40px;
+        }
+        
+        .footer-col h4 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--discord-white);
+            margin-bottom: 20px;
+        }
+        
+        .footer-col p {
+            color: var(--discord-gray);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        
+        .footer-col ul {
+            list-style: none;
+        }
+        
+        .footer-col ul li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-col ul li a {
+            color: var(--discord-gray);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .footer-col ul li a:hover {
+            color: var(--discord-white);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            width: 44px;
+            height: 44px;
+            background: var(--discord-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--discord-white);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .social-links a:hover {
+            background: var(--discord-blurple);
+            transform: translateY(-2px);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid var(--discord-dark);
+            color: var(--discord-gray-dark);
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 16px 20px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .nav-cta {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero h2 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .section-header h2 {
+                font-size: 2rem;
+            }
+            
+            .cta h2 {
+                font-size: 2rem;
+            }
+            
+            .features, .team, .actions, .faq {
+                padding: 60px 20px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="grain"></div>
-    <div class="glow-follow" id="glowFollow"></div>
-    <div class="mesh-bg"><div class="mesh-blob"></div><div class="mesh-blob"></div><div class="mesh-blob"></div></div>
-    <div class="preloader" id="preloader">
-        <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="Logo Ville de Québec Roleplay" class="preloader-logo">
-        <div class="preloader-percent" id="preloaderPercent">0%</div>
-        <div class="preloader-bar"><i id="preloaderBarFill"></i></div>
-        <div class="preloader-text">Chargement</div>
-    </div>
-    <div class="scroll-progress" id="scrollProgress"></div>
-    <canvas id="particleCanvas"></canvas>
-    <header id="header">
-        <div class="container"><nav>
-            <a href="#" class="logo"><img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="Logo"><h1>Ville de Québec Roleplay</h1></a>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#accueil" class="nav-link">Accueil</a></li>
-                <li><a href="#apropos" class="nav-link">À propos</a></li>
-                <li><a href="#reglements" class="nav-link">Règlements</a></li>
-                <li><a href="#equipe" class="nav-link">Équipe</a></li>
-                <li><a href="#faq" class="nav-link">FAQ</a></li>
-                <li><a href="#rejoindre" class="nav-link">Rejoindre</a></li>
-            </ul>
-            <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
-        </nav></div>
-    </header>
-    <section class="hero" id="accueil">
-        <div class="hero-content" id="heroContent">
-            <div class="hero-badge"><i class="fas fa-city"></i> Code VQC • ERLC Québécois</div>
-            <h2 id="heroTitle" data-text="VILLE DE QUÉBEC ROLEPLAY"></h2>
-            <p class="hero-subtitle" id="heroSub"></p>
-            <p class="hero-description">Ville de Québec Roleplay est un projet ambitieux visant à offrir une expérience ERLC fidèle, immersive et entièrement inspirée de la Ville de Québec. Roleplay structuré, services d'urgence québécois, systèmes immersifs et mises à jour régulières.</p>
-            <div class="btn-group">
-                <a href="https://discord.gg/UEf3epPwXS" class="btn" target="_blank" rel="noopener noreferrer"><i class="fab fa-discord"></i> Rejoindre le Discord</a>
-                <a href="#apropos" class="btn btn-secondary">Découvrir plus</a>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="#" class="nav-brand">
+            <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="VQC Logo">
+            <h1>Ville de Québec Roleplay</h1>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#team">Équipe</a></li>
+            <li><a href="#actions">Rejoindre</a></li>
+            <li><a href="#faq">FAQ</a></li>
+        </ul>
+        <a href="https://discord.gg/UEf3epPwXS" class="nav-cta" target="_blank">
+            <i class="fab fa-discord"></i> Rejoindre
+        </a>
+        <button class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-city"></i>
+                Code VQC • ERLC Québécois
+            </div>
+            <h2>Bienvenue à <span>Ville de Québec Roleplay</span></h2>
+            <p class="hero-subtitle">Une expérience ERLC immersive, fidèle et 100% québécoise</p>
+            <div class="hero-buttons">
+                <a href="https://discord.gg/UEf3epPwXS" class="btn btn-primary" target="_blank">
+                    <i class="fab fa-discord"></i> Rejoindre le Discord
+                </a>
+                <a href="#features" class="btn btn-secondary">
+                    <i class="fas fa-info-circle"></i> En savoir plus
+                </a>
             </div>
         </div>
     </section>
-    <div class="marquee"><div class="marquee-track">
-        <div class="marquee-item">ROLEPLAY STRUCTURÉ <i class="fas fa-star sep"></i> SERVICES D'URGENCE QUÉBÉCOIS <i class="fas fa-shield-halved sep"></i> SYSTÈMES IMMERSIFS <i class="fas fa-star sep"></i> MISES À JOUR RÉGULIÈRES <i class="fas fa-shield-halved sep"></i> 100% QUÉBÉCOIS <i class="fas fa-star sep"></i> COMMUNAUTÉ ENCADRÉE <i class="fas fa-shield-halved sep"></i></div>
-        <div class="marquee-item">ROLEPLAY STRUCTURÉ <i class="fas fa-star sep"></i> SERVICES D'URGENCE QUÉBÉCOIS <i class="fas fa-shield-halved sep"></i> SYSTÈMES IMMERSIFS <i class="fas fa-star sep"></i> MISES À JOUR RÉGULIÈRES <i class="fas fa-shield-halved sep"></i> 100% QUÉBÉCOIS <i class="fas fa-star sep"></i> COMMUNAUTÉ ENCADRÉE <i class="fas fa-shield-halved sep"></i></div>
-    </div></div>
-    <section id="apropos">
+
+    <!-- Features Section -->
+    <section class="features" id="features">
         <div class="container">
-            <div class="section-header reveal"><h2>Ce que tu vas trouver</h2><p>Un serveur ERLC fidèle, immersif et entièrement inspiré de la Ville de Québec.</p></div>
-            <div class="features-grid stagger">
-                <div class="feature-card tilt"><div class="spotlight"></div><div class="feature-icon"><i class="fas fa-masks-theater"></i></div><h3>Roleplay Structuré</h3><p>Une expérience de roleplay fidèle, immersive et encadrée, entièrement inspirée de la Ville de Québec. Reste en RP en tout temps pour des histoires réalistes.</p></div>
-                <div class="feature-card tilt"><div class="spotlight"></div><div class="feature-icon"><i class="fas fa-truck-medical"></i></div><h3>Services d'urgence québécois</h3><p>SPVQ, Sûreté du Québec, SPCIQ : intègre un département et entre au cœur de l'action avec des avantages exclusifs et un environnement immersif.</p></div>
-                <div class="feature-card tilt"><div class="spotlight"></div><div class="feature-icon"><i class="fas fa-gears"></i></div><h3>Systèmes immersifs</h3><p>Des systèmes et mécaniques immersives pour un roleplay réaliste et cohérent : conduite, interactions, combat et utilisation des armes.</p></div>
-                <div class="feature-card tilt"><div class="spotlight"></div><div class="feature-icon"><i class="fas fa-arrows-rotate"></i></div><h3>Mises à jour régulières</h3><p>Un développement sérieux et optimisé, avec des mises à jour régulières pour enrichir constamment l'expérience de jeu.</p></div>
-                <div class="feature-card tilt"><div class="spotlight"></div><div class="feature-icon"><i class="fas fa-user-shield"></i></div><h3>Gestion professionnelle</h3><p>Une communauté respectueuse et encadrée. Un staff présent et à l'écoute pour garantir une ambiance saine en tout temps.</p></div>
-                <div class="feature-card tilt"><div class="spotlight"></div><div class="feature-icon"><i class="fas fa-paintbrush"></i></div><h3>Fleur de Lys Design</h3><p>La boutique officielle de liveries ERLC : qualité studio, style québécois unique, packs pour serveurs RP et modèles exclusifs.</p></div>
+            <div class="section-header reveal">
+                <h2>Ce qui nous rend unique</h2>
+                <p>Un serveur ERLC fidèle, immersif et entièrement inspiré de la Ville de Québec</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-masks-theater"></i>
+                    </div>
+                    <h3>Roleplay Structuré</h3>
+                    <p>Une expérience de roleplay fidèle, immersive et encadrée. Reste en RP en tout temps pour des histoires réalistes et captivantes.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-truck-medical"></i>
+                    </div>
+                    <h3>Services d'urgence québécois</h3>
+                    <p>SPVQ, Sûreté du Québec, SPCIQ : intègre un département et entre au cœur de l'action avec des avantages exclusifs.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-gears"></i>
+                    </div>
+                    <h3>Systèmes immersifs</h3>
+                    <p>Des mécaniques immersives pour un roleplay réaliste : conduite, interactions, combat et utilisation des armes.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-arrows-rotate"></i>
+                    </div>
+                    <h3>Mises à jour régulières</h3>
+                    <p>Développement sérieux et optimisé avec des mises à jour régulières pour enrichir constamment l'expérience.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3>Gestion professionnelle</h3>
+                    <p>Communauté respectueuse et encadrée. Staff présent et à l'écoute pour garantir une ambiance saine.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-paintbrush"></i>
+                    </div>
+                    <h3>Fleur de Lys Design</h3>
+                    <p>Boutique officielle de liveries ERLC : qualité studio, style québécois unique, packs exclusifs.</p>
+                </div>
             </div>
         </div>
     </section>
-    <section id="reglements" style="background:linear-gradient(180deg,var(--nuit-0),var(--nuit-1))">
+
+    <!-- Team Section -->
+    <section class="team" id="team">
         <div class="container">
-            <div class="section-header reveal"><h2>Règlements du Serveur</h2><p>Du Discord au jeu, des règles claires pour une expérience immersive et respectueuse. Le non-respect entraînera des sanctions.</p></div>
-            <div class="rules-grid stagger">
-                <div class="rule-card reveal-left"><span class="rule-num">01</span><h4><i class="fas fa-brain"></i> Bon Sens</h4><p>Utilise ton bon sens. Ne sois pas volontairement agaçant. Les décisions du staff doivent être respectées.</p></div>
-                <div class="rule-card reveal-right"><span class="rule-num">02</span><h4><i class="fas fa-heart"></i> Respect</h4><p>Reste respectueux envers tous les membres. Les insultes excessives, provocations et discriminations ne sont pas permises.</p></div>
-                <div class="rule-card reveal-left"><span class="rule-num">03</span><h4><i class="fas fa-bullhorn"></i> Pas de Spam / Pub</h4><p>Ne spam pas, ne shitpost pas et ne fais aucune publicité. Garde les salons propres et lisibles.</p></div>
-                <div class="rule-card reveal-right"><span class="rule-num">04</span><h4><i class="fas fa-ban"></i> Contenu Interdit</h4><p>Aucun contenu 18+ (NSFW), gore, violent ou dérangeant n'est toléré sur le serveur.</p></div>
-                <div class="rule-card reveal-left"><span class="rule-num">05</span><h4><i class="fas fa-user-secret"></i> Identité et Mentions</h4><p>N'usurpe pas l'identité d'autres personnes et ne prétends pas être quelqu'un que tu n'es pas. Ne mentionne pas les membres sans raison.</p></div>
-                <div class="rule-card reveal-right"><span class="rule-num">06</span><h4><i class="fas fa-masks-theater"></i> Roleplay en Tout Temps</h4><p>Reste en RP en tout temps. Pas de troll ou d'actions irréalistes. Interdiction formelle de metagaming et powergaming.</p></div>
-                <div class="rule-card reveal-left"><span class="rule-num">07</span><h4><i class="fas fa-hand-fist"></i> Interactions et Combat</h4><p>Pas de RDM / VDM. Toute action hostile doit être justifiée RP. Utilisation cohérente des armes et de la force.</p></div>
-                <div class="rule-card reveal-right"><span class="rule-num">08</span><h4><i class="fas fa-car"></i> Conduite et Véhicules</h4><p>Conduite réaliste et contrôlée. Pas de crash volontaire ou conduite troll. Respect minimal du trafic selon le contexte RP.</p></div>
-                <div class="rule-card reveal-left"><span class="rule-num">09</span><h4><i class="fas fa-bug"></i> Triche et Exploits</h4><p>Interdiction de toute forme de triche. Aucun exploit de bug ou glitch. Tout problème doit être signalé au staff.</p></div>
-                <div class="rule-card reveal-right"><span class="rule-num">10</span><h4><i class="fas fa-gavel"></i> Sanctions et Sessions</h4><p>Le staff peut intervenir à tout moment : avertissement → kick → ban selon la gravité. Les sanctions sont définitives. L'accès au serveur est interdit lorsqu'aucune session n'est en cours.</p></div>
+            <div class="section-header reveal">
+                <h2>L'Équipe de Direction</h2>
+                <p>Une équipe passionnée pour faire vivre VQC</p>
             </div>
-        </div>
-    </section>
-    
-    <section class="team-section" id="equipe">
-        <div class="container">
-            <div class="section-header reveal"><h2>L'Équipe de Direction</h2><p>Une équipe passionnée et investie pour faire vivre Ville de Québec Roleplay.</p></div>
-            <div class="team-grid-centered stagger">
-                <div class="team-card tilt">
-                    <div class="team-img-wrap">
-                        <!-- NOUVELLE PFP FONDATEUR -->
-                        <img src="https://cdn.discordapp.com/avatars/1271541606759006332/cea78458445000372d4a4fef56b9ab52.webp?size=1024" alt="Lieutenant_Jacky" class="team-img">
+            <div class="team-grid">
+                <div class="team-card reveal">
+                    <div class="team-avatar">
+                        <img src="https://cdn.discordapp.com/avatars/1271541606759006332/cea78458445000372d4a4fef56b9ab52.webp?size=1024" alt="Lieutenant_Jacky">
                     </div>
                     <h3>Lieutenant_Jacky</h3>
                     <span class="team-role">Fondateur</span>
-                    <p>Propriétaire et leader de Ville de Québec Roleplay. Il porte la vision du projet et veille à offrir une expérience ERLC fidèle, immersive et entièrement inspirée de la Ville de Québec.</p>
-                    <p style="margin-top:15px;font-size:.9rem"><i class="fab fa-discord"></i> @lieutenant_jacky</p>
+                    <p>Propriétaire et leader du projet. Il porte la vision d'un serveur ERLC fidèle et immersif inspiré de la Ville de Québec.</p>
                 </div>
-                <div class="team-card tilt">
-                    <div class="team-img-wrap">
-                        <!-- NOUVELLE PFP CO-FONDATEUR / DÉVELOPPEUR -->
-                        <img src="https://cdn.discordapp.com/avatars/1281784488854159421/85109e1b8945496f3e802e5a8d8208aa.webp?size=1024" alt="Jacobin Babouain" class="team-img">
+                <div class="team-card reveal">
+                    <div class="team-avatar">
+                        <img src="https://cdn.discordapp.com/avatars/1281784488854159421/85109e1b8945496f3e802e5a8d8208aa.webp?size=1024" alt="Jacobin Babouain">
                     </div>
                     <h3>Jacobin Babouain</h3>
                     <span class="team-role">Co-Fondateur & Développeur</span>
-                    <p>En charge du développement web, de l'organisation et de la gestion technique de la communauté pour garantir un serveur sérieux, optimisé et encadré.</p>
-                    <p style="margin-top:15px;font-size:.9rem"><i class="fab fa-discord"></i> @jacobin904</p>
+                    <p>En charge du développement web, de l'organisation et de la gestion technique pour garantir un serveur optimisé.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="actions-section" id="actions">
+    <!-- Actions Section -->
+    <section class="actions" id="actions">
         <div class="container">
-            <div class="section-header reveal"><h2>Rejoins-nous</h2><p>Des opportunités pour t'impliquer et contribuer à la croissance de VQC.</p></div>
-            <div class="actions-grid stagger">
-                <div class="action-card tilt">
-                    <div class="action-icon"><i class="fas fa-user-shield"></i></div>
+            <div class="section-header reveal">
+                <h2>Rejoins-nous</h2>
+                <p>Des opportunités pour t'impliquer dans la communauté</p>
+            </div>
+            <div class="actions-grid">
+                <div class="action-card reveal">
+                    <div class="action-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
                     <h3>Devenir Modérateur</h3>
-                    <span class="team-role">Recrutement</span>
-                    <p>Tu souhaites rejoindre l'équipe de modération ? Remplis la candidature avec sérieux et honnêteté. Les candidatures incomplètes ou non professionnelles seront refusées.</p>
-                    <a href="Candidature/" class="action-btn"><i class="fas fa-arrow-right"></i> Postuler</a>
+                    <p>Tu souhaites rejoindre l'équipe ? Remplis la candidature avec sérieux. Les candidatures incomplètes seront refusées.</p>
+                    <a href="Candidature/" class="action-btn">
+                        <i class="fas fa-arrow-right"></i> Postuler
+                    </a>
                 </div>
-                <div class="action-card tilt">
-                    <div class="action-icon"><i class="fas fa-id-badge"></i></div>
+                <div class="action-card reveal">
+                    <div class="action-icon">
+                        <i class="fas fa-id-badge"></i>
+                    </div>
                     <h3>Intégrer un Département</h3>
-                    <span class="team-role">Whitelisted</span>
-                    <p>SPVQ, Sûreté du Québec, SPCIQ : choisis le serveur que tu veux rejoindre, puis suis les instructions : candidature, formation ou autres étapes avant d'obtenir l'accès.</p>
-                    <a href="https://discord.gg/UEf3epPwXS" class="action-btn" target="_blank"><i class="fas fa-arrow-right"></i> Voir les départements</a>
+                    <p>SPVQ, SQ, SPCIQ : rejoins un serveur whitelisted et suis les étapes de formation pour obtenir ton accès.</p>
+                    <a href="https://discord.gg/UEf3epPwXS" class="action-btn" target="_blank">
+                        <i class="fas fa-arrow-right"></i> Voir les départements
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="faq">
+    <!-- FAQ Section -->
+    <section class="faq" id="faq">
         <div class="container">
-            <div class="section-header reveal"><h2>Questions Fréquentes</h2><p>Tout ce que tu dois savoir avant de rejoindre la ville.</p></div>
-            <div class="faq-container stagger">
-                <div class="faq-item">
-                    <div class="faq-question">Comment Rejoindre le Serveur ? <i class="fas fa-chevron-down"></i></div>
-                    <div class="faq-answer">Rejoins notre Discord avec le lien https://discord.gg/UEf3epPwXS, passe la vérification Melonly, puis lis le règlement. Tu pourras ensuite participer à la communauté et aux sessions de jeu.</div>
+            <div class="section-header reveal">
+                <h2>Questions Fréquentes</h2>
+                <p>Tout ce que tu dois savoir avant de rejoindre</p>
+            </div>
+            <div class="faq-container">
+                <div class="faq-item reveal">
+                    <div class="faq-question">
+                        Comment rejoindre le serveur ?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Rejoins notre Discord, passe la vérification Melonly, puis lis le règlement. Tu pourras ensuite participer à la communauté et aux sessions de jeu.
+                    </div>
                 </div>
-                <div class="faq-item">
-                    <div class="faq-question">Comment Rejoindre un Département Whitelisted ? <i class="fas fa-chevron-down"></i></div>
-                    <div class="faq-answer">Va dans le salon dédié aux départements, choisis celui que tu veux rejoindre (SPVQ, Sûreté du Québec, SPCIQ), puis rejoins le serveur indiqué et suis les instructions : il peut te demander une candidature, une formation ou d'autres étapes avant de te donner l'accès.</div>
+                <div class="faq-item reveal">
+                    <div class="faq-question">
+                        Comment rejoindre un département whitelisted ?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Va dans le salon dédié aux départements, choisis celui que tu veux rejoindre, puis suis les instructions : candidature, formation ou autres étapes.
+                    </div>
                 </div>
-                <div class="faq-item">
-                    <div class="faq-question">Comment Devenir Staff ? <i class="fas fa-chevron-down"></i></div>
-                    <div class="faq-answer">Attends l'ouverture des recrutements et remplis la candidature modérateur avec sérieux et honnêteté. Les candidatures incomplètes ou non professionnelles seront refusées.</div>
+                <div class="faq-item reveal">
+                    <div class="faq-question">
+                        Comment devenir staff ?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Attends l'ouverture des recrutements et remplis la candidature modérateur avec sérieux et honnêteté.
+                    </div>
                 </div>
-                <div class="faq-item">
-                    <div class="faq-question">Que Faire si Quelqu'un ne Respecte pas les Règles ? <i class="fas fa-chevron-down"></i></div>
-                    <div class="faq-answer">Va dans le salon #support, choisis l'option « Report un Joueur », ouvre un ticket et envoie une preuve. Le staff s'occupe du reste.</div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">Où Poser une Question ou Proposer une Idée ? <i class="fas fa-chevron-down"></i></div>
-                    <div class="faq-answer">Pose tes questions dans le salon #questions et propose tes idées dans le salon #suggestions. Note : l'accès au serveur de jeu est interdit lorsqu'aucune session n'est en cours.</div>
+                <div class="faq-item reveal">
+                    <div class="faq-question">
+                        Que faire si quelqu'un ne respecte pas les règles ?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Va dans le salon #support, ouvre un ticket et envoie une preuve. Le staff s'occupe du reste.
+                    </div>
                 </div>
             </div>
         </div>
     </section>
-    <section class="cta" id="rejoindre">
-        <div class="container"><div class="reveal-scale">
-            <h2>Rejoins Ville de Québec Roleplay !</h2>
-            <p>Roleplay structuré, services d'urgence québécois, systèmes immersifs et communauté respectueuse. L'aventure commence maintenant.</p>
-            <a href="https://discord.gg/UEf3epPwXS" class="btn btn-pulse" target="_blank" rel="noopener noreferrer" style="background:var(--grad-btn);color:#fff;border:2px solid var(--gold);font-size:1.15rem;padding:20px 50px"><i class="fab fa-discord"></i> Rejoindre le Discord</a>
-        </div></div>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-content">
+            <h2>Prêt à rejoindre l'aventure ?</h2>
+            <p>Roleplay structuré, services d'urgence québécois, systèmes immersifs et communauté respectueuse.</p>
+            <a href="https://discord.gg/UEf3epPwXS" class="btn" target="_blank">
+                <i class="fab fa-discord"></i> Rejoindre le Discord
+            </a>
+        </div>
     </section>
-    <footer><div class="container">
+
+    <!-- Footer -->
+    <footer>
         <div class="footer-grid">
             <div class="footer-col">
                 <h4>À propos</h4>
-                <p>Ville de Québec Roleplay (VQC) est un serveur ERLC 100% québécois offrant une expérience fidèle, immersive et entièrement inspirée de la Ville de Québec. Roleplay structuré, services d'urgence et mises à jour régulières.</p>
+                <p>Ville de Québec Roleplay (VQC) est un serveur ERLC 100% québécois offrant une expérience fidèle et immersive.</p>
                 <div class="social-links">
-                    <a href="https://discord.gg/UEf3epPwXS" target="_blank" rel="noopener noreferrer" title="Discord"><i class="fab fa-discord"></i></a>
+                    <a href="https://discord.gg/UEf3epPwXS" target="_blank">
+                        <i class="fab fa-discord"></i>
+                    </a>
                 </div>
             </div>
             <div class="footer-col">
                 <h4>Navigation</h4>
                 <ul>
-                    <li><a href="#accueil"><i class="fas fa-home"></i> Accueil</a></li>
-                    <li><a href="#apropos"><i class="fas fa-info-circle"></i> À propos</a></li>
-                    <li><a href="#reglements"><i class="fas fa-scroll"></i> Règlements</a></li>
-                    <li><a href="#equipe"><i class="fas fa-users"></i> Équipe</a></li>
-                    <li><a href="#faq"><i class="fas fa-question-circle"></i> FAQ</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#team">Équipe</a></li>
+                    <li><a href="#actions">Rejoindre</a></li>
+                    <li><a href="#faq">FAQ</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4>Liens Utiles</h4>
                 <ul>
-                    <li><a href="https://discord.gg/UEf3epPwXS" target="_blank" rel="noopener noreferrer"><i class="fab fa-discord"></i> Invitation Discord</a></li>
-                    <li><a href="Candidature/"><i class="fas fa-user-plus"></i> Candidature Modérateur</a></li>
-                    <li><a href="https://www.roblox.com/share?code=67deee9afc937a41b4cb9cff77a18d23&type=ExperienceDetails&stamp=1779831447535" target="_blank" rel="noopener noreferrer"><i class="fas fa-paintbrush"></i> Fleur de Lys Design</a></li>
-                    <li><a href="#reglements"><i class="fas fa-gavel"></i> Règlement Complet</a></li>
+                    <li><a href="https://discord.gg/UEf3epPwXS" target="_blank">Invitation Discord</a></li>
+                    <li><a href="Candidature/">Candidature Modérateur</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4>Conception</h4>
-                <p>Site web conçu et développé pour la communauté Ville de Québec Roleplay.</p>
-                <div style="display:flex;align-items:center;gap:15px;margin-top:25px">
-                    <!-- NOUVELLE PFP DANS LE FOOTER AUSSI -->
-                    <img src="https://cdn.discordapp.com/avatars/1281784488854159421/85109e1b8945496f3e802e5a8d8208aa.webp?size=1024" alt="Jacobin Babouain" style="width:50px;height:50px;border-radius:50%;border:2px solid var(--gold)">
-                    <div>
-                        <p style="margin:0;font-weight:700;color:var(--cream)">Jacobin Babouain</p>
-                        <p style="margin:0;font-size:.9rem;color:var(--taupe)">Développeur Web</p>
-                    </div>
-                </div>
+                <p>Site conçu et développé pour la communauté VQC.</p>
+                <p style="margin-top: 20px; font-weight: 600; color: var(--discord-white);">Jacobin Babouain</p>
+                <p style="font-size: 0.9rem;">Développeur Web</p>
             </div>
         </div>
-        <div class="copyright">
-            <p>&copy; 2026 Ville de Québec Roleplay. Tous droits réservés. | Conçu avec <i class="fas fa-heart" style="color:var(--gold)"></i> par Jacobin Babouain</p>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Ville de Québec Roleplay. Tous droits réservés.</p>
         </div>
-    </div></footer>
-    <button class="fab-menu" id="fabMenu" aria-label="Navigation rapide"><i class="fas fa-compass"></i></button>
-    <div class="quicknav-overlay" id="quicknavOverlay"></div>
-    <div class="quicknav" id="quicknav">
-        <div class="quicknav-grab"></div>
-        <div class="quicknav-header">
-            <span>Navigation rapide</span>
-            <button class="quicknav-close" id="quicknavClose" aria-label="Fermer"><i class="fas fa-xmark"></i></button>
-        </div>
-        <nav class="quicknav-links">
-            <a href="#accueil"><i class="fas fa-home"></i> Accueil</a>
-            <a href="#apropos"><i class="fas fa-info-circle"></i> À propos</a>
-            <a href="#reglements"><i class="fas fa-scroll"></i> Règlements</a>
-            <a href="#equipe"><i class="fas fa-users"></i> Équipe</a>
-            <a href="#faq"><i class="fas fa-question-circle"></i> FAQ</a>
-            <a href="#rejoindre" class="qn-cta"><i class="fab fa-discord"></i> Rejoindre</a>
-        </nav>
-    </div>
-    <a href="#accueil" class="back-to-top" id="backToTop" aria-label="Retour en haut"><i class="fas fa-arrow-up"></i></a>
-<script>
-(function(){
-    const percentEl = document.getElementById('preloaderPercent');
-    const barFill = document.getElementById('preloaderBarFill');
-    const preloader = document.getElementById('preloader');
-    let loaded = false, pct = 0;
-    window.addEventListener('load', () => { loaded = true; });
-    const iv = setInterval(() => {
-        if (!loaded && pct >= 90) return;
-        pct += Math.floor(Math.random() * 12) + 5;
-        if (pct > 100) pct = 100;
-        percentEl.textContent = pct + '%';
-        barFill.style.width = pct + '%';
-        if (pct >= 100 && loaded) { clearInterval(iv); setTimeout(() => preloader.classList.add('hidden'), 350); }
-    }, 90);
-    setTimeout(() => { clearInterval(iv); preloader.classList.add('hidden'); }, 5000);
-})();
-const glow=document.getElementById('glowFollow');
-document.addEventListener('mousemove',e=>{glow.style.left=e.clientX+'px';glow.style.top=e.clientY+'px'});
-const scrollProgress=document.getElementById('scrollProgress'),header=document.getElementById('header'),backToTop=document.getElementById('backToTop');
-window.addEventListener('scroll',()=>{
-    const s=window.scrollY,h=document.documentElement.scrollHeight-window.innerHeight;
-    scrollProgress.style.width=(s/h*100)+'%';
-    header.classList.toggle('scrolled',s>100);
-    backToTop.classList.toggle('visible',s>500);
-},{passive:true});
-const titleEl=document.getElementById('heroTitle');
-const TITLE_TEXT=titleEl.getAttribute('data-text')||'VILLE DE QUÉBEC ROLEPLAY';
-(function buildTitle(){
-    titleEl.innerHTML='';
-    const words=TITLE_TEXT.split(' ');
-    let charIndex=0;
-    words.forEach((word)=>{
-        const wSpan=document.createElement('span');wSpan.className='word';
-        word.split('').forEach((ch)=>{
-            const cSpan=document.createElement('span');cSpan.className='char';cSpan.textContent=ch;
-            cSpan.style.animationDelay=(0.6+charIndex*0.045)+'s, 0s';
-            wSpan.appendChild(cSpan);charIndex++;
+    </footer>
+
+    <script>
+        // FAQ Accordion
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.parentElement;
+                const isActive = item.classList.contains('active');
+                
+                document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+                
+                if (!isActive) {
+                    item.classList.add('active');
+                }
+            });
         });
-        titleEl.appendChild(wSpan);
-    });
-    setTimeout(()=>titleEl.classList.add('done'),600+charIndex*45+800);
-})();
-const subEl=document.getElementById('heroSub');
-const SUB_TEXT='IMMERSION • ROLEPLAY • 100% QUÉBÉCOIS';
-let twI=0;
-function typeWriter(){if(twI<=SUB_TEXT.length){subEl.innerHTML=SUB_TEXT.slice(0,twI)+'<span class="tw-cursor"></span>';twI++;setTimeout(typeWriter,70)}else{subEl.innerHTML=SUB_TEXT}}
-setTimeout(typeWriter,1800);
-const canvas=document.getElementById('particleCanvas'),ctx=canvas.getContext('2d');let particles=[];
-function resizeC(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}resizeC();window.addEventListener('resize',resizeC);
-function initP(){particles=[];const c=Math.min(70,Math.floor(window.innerWidth/22));for(let i=0;i<c;i++)particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*1.8+.8})}initP();
-let pmx=-1e3,pmy=-1e3;document.addEventListener('mousemove',e=>{pmx=e.clientX;pmy=e.clientY});
-function drawFrame(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    particles.forEach(p=>{
-        p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>canvas.width)p.vx*=-1;if(p.y<0||p.y>canvas.height)p.vy*=-1;
-        const adx=pmx-p.x,ady=pmy-p.y,adist=Math.sqrt(adx*adx+ady*ady);
-        if(adist<180&&adist>28){const ang=Math.atan2(ady,adx);const force=0.03*(1-adist/180);p.vx+=Math.cos(ang)*force;p.vy+=Math.sin(ang)*force;const sp=Math.sqrt(p.vx*p.vx+p.vy*p.vy);if(sp>1.1){p.vx=(p.vx/sp)*1.1;p.vy=(p.vy/sp)*1.1;}}
-        ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(245,243,237,.4)';ctx.fill();
-    });
-    for(let i=0;i<particles.length;i++){
-        for(let j=i+1;j<particles.length;j++){const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle=`rgba(77,141,255,${.3*(1-d/120)})`;ctx.lineWidth=1;ctx.stroke()}}
-        const dmx=particles[i].x-pmx,dmy=particles[i].y-pmy,dm=Math.sqrt(dmx*dmx+dmy*dmy);
-        if(dm<150){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(pmx,pmy);ctx.strokeStyle=`rgba(77,141,255,${.4*(1-dm/150)})`;ctx.lineWidth=1;ctx.stroke()}
-    }
-}
-function loop(){drawFrame();requestAnimationFrame(loop);}loop();
-const allReveal=document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-scale,.stagger');
-const revObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('active')})},{threshold:.1});
-allReveal.forEach(el=>revObs.observe(el));
-const hamburger=document.getElementById('hamburger'),navLinks=document.getElementById('navLinks');
-hamburger.addEventListener('click',()=>{hamburger.classList.toggle('active');navLinks.classList.toggle('open')});
-navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{hamburger.classList.remove('active');navLinks.classList.remove('open')}));
-document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',function(e){const t=document.querySelector(this.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}})});
-const fabMenu=document.getElementById('fabMenu'),quicknav=document.getElementById('quicknav'),quicknavOverlay=document.getElementById('quicknavOverlay'),quicknavClose=document.getElementById('quicknavClose');
-function openQN(){quicknav.classList.add('open');quicknavOverlay.classList.add('open');document.body.style.overflow='hidden'}
-function closeQN(){quicknav.classList.remove('open');quicknavOverlay.classList.remove('open');document.body.style.overflow=''}
-fabMenu.addEventListener('click',openQN);quicknavClose.addEventListener('click',closeQN);quicknavOverlay.addEventListener('click',closeQN);
-quicknav.querySelectorAll('a').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');closeQN();setTimeout(()=>{const t=document.querySelector(h);if(t)t.scrollIntoView({behavior:'smooth',block:'start'})},80)})});
-document.querySelectorAll('.faq-item').forEach(item=>{item.querySelector('.faq-question').addEventListener('click',()=>{const a=item.classList.contains('active');document.querySelectorAll('.faq-item').forEach(o=>o.classList.remove('active'));if(!a)item.classList.add('active')})});
-</script>
+
+        // Scroll Reveal
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Mobile Menu (placeholder)
+        document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
+            alert('Menu mobile à implémenter');
+        });
+    </script>
 </body>
 </html>
