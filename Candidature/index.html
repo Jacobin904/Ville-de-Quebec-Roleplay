@@ -55,6 +55,13 @@
         .form-card{background:rgba(30,40,58,.5);border-radius:28px;padding:45px;border:2px solid var(--border);backdrop-filter:blur(15px);box-shadow:0 30px 80px rgba(0,0,0,.5)}
         @media(max-width:700px){.form-card{padding:30px 20px;border-radius:20px}}
 
+        .criteria-box{background:rgba(77,141,255,.08);border:2px solid var(--gold);border-radius:16px;padding:25px;margin-bottom:30px}
+        .criteria-box h3{color:var(--gold);margin-bottom:15px;font-size:1.1rem}
+        .criteria-box ul{list-style:none;display:grid;gap:10px}
+        .criteria-box li{font-size:.9rem;color:var(--cream-2);padding-left:20px;position:relative}
+        .criteria-box li::before{content:'•';color:var(--gold);position:absolute;left:0;font-weight:bold}
+        .warning{color:#ef4444;font-weight:700;margin-top:15px;font-size:.9rem;text-align:center}
+
         .discord-section{background:linear-gradient(135deg,rgba(77,141,255,.08),rgba(0,61,165,.15));border:2px solid var(--gold);border-radius:20px;padding:28px;margin-bottom:35px;display:flex;flex-wrap:wrap;align-items:center;gap:20px}
         .discord-avatar{width:70px;height:70px;border-radius:50%;border:3px solid var(--gold);background:var(--nuit-2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:var(--gold);flex-shrink:0;overflow:hidden;box-shadow:0 0 25px rgba(77,141,255,.4)}
         .discord-avatar img{width:100%;height:100%;object-fit:cover}
@@ -62,8 +69,6 @@
         .discord-info .label{font-size:.8rem;color:var(--taupe);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-weight:600}
         .discord-info .username{font-size:1.2rem;font-weight:800;color:var(--cream);font-family:'JetBrains Mono',monospace}
         .discord-info .placeholder{font-size:1rem;color:var(--taupe);font-style:italic}
-        
-        /* MODIFICATION ICI : C'est maintenant un vrai lien <a> au lieu d'un bouton JS */
         .discord-btn{padding:12px 25px;border-radius:50px;background:var(--grad-btn);color:#fff;border:2px solid var(--gold);text-decoration:none;font-weight:700;font-size:.9rem;display:inline-flex;align-items:center;gap:10px;transition:all .3s;text-transform:uppercase;letter-spacing:1px;box-shadow:0 10px 25px rgba(0,61,165,.3)}
         .discord-btn:hover{transform:translateY(-2px);box-shadow:0 15px 35px rgba(0,61,165,.5);background:var(--gold-light)}
         .discord-btn.logout{background:transparent;color:var(--gold);box-shadow:none;cursor:pointer;border:2px solid var(--gold)}
@@ -73,9 +78,10 @@
         .form-group label{display:block;margin-bottom:10px;font-weight:700;font-size:1rem;color:var(--cream);line-height:1.5}
         .form-group label .q-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--grad-btn);color:#fff;border-radius:50%;font-size:.8rem;margin-right:10px;font-weight:800;vertical-align:middle}
         .form-group .hint{display:block;font-size:.85rem;color:var(--taupe);margin-bottom:10px;font-weight:500}
-        textarea{width:100%;min-height:110px;padding:15px 18px;background:var(--nuit-1);border:2px solid var(--border);border-radius:14px;color:var(--cream);font-family:'Inter',sans-serif;font-size:1rem;line-height:1.6;resize:vertical;transition:border-color .3s,box-shadow .3s}
-        textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(77,141,255,.2)}
-        textarea::placeholder{color:var(--taupe);font-style:italic}
+        input, textarea{width:100%;padding:15px 18px;background:var(--nuit-1);border:2px solid var(--border);border-radius:14px;color:var(--cream);font-family:'Inter',sans-serif;font-size:1rem;line-height:1.6;resize:vertical;transition:border-color .3s,box-shadow .3s}
+        input:focus, textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(77,141,255,.2)}
+        textarea{min-height:110px}
+        textarea::placeholder, input::placeholder{color:var(--taupe);font-style:italic}
 
         .actions-row{display:flex;gap:15px;flex-wrap:wrap;margin-top:40px;justify-content:center}
         .btn{display:inline-flex;align-items:center;gap:12px;padding:16px 40px;border-radius:50px;text-decoration:none;font-weight:700;font-size:1rem;transition:all .3s;border:2px solid var(--gold);box-shadow:0 12px 35px rgba(0,61,165,.4);text-transform:uppercase;letter-spacing:1px;cursor:pointer}
@@ -83,27 +89,12 @@
         .btn-primary:hover{transform:translateY(-3px);box-shadow:0 20px 50px rgba(0,61,165,.55);background:var(--gold-light)}
         .btn-secondary{background:transparent;color:var(--gold)}
         .btn-secondary:hover{background:rgba(77,141,255,.15);transform:translateY(-2px)}
-        .btn:disabled{opacity:.5;cursor:not-allowed;transform:none !important;box-shadow:none !important}
+        .btn:disabled{opacity:.6;cursor:not-allowed;transform:none !important;box-shadow:none !important}
 
         .toast{position:fixed;bottom:30px;right:30px;background:var(--grad-btn);color:#fff;padding:16px 24px;border-radius:14px;font-weight:700;box-shadow:0 15px 40px rgba(0,61,165,.5);display:flex;align-items:center;gap:12px;z-index:9999;transform:translateY(200%);opacity:0;transition:all .4s;max-width:340px}
         .toast.show{transform:translateY(0);opacity:1}
         .toast.success{background:linear-gradient(135deg,#059669,#10b981)}
         .toast.error{background:linear-gradient(135deg,#dc2626,#ef4444)}
-
-        .summary-modal{position:fixed;inset:0;background:rgba(10,14,26,.85);backdrop-filter:blur(8px);z-index:9998;display:none;align-items:center;justify-content:center;padding:20px}
-        .summary-modal.open{display:flex}
-        .summary-box{background:var(--nuit-1);border:2px solid var(--gold);border-radius:24px;padding:35px;max-width:650px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,.7)}
-        .summary-box h3{font-size:1.6rem;background:var(--grad-gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px;font-family:'Playfair Display',serif;font-weight:800}
-        .summary-item{background:var(--nuit-2);padding:15px 18px;border-radius:12px;margin-bottom:12px;border-left:4px solid var(--gold)}
-        .summary-item .q{font-size:.8rem;color:var(--taupe);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:600}
-        .summary-item .a{color:var(--cream);font-size:.95rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
-        .summary-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}
-        .summary-actions .btn{padding:12px 25px;font-size:.9rem;flex:1;min-width:180px;justify-content:center}
-
-        .info-banner{background:rgba(77,141,255,.1);border:2px solid var(--border);border-radius:16px;padding:18px 22px;margin-bottom:30px;display:flex;gap:15px;align-items:flex-start}
-        .info-banner i{color:var(--gold);font-size:1.3rem;margin-top:2px}
-        .info-banner p{color:var(--cream-2);font-size:.95rem;line-height:1.6}
-        .info-banner strong{color:var(--gold)}
 
         footer{text-align:center;padding:30px 20px;border-top:2px solid var(--border);color:var(--taupe);font-size:.9rem}
         footer i{color:var(--gold)}
@@ -129,25 +120,34 @@
 
     <section class="hero-mini">
         <div class="badge"><i class="fas fa-user-shield"></i> Recrutement Staff</div>
-        <h2>Candidature Modérateur</h2>
-        <p>Tu souhaites rejoindre l'équipe de modération de Ville de Québec Roleplay ? Remplis ce formulaire avec sérieux et honnêteté. Les candidatures incomplètes ou non professionnelles seront refusées.</p>
+        <h2>Candidature de modérateur</h2>
+        <p>Tu souhaites rejoindre l'équipe de modération de Ville de Québec Roleplay ? Remplis ce formulaire avec sérieux et honnêteté.</p>
     </section>
 
     <div class="form-container">
         <div class="form-card">
-            <div class="info-banner">
-                <i class="fas fa-circle-info"></i>
-                <p>Connecte-toi avec <strong>Discord</strong> pour pré-remplir automatiquement ton nom d'utilisateur. Les autres questions sont à répondre manuellement. Tu pourras ensuite copier ton résumé de candidature et l'envoyer au staff.</p>
+            <div class="criteria-box">
+                <h3>Critères pour devenir modérateur</h3>
+                <ul>
+                    <li><strong>Âge :</strong> Doit avoir au moins 13 ans.</li>
+                    <li><strong>Activité :</strong> Doit jouer régulièrement sur le serveur et rester actif sur Discord.</li>
+                    <li><strong>Ancienneté sur le serveur :</strong> Doit être membre du serveur depuis au moins une semaine.</li>
+                    <li><strong>Bon comportement :</strong> Doit toujours respecter les règles et faire preuve de respect envers les autres.</li>
+                    <li><strong>Communication :</strong> Doit s’exprimer clairement et poliment avec les joueurs et le staff.</li>
+                    <li><strong>Gestion des conflits :</strong> Doit rester calme et aider à résoudre les problèmes de manière équitable.</li>
+                    <li><strong>Disponibilité :</strong> Doit être en ligne pendant les périodes de forte affluence pour aider.</li>
+                    <li><strong>Esprit d’équipe :</strong> Doit bien collaborer avec les autres membres du staff.</li>
+                    <li><strong>Casier disciplinaire :</strong> Ne doit pas avoir de bannissements ou avertissements majeurs.</li>
+                </ul>
+                <p class="warning">⚠️ Toute forme d'utilisation de l'intelligence artificielle sera détectée et entraînera un refus immédiat.</p>
             </div>
 
-            <!-- Section Discord OAuth2 (MODIFIÉE : Lien direct infaillible) -->
             <div class="discord-section" id="discordSection">
                 <div class="discord-avatar" id="discordAvatar"><i class="fab fa-discord"></i></div>
                 <div class="discord-info">
                     <div class="label">Nom d'utilisateur Discord</div>
                     <div class="username" id="discordUsername"><span class="placeholder">Non connecté</span></div>
                 </div>
-                <!-- Ce lien est codé en dur pour garantir qu'il fonctionne toujours -->
                 <a href="https://discord.com/oauth2/authorize?client_id=1533811111923552317&redirect_uri=https%3A%2F%2Fjacobin904.github.io%2FVille-de-Quebec-Roleplay%2FCandidature%2F&response_type=token&scope=identify" class="discord-btn" id="discordConnectBtn">
                     <i class="fab fa-discord"></i> Se connecter
                 </a>
@@ -155,39 +155,57 @@
 
             <form id="candForm" novalidate>
                 <div class="form-group">
-                    <label for="q1"><span class="q-num">1</span>Pourquoi veux-tu devenir modérateur dans notre communauté ?</label>
-                    <span class="hint">Explique ta motivation et ce qui t'attire dans notre serveur.</span>
-                    <textarea id="q1" name="q1" placeholder="Ex: Je souhaite contribuer à une communauté saine et immersive..." required></textarea>
+                    <label for="roblox">Nom d'utilisateur Roblox</label>
+                    <div class="hint">Requis</div>
+                    <input type="text" id="roblox" required placeholder="Ton pseudo Roblox exact">
                 </div>
 
                 <div class="form-group">
-                    <label for="q2"><span class="q-num">2</span>As-tu déjà été modérateur ou staff ailleurs ?</label>
-                    <span class="hint">Si oui, précise où, pendant combien de temps et quelles étaient tes responsabilités.</span>
-                    <textarea id="q2" name="q2" placeholder="Ex: Oui, j'ai été modérateur sur X serveur pendant 8 mois..." required></textarea>
+                    <label for="q1"><span class="q-num">1</span>Pourquoi voulez-vous être modérateur ?</label>
+                    <div class="hint">Requis</div>
+                    <textarea id="q1" required placeholder="Explique ta motivation..."></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="q3"><span class="q-num">3</span>Selon toi, quelles qualités sont essentielles pour un bon modérateur ?</label>
-                    <span class="hint">Partage ta vision du rôle et des compétences clés.</span>
-                    <textarea id="q3" name="q3" placeholder="Ex: Patience, impartialité, communication claire..." required></textarea>
+                    <label for="q2"><span class="q-num">2</span>Avez-vous déjà été modérateur auparavant ? Si oui, où ?</label>
+                    <div class="hint">Requis</div>
+                    <textarea id="q2" required placeholder="Détaille ton expérience..."></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="q4"><span class="q-num">4</span>Comment réagirais-tu face à un membre agressif ou irrespectueux ?</label>
-                    <span class="hint">Décris ta démarche étape par étape.</span>
-                    <textarea id="q4" name="q4" placeholder="Ex: J'essaierais d'abord de désamorcer la situation en privé..." required></textarea>
+                    <label for="q3"><span class="q-num">3</span>Comment vous décririez-vous en tant que joueur ?</label>
+                    <div class="hint">Requis - Minimum 2 phrases</div>
+                    <textarea id="q3" required minlength="40" placeholder="Décris ton style de jeu..."></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="q5"><span class="q-num">5</span>Comment déterminerais-tu la sanction appropriée selon la gravité ?</label>
-                    <span class="hint">Parle de l'échelle des sanctions et de ton jugement.</span>
-                    <textarea id="q5" name="q5" placeholder="Ex: Je me baserais sur le règlement, les antécédents et le contexte..." required></textarea>
+                    <label for="q4"><span class="q-num">4</span>Selon vous, quelles sont les qualités les plus importantes d'un bon modérateur ?</label>
+                    <div class="hint">Requis - Minimum 2 phrases</div>
+                    <textarea id="q4" required minlength="40" placeholder="Patience, impartialité..."></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="q6"><span class="q-num">6</span>Comment communiquerais-tu avec un membre qui ne comprend pas une règle ?</label>
-                    <span class="hint">Explique ton approche pédagogique.</span>
-                    <textarea id="q6" name="q6" placeholder="Ex: Je prendrais le temps de lui expliquer calmement la règle..." required></textarea>
+                    <label for="q5"><span class="q-num">5</span>Si vous voyez un autre modérateur enfreindre les règles, comment le géreriez-vous ?</label>
+                    <div class="hint">Requis</div>
+                    <textarea id="q5" required placeholder="Ta démarche..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="q6"><span class="q-num">6</span>Comment encourageriez-vous les nouveaux membres à suivre les règles et à participer ?</label>
+                    <div class="hint">Requis</div>
+                    <textarea id="q6" required placeholder="Ton approche..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="q7"><span class="q-num">7</span>Comment amélioreriez-vous le serveur en tant que modérateur ?</label>
+                    <div class="hint">Requis</div>
+                    <textarea id="q7" required placeholder="Tes idées d'amélioration..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="q8"><span class="q-num">8</span>Si vous faisiez une erreur en tant que modérateur, comment la géreriez-vous ?</label>
+                    <div class="hint">Requis</div>
+                    <textarea id="q8" required placeholder="Ta gestion de l'erreur..."></textarea>
                 </div>
 
                 <div class="actions-row">
@@ -198,19 +216,6 @@
         </div>
     </div>
 
-    <!-- Modale de résumé -->
-    <div class="summary-modal" id="summaryModal">
-        <div class="summary-box">
-            <h3><i class="fas fa-check-circle"></i> Résumé de ta candidature</h3>
-            <div id="summaryContent"></div>
-            <div class="summary-actions">
-                <button type="button" class="btn btn-primary" id="copySummaryBtn"><i class="fas fa-copy"></i> Copier le résumé</button>
-                <button type="button" class="btn btn-secondary" id="closeSummaryBtn"><i class="fas fa-xmark"></i> Fermer</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast notifications -->
     <div class="toast" id="toast"></div>
 
     <footer>
@@ -218,16 +223,20 @@
     </footer>
 
 <script>
+// ⚠️ REMPLACE CETTE URL PAR L'URL RÉELLE DE TON BOT RENDER (ex: https://ville-de-quebec-roleplay.onrender.com)
+const RENDER_BACKEND_URL = "https://ville-de-quebec-roleplay.onrender.com"; 
+
 const STORAGE_KEY = "vqc_discord_user";
 const discordAvatar = document.getElementById("discordAvatar");
 const discordUsername = document.getElementById("discordUsername");
 const discordConnectBtn = document.getElementById("discordConnectBtn");
+const form = document.getElementById("candForm");
+const submitBtn = document.getElementById("submitBtn");
+const toast = document.getElementById("toast");
 
-function showToast(msg, type = "success", duration = 3500) {
-    const toast = document.getElementById("toast");
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `<i class="fas fa-${type === "success" ? "check" : type === "error" ? "xmark" : "info"}"></i> ${msg}`;
-    toast.classList.add("show");
+function showToast(msg, type = "success", duration = 4000) {
+    toast.className = `toast ${type} show`;
+    toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'xmark'}"></i> ${msg}`;
     setTimeout(() => toast.classList.remove("show"), duration);
 }
 
@@ -240,31 +249,18 @@ function disconnectDiscord() {
 
 async function fetchDiscordUser(token) {
     try {
-        const res = await fetch("https://discord.com/api/users/@me", {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await fetch("https://discord.com/api/users/@me", { headers: { Authorization: `Bearer ${token}` } });
         if (!res.ok) throw new Error("Erreur API");
         const data = await res.json();
-        const avatarUrl = data.avatar
-            ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=256`
-            : `https://cdn.discordapp.com/embed/avatars/${(BigInt(data.id) >> 22n) % 6n}.png`;
-        return {
-            id: data.id,
-            username: data.username + (data.discriminator && data.discriminator !== "0" ? "#" + data.discriminator : ""),
-            globalName: data.global_name || data.username,
-            avatar: avatarUrl
-        };
-    } catch (err) {
-        console.error(err);
-        return null;
-    }
+        const avatarUrl = data.avatar ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=256` : `https://cdn.discordapp.com/embed/avatars/${(BigInt(data.id) >> 22n) % 6n}.png`;
+        return { id: data.id, username: data.username + (data.discriminator && data.discriminator !== "0" ? "#" + data.discriminator : ""), globalName: data.global_name || data.username, avatar: avatarUrl };
+    } catch (err) { return null; }
 }
 
 function updateDiscordUI(user) {
     if (user) {
         discordAvatar.innerHTML = `<img src="${user.avatar}" alt="${user.username}">`;
         discordUsername.innerHTML = `<i class="fab fa-discord" style="color:#5865F2;margin-right:8px"></i> ${user.username}`;
-        // On transforme le lien en bouton de déconnexion une fois connecté
         discordConnectBtn.className = "discord-btn logout";
         discordConnectBtn.href = "#";
         discordConnectBtn.innerHTML = `<i class="fas fa-right-from-bracket"></i> Déconnecter`;
@@ -272,7 +268,6 @@ function updateDiscordUI(user) {
     } else {
         discordAvatar.innerHTML = `<i class="fab fa-discord"></i>`;
         discordUsername.innerHTML = `<span class="placeholder">Non connecté</span>`;
-        // On remet le lien de connexion d'origine
         discordConnectBtn.className = "discord-btn";
         discordConnectBtn.href = "https://discord.com/oauth2/authorize?client_id=1533811111923552317&redirect_uri=https%3A%2F%2Fjacobin904.github.io%2FVille-de-Quebec-Roleplay%2FCandidature%2F&response_type=token&scope=identify";
         discordConnectBtn.innerHTML = `<i class="fab fa-discord"></i> Se connecter`;
@@ -286,35 +281,20 @@ async function handleOAuthReturn() {
     const params = new URLSearchParams(hash);
     const token = params.get("access_token");
     if (!token) return;
-
     window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
     const user = await fetchDiscordUser(token);
     if (user) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
         updateDiscordUI(user);
         showToast(`Bienvenue ${user.globalName} !`, "success");
-    } else {
-        showToast("Erreur lors de la connexion Discord", "error");
     }
 }
 
 function loadStoredUser() {
-    try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) updateDiscordUI(JSON.parse(stored));
-    } catch {}
+    try { const stored = localStorage.getItem(STORAGE_KEY); if (stored) updateDiscordUI(JSON.parse(stored)); } catch {}
 }
 
-const QUESTIONS = [
-    { id: "q1", label: "Pourquoi veux-tu devenir modérateur dans notre communauté ?" },
-    { id: "q2", label: "As-tu déjà été modérateur ou staff ailleurs ?" },
-    { id: "q3", label: "Selon toi, quelles qualités sont essentielles pour un bon modérateur ?" },
-    { id: "q4", label: "Comment réagirais-tu face à un membre agressif ou irrespectueux ?" },
-    { id: "q5", label: "Comment déterminerais-tu la sanction appropriée selon la gravité ?" },
-    { id: "q6", label: "Comment communiquerais-tu avec un membre qui ne comprend pas une règle ?" }
-];
-
-document.getElementById("candForm").addEventListener("submit", (e) => {
+form.addEventListener("submit", async (e) => {
     e.preventDefault();
     let user = null;
     try { user = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch {}
@@ -324,47 +304,57 @@ document.getElementById("candForm").addEventListener("submit", (e) => {
         return;
     }
 
-    for (const q of QUESTIONS) {
-        const val = document.getElementById(q.id).value.trim();
-        if (val.length < 15) {
-            showToast("Réponds à toutes les questions avec au moins 15 caractères.", "error");
-            document.getElementById(q.id).focus();
+    // Validation basique des champs
+    const fields = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8'];
+    for (const id of fields) {
+        if (document.getElementById(id).value.trim().length < 10) {
+            showToast("Merci de répondre à toutes les questions de manière détaillée.", "error");
+            document.getElementById(id).focus();
             return;
         }
     }
 
-    let summaryHtml = `<div class="summary-item"><div class="q">Candidat (Discord)</div><div class="a"><i class="fab fa-discord" style="color:#5865F2"></i> ${user.username} (${user.globalName})</div></div>`;
-    let summaryText = `📋 CANDIDATURE MODÉRATEUR — VILLE DE QUÉBEC ROLEPLAY\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n👤 Candidat Discord : ${user.username} (${user.globalName})\n\n`;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Envoi en cours...`;
 
-    QUESTIONS.forEach((q, i) => {
-        const val = document.getElementById(q.id).value.trim();
-        summaryHtml += `<div class="summary-item"><div class="q">Question ${i + 1} — ${q.label}</div><div class="a">${val.replace(/</g, "&lt;")}</div></div>`;
-        summaryText += `❓ Q${i + 1} — ${q.label}\n💬 ${val}\n\n`;
-    });
-    summaryText += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nEnvoyé le ${new Date().toLocaleString("fr-CA")}`;
-
-    document.getElementById("summaryContent").innerHTML = summaryHtml;
-    document.getElementById("summaryModal").classList.add("open");
-
-    document.getElementById("copySummaryBtn").onclick = async () => {
-        try {
-            await navigator.clipboard.writeText(summaryText);
-            showToast("Candidature copiée ! Colle-la dans le salon #support.", "success", 4000);
-        } catch {
-            showToast("Erreur lors de la copie", "error");
-        }
+    const payload = {
+        roblox: document.getElementById('roblox').value.trim(),
+        discord: user.username,
+        q1: document.getElementById('q1').value.trim(),
+        q2: document.getElementById('q2').value.trim(),
+        q3: document.getElementById('q3').value.trim(),
+        q4: document.getElementById('q4').value.trim(),
+        q5: document.getElementById('q5').value.trim(),
+        q6: document.getElementById('q6').value.trim(),
+        q7: document.getElementById('q7').value.trim(),
+        q8: document.getElementById('q8').value.trim(),
+        date: new Date().toLocaleString('fr-CA')
     };
-});
 
-document.getElementById("closeSummaryBtn").addEventListener("click", () => {
-    document.getElementById("summaryModal").classList.remove("open");
-});
+    try {
+        // Envoi vers la "Base de données" (Bot Render -> GitHub API)
+        const response = await fetch(`${RENDER_BACKEND_URL}/submit-application`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-document.getElementById("summaryModal").addEventListener("click", (e) => {
-    if (e.target.id === "summaryModal") {
-        document.getElementById("summaryModal").classList.remove("open");
+        if (response.ok) {
+            showToast("Bonne chance! Ta candidature a été envoyée au staff.", "success", 5000);
+            form.reset();
+        } else {
+            showToast("Erreur serveur. Réessaie dans quelques minutes.", "error");
+        }
+    } catch (err) {
+        console.error(err);
+        showToast("Erreur de connexion. Vérifie ta connexion internet.", "error");
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i class="fas fa-paper-plane"></i> Envoyer ma candidature`;
     }
 });
+
+document.getElementById("closeSummaryBtn")?.addEventListener("click", () => { /* Legacy support */ });
 
 (async function init() {
     await handleOAuthReturn();
