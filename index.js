@@ -30,7 +30,7 @@ client.pendingEmbeds = new Map();
 client.tempVoiceChannels = new Map(); // Stocke: channelId -> ownerId
 
 // ID du salon "Créer ton vocal"
-const JOIN_CHANNEL_ID = '1490445738163830815';
+const JOIN_CHANNEL_ID = '1537569455754969188';
 
 // 3. Commandes Slash
 const commands = [
