@@ -1,232 +1,220 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Candidature Modérateur — Ville de Québec Roleplay</title>
-    <link rel="icon" type="image/webp" href="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024">
-    <meta name="description" content="Postule pour devenir modérateur sur Ville de Québec Roleplay (VQC) — serveur ERLC 100% québécois.">
-    <meta name="theme-color" content="#003DA5">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Cormorant+Garamond:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
-        :root {
-            --nuit-0:#0a0e1a;--nuit-1:#111827;--nuit-2:#1e293b;--nuit-3:#2d3748;
-            --primary:#003DA5;--primary-dark:#002b75;--primary-light:#1a5fd0;
-            --gold:#4d8dff;--gold-light:#8fb8ff;--gold-dark:#003DA5;
-            --cream:#f8fafc;--cream-2:#e2e8f0;--taupe:#94a3b8;
-            --border:rgba(77,141,255,.3);
-            --grad-gold:linear-gradient(135deg,#4d8dff 0%,#8fb8ff 50%,#4d8dff 100%);
-            --grad-btn:linear-gradient(135deg,#003DA5 0%,#1a5fd0 50%,#003DA5 100%);
-            --danger:#dc2626;--success:#059669;
-        }
-        *{margin:0;padding:0;box-sizing:border-box}
-        html{scroll-behavior:smooth}
-        body{font-family:'Inter',sans-serif;background:var(--nuit-0);color:var(--cream-2);line-height:1.7;overflow-x:hidden;min-height:100vh}
-        ::-webkit-scrollbar{width:8px}
-        ::-webkit-scrollbar-track{background:var(--nuit-0)}
-        ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--gold),var(--gold-dark));border-radius:4px}
-        ::-webkit-scrollbar-thumb:hover{background:var(--gold)}
-        .grain{position:fixed;inset:0;z-index:9997;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:128px 128px}
-        .mesh-bg{position:fixed;inset:0;z-index:-2;overflow:hidden}
-        .mesh-blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.3;animation:blobFloat 20s ease-in-out infinite}
-        .mesh-blob:nth-child(1){width:500px;height:500px;background:rgba(0,61,165,.5);top:-10%;left:-5%}
-        .mesh-blob:nth-child(2){width:400px;height:400px;background:rgba(77,141,255,.18);bottom:10%;right:-5%;animation-delay:-7s}
-        .mesh-blob:nth-child(3){width:350px;height:350px;background:rgba(0,61,165,.25);top:40%;left:50%;animation-delay:-14s}
-        @keyframes blobFloat{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(30px,-40px) scale(1.1)}50%{transform:translate(-20px,30px) scale(.95)}75%{transform:translate(40px,20px) scale(1.05)}}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Candidature Modérateur — Ville de Québec Roleplay</title>
+<meta name="description" content="Postule pour devenir modérateur sur Ville de Québec Roleplay (VQC)">
+<meta name="theme-color" content="#003DA5">
+<link rel="icon" href="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-        header{background:rgba(10,14,26,.96);backdrop-filter:blur(24px) saturate(180%);border-bottom:2px solid var(--border);color:var(--cream);padding:20px 0;position:sticky;top:0;z-index:1000;box-shadow:0 4px 30px rgba(0,0,0,.7)}
-        .container{width:100%;max-width:1000px;margin:0 auto;padding:0 40px}
-        nav{display:flex;justify-content:space-between;align-items:center;gap:20px}
-        .logo{display:flex;align-items:center;gap:15px;text-decoration:none;color:var(--cream);transition:all .4s}
-        .logo:hover{transform:scale(1.05)}
-        .logo img{height:45px;border-radius:50%;border:2px solid var(--gold);box-shadow:0 0 20px rgba(77,141,255,.4)}
-        .logo h1{font-size:1.35rem;font-weight:900;background:var(--grad-gold);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-family:'Playfair Display',serif;animation:gradShift 4s ease infinite}
-        @keyframes gradShift{0%,100%{background-position:0% center}50%{background-position:100% center}}
-        .back-link{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:50px;background:transparent;border:2px solid var(--gold);color:var(--gold);text-decoration:none;font-size:.85rem;font-weight:700;transition:all .3s;text-transform:uppercase;letter-spacing:1px}
-        .back-link:hover{background:var(--grad-btn);color:#fff;box-shadow:0 10px 30px rgba(0,61,165,.4)}
+:root{
+  --brand:#003DA5; --brand-hover:#002b75;
+  --dark:#23272A; --gray:#99AAB5; --light:#F6F6F6;
+  --white:#FFFFFF;
+}
 
-        .hero-mini{text-align:center;padding:80px 20px 40px;position:relative}
-        .hero-mini h2{font-size:3rem;margin-bottom:15px;font-weight:900;font-family:'Playfair Display',serif;background:var(--grad-gold);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:gradShift 4s ease infinite}
-        .hero-mini p{font-size:1.1rem;color:var(--taupe);max-width:650px;margin:0 auto;line-height:1.8}
-        .hero-mini .badge{display:inline-flex;align-items:center;gap:10px;background:rgba(77,141,255,.15);backdrop-filter:blur(15px);padding:10px 22px;border-radius:50px;font-size:.85rem;font-weight:700;margin-bottom:25px;border:2px solid var(--gold);color:var(--gold);letter-spacing:2px;text-transform:uppercase;box-shadow:0 8px 24px rgba(0,61,165,.25)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--light);color:var(--dark);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+button{font-family:'Inter',sans-serif;cursor:pointer;border:none}
 
-        .form-container{max-width:800px;margin:0 auto 80px;padding:0 20px}
-        .form-card{background:rgba(30,40,58,.5);border-radius:28px;padding:45px;border:2px solid var(--border);backdrop-filter:blur(15px);box-shadow:0 30px 80px rgba(0,0,0,.5)}
-        @media(max-width:700px){.form-card{padding:30px 20px;border-radius:20px}}
+/* ===== HEADER ===== */
+header{background:var(--white);border-bottom:1px solid #E5E5E5;padding:0 48px;height:80px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header-brand{display:flex;align-items:center;gap:14px;font-weight:800;font-size:1.1rem;color:var(--dark)}
+.header-brand img{width:48px;height:48px;border-radius:14px}
+.back-btn{display:inline-flex;align-items:center;gap:8px;color:var(--dark);font-weight:600;font-size:.95rem;padding:10px 20px;border-radius:40px;transition:all .2s}
+.back-btn:hover{background:var(--light);color:var(--brand)}
 
-        .criteria-box{background:rgba(77,141,255,.08);border:2px solid var(--gold);border-radius:16px;padding:25px;margin-bottom:30px}
-        .criteria-box h3{color:var(--gold);margin-bottom:15px;font-size:1.1rem}
-        .criteria-box ul{list-style:none;display:grid;gap:10px}
-        .criteria-box li{font-size:.9rem;color:var(--cream-2);padding-left:20px;position:relative}
-        .criteria-box li::before{content:'•';color:var(--gold);position:absolute;left:0;font-weight:bold}
-        .warning{color:#ef4444;font-weight:700;margin-top:15px;font-size:.9rem;text-align:center}
+/* ===== MAIN ===== */
+.main{max-width:840px;margin:0 auto;padding:60px 40px 100px}
+.hero-section{text-align:center;margin-bottom:48px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,61,165,.1);color:var(--brand);padding:8px 20px;border-radius:40px;font-size:.85rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin-bottom:24px}
+.hero-section h2{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-.02em;line-height:1.1;margin-bottom:16px;color:var(--dark)}
+.hero-section p{font-size:1.15rem;color:var(--gray);max-width:600px;margin:0 auto}
 
-        .discord-section{background:linear-gradient(135deg,rgba(77,141,255,.08),rgba(0,61,165,.15));border:2px solid var(--gold);border-radius:20px;padding:28px;margin-bottom:35px;display:flex;flex-wrap:wrap;align-items:center;gap:20px}
-        .discord-avatar{width:70px;height:70px;border-radius:50%;border:3px solid var(--gold);background:var(--nuit-2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:var(--gold);flex-shrink:0;overflow:hidden;box-shadow:0 0 25px rgba(77,141,255,.4)}
-        .discord-avatar img{width:100%;height:100%;object-fit:cover}
-        .discord-info{flex:1;min-width:200px}
-        .discord-info .label{font-size:.8rem;color:var(--taupe);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-weight:600}
-        .discord-info .username{font-size:1.2rem;font-weight:800;color:var(--cream);font-family:'JetBrains Mono',monospace}
-        .discord-info .placeholder{font-size:1rem;color:var(--taupe);font-style:italic}
-        .discord-btn{padding:12px 25px;border-radius:50px;background:var(--grad-btn);color:#fff;border:2px solid var(--gold);text-decoration:none;font-weight:700;font-size:.9rem;display:inline-flex;align-items:center;gap:10px;transition:all .3s;text-transform:uppercase;letter-spacing:1px;box-shadow:0 10px 25px rgba(0,61,165,.3)}
-        .discord-btn:hover{transform:translateY(-2px);box-shadow:0 15px 35px rgba(0,61,165,.5);background:var(--gold-light)}
-        .discord-btn.logout{background:transparent;color:var(--gold);box-shadow:none;cursor:pointer;border:2px solid var(--gold)}
-        .discord-btn.logout:hover{background:rgba(77,141,255,.15);box-shadow:none}
+/* ===== CRITERIA ===== */
+.criteria-box{background:var(--white);border-radius:20px;padding:40px;margin-bottom:40px;box-shadow:0 4px 16px rgba(0,0,0,.06);border:1px solid #E5E5E5}
+.criteria-box h3{font-size:1.4rem;font-weight:800;color:var(--dark);margin-bottom:24px}
+.criteria-box ul{list-style:none;margin-bottom:24px}
+.criteria-box li{padding:12px 0;border-bottom:1px solid #F0F0F0;color:#555;line-height:1.6;font-size:.95rem}
+.criteria-box li:last-child{border-bottom:none}
+.criteria-box li strong{color:var(--dark);font-weight:700}
+.warning{background:rgba(237,66,69,.08);border:1px solid #ED4245;color:#ED4245;padding:16px;border-radius:12px;font-weight:700;text-align:center;display:flex;align-items:center;justify-content:center;gap:10px;font-size:.95rem}
 
-        .form-group{margin-bottom:30px}
-        .form-group label{display:block;margin-bottom:10px;font-weight:700;font-size:1rem;color:var(--cream);line-height:1.5}
-        .form-group label .q-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--grad-btn);color:#fff;border-radius:50%;font-size:.8rem;margin-right:10px;font-weight:800;vertical-align:middle}
-        .form-group .hint{display:block;font-size:.85rem;color:var(--taupe);margin-bottom:10px;font-weight:500}
-        input, textarea{width:100%;padding:15px 18px;background:var(--nuit-1);border:2px solid var(--border);border-radius:14px;color:var(--cream);font-family:'Inter',sans-serif;font-size:1rem;line-height:1.6;resize:vertical;transition:border-color .3s,box-shadow .3s}
-        input:focus, textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(77,141,255,.2)}
-        textarea{min-height:110px}
-        textarea::placeholder, input::placeholder{color:var(--taupe);font-style:italic}
+/* ===== DISCORD CONNECT ===== */
+.discord-section{background:var(--white);border-radius:16px;padding:24px;margin-bottom:32px;display:flex;align-items:center;gap:20px;border:1px solid #E5E5E5;box-shadow:0 4px 16px rgba(0,0,0,.04)}
+.discord-avatar{width:64px;height:64px;border-radius:50%;background:var(--light);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:var(--brand);flex-shrink:0;overflow:hidden}
+.discord-avatar img{width:100%;height:100%;object-fit:cover}
+.discord-info{flex:1}
+.discord-info .label{font-size:.75rem;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;font-weight:700}
+.discord-info .username{font-size:1.2rem;font-weight:700;color:var(--dark)}
+.discord-info .placeholder{color:var(--gray);font-style:italic}
+.discord-btn{background:var(--brand);color:#fff;padding:12px 24px;border-radius:40px;text-decoration:none;font-weight:600;font-size:.95rem;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.discord-btn:hover{background:var(--brand-hover);transform:translateY(-2px)}
+.discord-btn.logout{background:transparent;border:1px solid #ED4245;color:#ED4245}
+.discord-btn.logout:hover{background:rgba(237,66,69,.08);transform:none}
 
-        .actions-row{display:flex;gap:15px;flex-wrap:wrap;margin-top:40px;justify-content:center}
-        .btn{display:inline-flex;align-items:center;gap:12px;padding:16px 40px;border-radius:50px;text-decoration:none;font-weight:700;font-size:1rem;transition:all .3s;border:2px solid var(--gold);box-shadow:0 12px 35px rgba(0,61,165,.4);text-transform:uppercase;letter-spacing:1px;cursor:pointer}
-        .btn-primary{background:var(--grad-btn);color:#fff}
-        .btn-primary:hover{transform:translateY(-3px);box-shadow:0 20px 50px rgba(0,61,165,.55);background:var(--gold-light)}
-        .btn-secondary{background:transparent;color:var(--gold)}
-        .btn-secondary:hover{background:rgba(77,141,255,.15);transform:translateY(-2px)}
-        .btn:disabled{opacity:.6;cursor:not-allowed;transform:none !important;box-shadow:none !important}
+/* ===== FORM ===== */
+.form-card{background:var(--white);border-radius:20px;padding:48px;border:1px solid #E5E5E5;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.form-group{margin-bottom:32px}
+.form-group label{display:block;font-weight:700;color:var(--dark);margin-bottom:8px;font-size:1rem}
+.form-group label .q-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--brand);color:#fff;border-radius:50%;font-size:.85rem;font-weight:800;margin-right:10px}
+.form-group .hint{font-size:.9rem;color:var(--gray);margin-bottom:12px;font-weight:500}
+input, textarea{width:100%;padding:14px 16px;background:var(--light);border:2px solid transparent;border-radius:12px;color:var(--dark);font-family:'Inter',sans-serif;font-size:1rem;transition:all .2s}
+input:focus, textarea:focus{outline:none;background:#fff;border-color:var(--brand);box-shadow:0 0 0 4px rgba(0,61,165,.1)}
+input::placeholder, textarea::placeholder{color:var(--gray)}
+textarea{min-height:120px;resize:vertical}
 
-        .toast{position:fixed;bottom:30px;right:30px;background:var(--grad-btn);color:#fff;padding:16px 24px;border-radius:14px;font-weight:700;box-shadow:0 15px 40px rgba(0,61,165,.5);display:flex;align-items:center;gap:12px;z-index:9999;transform:translateY(200%);opacity:0;transition:all .4s;max-width:340px}
-        .toast.show{transform:translateY(0);opacity:1}
-        .toast.success{background:linear-gradient(135deg,#059669,#10b981)}
-        .toast.error{background:linear-gradient(135deg,#dc2626,#ef4444)}
+.form-actions{display:flex;gap:16px;margin-top:40px;justify-content:center}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:40px;font-weight:600;font-size:1rem;text-decoration:none;transition:all .2s;border:none;cursor:pointer}
+.btn-primary{background:var(--brand);color:#fff;box-shadow:0 8px 16px rgba(0,61,165,.24)}
+.btn-primary:hover{background:var(--brand-hover);transform:translateY(-2px)}
+.btn-secondary{background:transparent;color:var(--dark);border:2px solid #E5E5E5}
+.btn-secondary:hover{background:var(--light);transform:translateY(-2px)}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none !important}
 
-        footer{text-align:center;padding:30px 20px;border-top:2px solid var(--border);color:var(--taupe);font-size:.9rem}
-        footer i{color:var(--gold)}
+/* ===== TOAST ===== */
+.toast{position:fixed;bottom:30px;right:30px;background:var(--white);color:var(--dark);padding:16px 24px;border-radius:12px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.15);display:flex;align-items:center;gap:12px;z-index:9999;transform:translateY(200%);opacity:0;transition:all .3s;max-width:400px;border-left:4px solid var(--brand)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-left-color:#57F287}
+.toast.error{border-left-color:#ED4245}
 
-        @media(max-width:768px){
-            .container{padding:0 20px}
-            .hero-mini h2{font-size:2rem}
-            .logo h1{font-size:1rem}
-            .discord-section{flex-direction:column;text-align:center}
-        }
-    </style>
+/* ===== FOOTER ===== */
+.footer{text-align:center;padding:40px 20px;border-top:1px solid #E5E5E5;color:var(--gray);font-size:.9rem;background:var(--white)}
+
+@media(max-width:768px){
+  header{padding:0 24px}
+  .main{padding:40px 20px 80px}
+  .form-card{padding:28px}
+  .discord-section{flex-direction:column;text-align:center}
+  .form-actions{flex-direction:column}
+}
+</style>
 </head>
 <body>
-    <div class="grain"></div>
-    <div class="mesh-bg"><div class="mesh-blob"></div><div class="mesh-blob"></div><div class="mesh-blob"></div></div>
 
-    <header>
-        <div class="container"><nav>
-            <a href="../" class="logo"><img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="Logo"><h1>Ville de Québec Roleplay</h1></a>
-            <a href="../" class="back-link"><i class="fas fa-arrow-left"></i> Retour au site</a>
-        </nav></div>
-    </header>
+<header>
+  <a href="../" class="header-brand">
+    <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="Logo VQC">
+    Ville de Québec RP
+  </a>
+  <a href="../" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Retour au site</a>
+</header>
 
-    <section class="hero-mini">
-        <div class="badge"><i class="fas fa-user-shield"></i> Recrutement Staff</div>
-        <h2>Candidature de modérateur</h2>
-        <p>Tu souhaites rejoindre l'équipe de modération de Ville de Québec Roleplay ? Remplis ce formulaire avec sérieux et honnêteté.</p>
-    </section>
+<main class="main">
+  <div class="hero-section">
+    <div class="hero-badge"><i class="fa-solid fa-user-shield"></i> Recrutement Staff</div>
+    <h2>Candidature de modérateur</h2>
+    <p>Tu souhaites rejoindre l'équipe de modération ? Remplis ce formulaire avec sérieux et honnêteté. Les réponses courtes seront refusées.</p>
+  </div>
 
-    <div class="form-container">
-        <div class="form-card">
-            <div class="criteria-box">
-                <h3>Critères pour devenir modérateur</h3>
-                <ul>
-                    <li><strong>Âge :</strong> Doit avoir au moins 13 ans.</li>
-                    <li><strong>Activité :</strong> Doit jouer régulièrement sur le serveur et rester actif sur Discord.</li>
-                    <li><strong>Ancienneté sur le serveur :</strong> Doit être membre du serveur depuis au moins une semaine.</li>
-                    <li><strong>Bon comportement :</strong> Doit toujours respecter les règles et faire preuve de respect envers les autres.</li>
-                    <li><strong>Communication :</strong> Doit s’exprimer clairement et poliment avec les joueurs et le staff.</li>
-                    <li><strong>Gestion des conflits :</strong> Doit rester calme et aider à résoudre les problèmes de manière équitable.</li>
-                    <li><strong>Disponibilité :</strong> Doit être en ligne pendant les périodes de forte affluence pour aider.</li>
-                    <li><strong>Esprit d’équipe :</strong> Doit bien collaborer avec les autres membres du staff.</li>
-                    <li><strong>Casier disciplinaire :</strong> Ne doit pas avoir de bannissements ou avertissements majeurs.</li>
-                </ul>
-                <p class="warning">⚠️ Toute forme d'utilisation de l'intelligence artificielle sera détectée et entraînera un refus immédiat.</p>
-            </div>
+  <div class="criteria-box">
+    <h3>Critères pour devenir modérateur</h3>
+    <ul>
+      <li><strong>Âge :</strong> Doit avoir au moins 13 ans.</li>
+      <li><strong>Activité :</strong> Doit jouer régulièrement sur le serveur et rester actif sur Discord.</li>
+      <li><strong>Ancienneté :</strong> Doit être membre du serveur depuis au moins une semaine.</li>
+      <li><strong>Bon comportement :</strong> Doit toujours respecter les règles et faire preuve de respect.</li>
+      <li><strong>Communication :</strong> Doit s'exprimer clairement et poliment avec les joueurs et le staff.</li>
+      <li><strong>Gestion des conflits :</strong> Doit rester calme et aider à résoudre les problèmes de manière équitable.</li>
+      <li><strong>Disponibilité :</strong> Doit être en ligne pendant les périodes de forte affluence.</li>
+      <li><strong>Esprit d'équipe :</strong> Doit bien collaborer avec les autres membres du staff.</li>
+      <li><strong>Casier disciplinaire :</strong> Ne doit pas avoir de bannissements ou avertissements majeurs.</li>
+    </ul>
+    <div class="warning">
+      <i class="fa-solid fa-triangle-exclamation"></i> Toute forme d'utilisation de l'intelligence artificielle sera détectée et entraînera un refus immédiat.
+    </div>
+  </div>
 
-            <div class="discord-section" id="discordSection">
-                <div class="discord-avatar" id="discordAvatar"><i class="fab fa-discord"></i></div>
-                <div class="discord-info">
-                    <div class="label">Nom d'utilisateur Discord</div>
-                    <div class="username" id="discordUsername"><span class="placeholder">Non connecté</span></div>
-                </div>
-                <a href="https://discord.com/oauth2/authorize?client_id=1533811111923552317&redirect_uri=https%3A%2F%2Fjacobin904.github.io%2FVille-de-Quebec-Roleplay%2FCandidature%2F&response_type=token&scope=identify" class="discord-btn" id="discordConnectBtn">
-                    <i class="fab fa-discord"></i> Se connecter
-                </a>
-            </div>
+  <div class="discord-section">
+    <div class="discord-avatar" id="discordAvatar"><i class="fa-brands fa-discord"></i></div>
+    <div class="discord-info">
+      <div class="label">Nom d'utilisateur Discord</div>
+      <div class="username" id="discordUsername"><span class="placeholder">Non connecté</span></div>
+    </div>
+    <a href="https://discord.com/oauth2/authorize?client_id=1533811111923552317&redirect_uri=https%3A%2F%2Fjacobin904.github.io%2FVille-de-Quebec-Roleplay%2FCandidature%2F&response_type=token&scope=identify" class="discord-btn" id="discordConnectBtn">
+      <i class="fa-brands fa-discord"></i> Se connecter
+    </a>
+  </div>
 
-            <form id="candForm" novalidate>
-                <div class="form-group">
-                    <label for="roblox">Nom d'utilisateur Roblox</label>
-                    <div class="hint">Requis</div>
-                    <input type="text" id="roblox" required placeholder="Ton pseudo Roblox exact">
-                </div>
-
-                <div class="form-group">
-                    <label for="q1"><span class="q-num">1</span>Pourquoi voulez-vous être modérateur ?</label>
-                    <div class="hint">Requis</div>
-                    <textarea id="q1" required placeholder="Explique ta motivation..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="q2"><span class="q-num">2</span>Avez-vous déjà été modérateur auparavant ? Si oui, où ?</label>
-                    <div class="hint">Requis</div>
-                    <textarea id="q2" required placeholder="Détaille ton expérience..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="q3"><span class="q-num">3</span>Comment vous décririez-vous en tant que joueur ?</label>
-                    <div class="hint">Requis - Minimum 2 phrases</div>
-                    <textarea id="q3" required minlength="40" placeholder="Décris ton style de jeu..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="q4"><span class="q-num">4</span>Selon vous, quelles sont les qualités les plus importantes d'un bon modérateur ?</label>
-                    <div class="hint">Requis - Minimum 2 phrases</div>
-                    <textarea id="q4" required minlength="40" placeholder="Patience, impartialité..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="q5"><span class="q-num">5</span>Si vous voyez un autre modérateur enfreindre les règles, comment le géreriez-vous ?</label>
-                    <div class="hint">Requis</div>
-                    <textarea id="q5" required placeholder="Ta démarche..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="q6"><span class="q-num">6</span>Comment encourageriez-vous les nouveaux membres à suivre les règles et à participer ?</label>
-                    <div class="hint">Requis</div>
-                    <textarea id="q6" required placeholder="Ton approche..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="q7"><span class="q-num">7</span>Comment amélioreriez-vous le serveur en tant que modérateur ?</label>
-                    <div class="hint">Requis</div>
-                    <textarea id="q7" required placeholder="Tes idées d'amélioration..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="q8"><span class="q-num">8</span>Si vous faisiez une erreur en tant que modérateur, comment la géreriez-vous ?</label>
-                    <div class="hint">Requis</div>
-                    <textarea id="q8" required placeholder="Ta gestion de l'erreur..."></textarea>
-                </div>
-
-                <div class="actions-row">
-                    <button type="submit" class="btn btn-primary" id="submitBtn"><i class="fas fa-paper-plane"></i> Envoyer ma candidature</button>
-                    <button type="reset" class="btn btn-secondary"><i class="fas fa-rotate-left"></i> Réinitialiser</button>
-                </div>
-            </form>
-        </div>
+  <form id="candForm" class="form-card">
+    <div class="form-group">
+      <label for="roblox">Nom d'utilisateur Roblox</label>
+      <div class="hint">Requis</div>
+      <input type="text" id="roblox" required placeholder="Ton pseudo Roblox exact">
     </div>
 
-    <div class="toast" id="toast"></div>
+    <div class="form-group">
+      <label for="q1"><span class="q-num">1</span>Pourquoi voulez-vous être modérateur ?</label>
+      <div class="hint">Requis</div>
+      <textarea id="q1" required placeholder="Explique ta motivation..."></textarea>
+    </div>
 
-    <footer>
-        <p>&copy; 2026 Ville de Québec Roleplay. | Conçu avec <i class="fas fa-heart"></i> par Jacobin Babouain</p>
-    </footer>
+    <div class="form-group">
+      <label for="q2"><span class="q-num">2</span>Avez-vous déjà été modérateur auparavant ? Si oui, où ?</label>
+      <div class="hint">Requis</div>
+      <textarea id="q2" required placeholder="Détaille ton expérience..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="q3"><span class="q-num">3</span>Comment vous décririez-vous en tant que joueur ?</label>
+      <div class="hint">Requis - Minimum 2 phrases</div>
+      <textarea id="q3" required minlength="40" placeholder="Décris ton style de jeu..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="q4"><span class="q-num">4</span>Selon vous, quelles sont les qualités les plus importantes d'un bon modérateur ?</label>
+      <div class="hint">Requis - Minimum 2 phrases</div>
+      <textarea id="q4" required minlength="40" placeholder="Patience, impartialité..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="q5"><span class="q-num">5</span>Si vous voyez un autre modérateur enfreindre les règles, comment le géreriez-vous ?</label>
+      <div class="hint">Requis</div>
+      <textarea id="q5" required placeholder="Ta démarche..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="q6"><span class="q-num">6</span>Comment encourageriez-vous les nouveaux membres à suivre les règles et à participer ?</label>
+      <div class="hint">Requis</div>
+      <textarea id="q6" required placeholder="Ton approche..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="q7"><span class="q-num">7</span>Comment amélioreriez-vous le serveur en tant que modérateur ?</label>
+      <div class="hint">Requis</div>
+      <textarea id="q7" required placeholder="Tes idées d'amélioration..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="q8"><span class="q-num">8</span>Si vous faisiez une erreur en tant que modérateur, comment la géreriez-vous ?</label>
+      <div class="hint">Requis</div>
+      <textarea id="q8" required placeholder="Ta gestion de l'erreur..."></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" id="submitBtn"><i class="fa-solid fa-paper-plane"></i> Envoyer ma candidature</button>
+      <button type="reset" class="btn btn-secondary"><i class="fa-solid fa-rotate-left"></i> Réinitialiser</button>
+    </div>
+  </form>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<footer class="footer">
+  <p>© 2026 Ville de Québec Roleplay. Conçu avec <i class="fa-solid fa-heart" style="color: var(--brand);"></i> par Jacobin Babouain</p>
+</footer>
 
 <script>
-// ⚠️ REMPLACE CETTE URL PAR L'URL RÉELLE DE TON BOT RENDER (ex: https://ville-de-quebec-roleplay.onrender.com)
-const RENDER_BACKEND_URL = "https://ville-de-quebec-roleplay.onrender.com"; 
-
+const RENDER_BACKEND_URL = "https://ville-de-quebec-roleplay.onrender.com";
 const STORAGE_KEY = "vqc_discord_user";
+
 const discordAvatar = document.getElementById("discordAvatar");
 const discordUsername = document.getElementById("discordUsername");
 const discordConnectBtn = document.getElementById("discordConnectBtn");
@@ -235,131 +223,112 @@ const submitBtn = document.getElementById("submitBtn");
 const toast = document.getElementById("toast");
 
 function showToast(msg, type = "success", duration = 4000) {
-    toast.className = `toast ${type} show`;
-    toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'xmark'}"></i> ${msg}`;
-    setTimeout(() => toast.classList.remove("show"), duration);
+  toast.className = `toast ${type} show`;
+  toast.innerHTML = `<i class="fa-solid fa-${type === 'success' ? 'check-circle' : 'circle-exclamation'}"></i> ${msg}`;
+  setTimeout(() => toast.classList.remove("show"), duration);
 }
 
 function disconnectDiscord() {
-    localStorage.removeItem(STORAGE_KEY);
-    window.location.hash = "";
-    updateDiscordUI(null);
-    showToast("Déconnecté de Discord", "success");
+  localStorage.removeItem(STORAGE_KEY);
+  window.location.hash = "";
+  updateDiscordUI(null);
+  showToast("Déconnecté de Discord", "success");
 }
 
 async function fetchDiscordUser(token) {
-    try {
-        const res = await fetch("https://discord.com/api/users/@me", { headers: { Authorization: `Bearer ${token}` } });
-        if (!res.ok) throw new Error("Erreur API");
-        const data = await res.json();
-        const avatarUrl = data.avatar ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=256` : `https://cdn.discordapp.com/embed/avatars/${(BigInt(data.id) >> 22n) % 6n}.png`;
-        return { id: data.id, username: data.username + (data.discriminator && data.discriminator !== "0" ? "#" + data.discriminator : ""), globalName: data.global_name || data.username, avatar: avatarUrl };
-    } catch (err) { return null; }
+  try {
+    const res = await fetch("https://discord.com/api/users/@me", { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) throw new Error("Erreur API");
+    const data = await res.json();
+    const avatarUrl = data.avatar ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=256` : `https://cdn.discordapp.com/embed/avatars/${(BigInt(data.id) >> 22n) % 6n}.png`;
+    return { id: data.id, username: data.username + (data.discriminator && data.discriminator !== "0" ? "#" + data.discriminator : ""), globalName: data.global_name || data.username, avatar: avatarUrl };
+  } catch (err) { return null; }
 }
 
 function updateDiscordUI(user) {
-    if (user) {
-        discordAvatar.innerHTML = `<img src="${user.avatar}" alt="${user.username}">`;
-        discordUsername.innerHTML = `<i class="fab fa-discord" style="color:#5865F2;margin-right:8px"></i> ${user.username}`;
-        discordConnectBtn.className = "discord-btn logout";
-        discordConnectBtn.href = "#";
-        discordConnectBtn.innerHTML = `<i class="fas fa-right-from-bracket"></i> Déconnecter`;
-        discordConnectBtn.onclick = (e) => { e.preventDefault(); disconnectDiscord(); };
-    } else {
-        discordAvatar.innerHTML = `<i class="fab fa-discord"></i>`;
-        discordUsername.innerHTML = `<span class="placeholder">Non connecté</span>`;
-        discordConnectBtn.className = "discord-btn";
-        discordConnectBtn.href = "https://discord.com/oauth2/authorize?client_id=1533811111923552317&redirect_uri=https%3A%2F%2Fjacobin904.github.io%2FVille-de-Quebec-Roleplay%2FCandidature%2F&response_type=token&scope=identify";
-        discordConnectBtn.innerHTML = `<i class="fab fa-discord"></i> Se connecter`;
-        discordConnectBtn.onclick = null;
-    }
+  if (user) {
+    discordAvatar.innerHTML = `<img src="${user.avatar}" alt="${user.username}">`;
+    discordUsername.innerHTML = `<i class="fa-brands fa-discord" style="color:#5865F2;margin-right:8px"></i> ${user.username}`;
+    discordConnectBtn.className = "discord-btn logout";
+    discordConnectBtn.href = "#";
+    discordConnectBtn.innerHTML = `<i class="fa-solid fa-right-from-bracket"></i> Déconnecter`;
+    discordConnectBtn.onclick = (e) => { e.preventDefault(); disconnectDiscord(); };
+  } else {
+    discordAvatar.innerHTML = `<i class="fa-brands fa-discord"></i>`;
+    discordUsername.innerHTML = `<span class="placeholder">Non connecté</span>`;
+    discordConnectBtn.className = "discord-btn";
+    discordConnectBtn.href = "https://discord.com/oauth2/authorize?client_id=1533811111923552317&redirect_uri=https%3A%2F%2Fjacobin904.github.io%2FVille-de-Quebec-Roleplay%2FCandidature%2F&response_type=token&scope=identify";
+    discordConnectBtn.innerHTML = `<i class="fa-brands fa-discord"></i> Se connecter`;
+    discordConnectBtn.onclick = null;
+  }
 }
 
 async function handleOAuthReturn() {
-    const hash = window.location.hash.substring(1);
-    if (!hash) return;
-    const params = new URLSearchParams(hash);
-    const token = params.get("access_token");
-    if (!token) return;
-    window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
-    const user = await fetchDiscordUser(token);
-    if (user) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-        updateDiscordUI(user);
-        showToast(`Bienvenue ${user.globalName} !`, "success");
-    }
+  const hash = window.location.hash.substring(1);
+  if (!hash) return;
+  const params = new URLSearchParams(hash);
+  const token = params.get("access_token");
+  if (!token) return;
+  window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+  const user = await fetchDiscordUser(token);
+  if (user) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+    updateDiscordUI(user);
+    showToast(`Bienvenue ${user.globalName} !`, "success");
+  }
 }
 
 function loadStoredUser() {
-    try { const stored = localStorage.getItem(STORAGE_KEY); if (stored) updateDiscordUI(JSON.parse(stored)); } catch {}
+  try { const stored = localStorage.getItem(STORAGE_KEY); if (stored) updateDiscordUI(JSON.parse(stored)); } catch {}
 }
 
 form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    let user = null;
-    try { user = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch {}
+  e.preventDefault();
+  let user = null;
+  try { user = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch {}
 
-    if (!user) {
-        showToast("Connecte-toi avec Discord d'abord !", "error");
-        return;
+  if (!user) { showToast("Connecte-toi avec Discord d'abord !", "error"); return; }
+
+  const fields = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8'];
+  for (const id of fields) {
+    if (document.getElementById(id).value.trim().length < 10) {
+      showToast("Merci de répondre à toutes les questions de manière détaillée.", "error");
+      document.getElementById(id).focus();
+      return;
     }
+  }
 
-    // Validation basique des champs
-    const fields = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8'];
-    for (const id of fields) {
-        if (document.getElementById(id).value.trim().length < 10) {
-            showToast("Merci de répondre à toutes les questions de manière détaillée.", "error");
-            document.getElementById(id).focus();
-            return;
-        }
-    }
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Envoi en cours...`;
 
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Envoi en cours...`;
+  const payload = {
+    roblox: document.getElementById('roblox').value.trim(),
+    discord: user.username,
+    q1: document.getElementById('q1').value.trim(), q2: document.getElementById('q2').value.trim(),
+    q3: document.getElementById('q3').value.trim(), q4: document.getElementById('q4').value.trim(),
+    q5: document.getElementById('q5').value.trim(), q6: document.getElementById('q6').value.trim(),
+    q7: document.getElementById('q7').value.trim(), q8: document.getElementById('q8').value.trim(),
+    date: new Date().toLocaleString('fr-CA')
+  };
 
-    const payload = {
-        roblox: document.getElementById('roblox').value.trim(),
-        discord: user.username,
-        q1: document.getElementById('q1').value.trim(),
-        q2: document.getElementById('q2').value.trim(),
-        q3: document.getElementById('q3').value.trim(),
-        q4: document.getElementById('q4').value.trim(),
-        q5: document.getElementById('q5').value.trim(),
-        q6: document.getElementById('q6').value.trim(),
-        q7: document.getElementById('q7').value.trim(),
-        q8: document.getElementById('q8').value.trim(),
-        date: new Date().toLocaleString('fr-CA')
-    };
-
-    try {
-        // Envoi vers la "Base de données" (Bot Render -> GitHub API)
-        const response = await fetch(`${RENDER_BACKEND_URL}/submit-application`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (response.ok) {
-            showToast("Bonne chance! Ta candidature a été envoyée au staff.", "success", 5000);
-            form.reset();
-        } else {
-            showToast("Erreur serveur. Réessaie dans quelques minutes.", "error");
-        }
-    } catch (err) {
-        console.error(err);
-        showToast("Erreur de connexion. Vérifie ta connexion internet.", "error");
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = `<i class="fas fa-paper-plane"></i> Envoyer ma candidature`;
-    }
+  try {
+    const response = await fetch(`${RENDER_BACKEND_URL}/submit-application`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+    });
+    if (response.ok) {
+      showToast("Bonne chance ! Ta candidature a été envoyée au staff.", "success", 5000);
+      form.reset();
+    } else { showToast("Erreur serveur. Réessaie dans quelques minutes.", "error"); }
+  } catch (err) {
+    console.error(err);
+    showToast("Erreur de connexion. Vérifie ta connexion internet.", "error");
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Envoyer ma candidature`;
+  }
 });
 
-document.getElementById("closeSummaryBtn")?.addEventListener("click", () => { /* Legacy support */ });
-
-(async function init() {
-    await handleOAuthReturn();
-    loadStoredUser();
-})();
+(async function init() { await handleOAuthReturn(); loadStoredUser(); })();
 </script>
 </body>
 </html>
