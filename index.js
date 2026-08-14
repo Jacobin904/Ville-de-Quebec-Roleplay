@@ -4,7 +4,7 @@ const {
     Client, GatewayIntentBits, EmbedBuilder, SlashCommandBuilder, 
     REST, Routes, ChannelType, PermissionFlagsBits, 
     ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, 
-    TextInputBuilder, TextInputStyle
+    TextInputBuilder, TextInputStyle, PermissionsBitField
 } = require('discord.js');
 
 // 1. Serveur web pour Render
@@ -21,15 +21,15 @@ const client = new Client({
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildModeration,
-        GatewayIntentBits.GuildVoiceStates // NÉCESSAIRE pour les salons vocaux
+        GatewayIntentBits.GuildVoiceStates
     ] 
 });
 
-// Stockage des embeds et des salons vocaux temporaires
+// Stockage
 client.pendingEmbeds = new Map();
-client.tempVoiceChannels = new Map(); // Stocke: channelId -> ownerId
+client.tempVoiceChannels = new Map();
 
-// ID du salon "Créer ton vocal"
+// ID du salon "Créer ton vocal" (MIS À JOUR)
 const JOIN_CHANNEL_ID = '1537569455754969188';
 
 // 3. Commandes Slash
@@ -46,8 +46,6 @@ const commands = [
     new SlashCommandBuilder().setName('userinfo').setDescription('Affiche les informations d\'un utilisateur.')
         .addUserOption(option => option.setName('membre').setDescription('Le membre dont voir les infos')),
     new SlashCommandBuilder().setName('serverinfo').setDescription('Affiche les informations du serveur.'),
-    
-    // NOUVELLE COMMANDE : MATRICULE
     new SlashCommandBuilder()
         .setName('matricule')
         .setDescription('Définit ou met à jour votre matricule dans votre nom d\'affichage.')
@@ -69,7 +67,7 @@ client.once('clientReady', async () => {
     } catch (error) { console.error('Erreur:', error); }
 });
 
-// 5. Système de logs (Join/Leave/Delete)
+// 5. Système de logs
 client.on('guildMemberAdd', async member => {
     const logsChannel = member.guild.channels.cache.find(c => c.name === 'logs' || c.name === 'journaux');
     if (!logsChannel) return;
@@ -90,7 +88,7 @@ client.on('messageDelete', async message => {
 });
 
 // ============================================================
-// 6. NOUVEAU : Système de Salon Vocal Temporaire (Join-to-Create)
+// 6. Système de Salon Vocal Temporaire (AMÉLIORÉ)
 // ============================================================
 client.on('voiceStateUpdate', async (oldState, newState) => {
     const member = newState.member;
@@ -99,28 +97,50 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
     // Si le membre rejoint le salon "Créer ton vocal"
     if (newState.channelId === JOIN_CHANNEL_ID && oldState.channelId !== JOIN_CHANNEL_ID) {
         try {
-            const category = newState.channel.parentId;
-            const displayName = member.displayName; // Nom d'affichage Discord
+            const joinChannel = newState.channel;
+            const category = joinChannel.parent;
+            const displayName = member.displayName;
             
-            // Créer le nouveau salon
+            // Récupérer les permissions de la catégorie parente pour les hériter
+            const categoryOverwrites = category ? category.permissionOverwrites.cache : new Map();
+            
+            // Convertir les permissions de la catégorie en format utilisable
+            const inheritedOverwrites = [];
+            categoryOverwrites.forEach((overwrite) => {
+                inheritedOverwrites.push({
+                    id: overwrite.id,
+                    type: overwrite.type,
+                    allow: overwrite.allow.bitfield,
+                    deny: overwrite.deny.bitfield
+                });
+            });
+
+            // Permissions spécifiques du propriétaire (priorité à la parole + gestion)
+            const ownerPermissions = new PermissionsBitField([
+                PermissionFlagsBits.ViewChannel,
+                PermissionFlagsBits.Connect,
+                PermissionFlagsBits.Speak,
+                PermissionFlagsBits.PrioritySpeaker,  // ✅ PRIORITÉ À LA PAROLE
+                PermissionFlagsBits.MuteMembers,
+                PermissionFlagsBits.DeafenMembers,
+                PermissionFlagsBits.MoveMembers,
+                PermissionFlagsBits.ManageChannels
+            ]);
+
+            // Créer le nouveau salon avec les permissions héritées + celles du propriétaire
             const newChannel = await newState.guild.channels.create({
                 name: `Vocal ${displayName}`,
                 type: ChannelType.GuildVoice,
-                parent: category,
+                parent: category ? category.id : null,
                 permissionOverwrites: [
+                    // Hériter les permissions de la catégorie
+                    ...inheritedOverwrites,
+                    // Ajouter/écraser les permissions du propriétaire
                     {
-                        id: newState.guild.id, // @everyone
-                        deny: [PermissionFlagsBits.Connect] // Optionnel : empêche les autres de se connecter si tu veux un salon privé
-                    },
-                    {
-                        id: member.id, // Le propriétaire
-                        allow: [
-                            PermissionFlagsBits.Connect,
-                            PermissionFlagsBits.ManageChannels,
-                            PermissionFlagsBits.MoveMembers,
-                            PermissionFlagsBits.MuteMembers,
-                            PermissionFlagsBits.DeafenMembers
-                        ]
+                        id: member.id,
+                        type: 0, // 0 = member
+                        allow: ownerPermissions.bitfield,
+                        deny: 0
                     }
                 ]
             });
@@ -130,6 +150,9 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
             
             // Enregistrer le propriétaire
             client.tempVoiceChannels.set(newChannel.id, member.id);
+            
+            // Message de bienvenue dans le salon (optionnel)
+            await newChannel.send(`Bienvenue **${displayName}** ! Tu es le propriétaire de ce salon vocal. Tu as la priorité à la parole et les permissions de gestion.`).catch(() => {});
             
         } catch (error) {
             console.error('Erreur création salon vocal:', error);
@@ -161,16 +184,14 @@ client.on('interactionCreate', async interaction => {
         const numero = interaction.options.getString('numero');
         const member = interaction.member;
         
-        // Récupérer le nom de base (sans l'ancien matricule s'il y en a un)
-        // Ex: "12-43 | Jacobin904" -> on garde "Jacobin904"
+        // Récupérer le nom de base (sans l'ancien matricule)
         const parts = member.displayName.split(' | ');
         const baseName = parts.length > 1 ? parts.slice(1).join(' | ') : member.displayName;
         
         const newName = `${numero} | ${baseName}`;
         
-        // Vérifier la limite de 32 caractères de Discord
         if (newName.length > 32) {
-            return interaction.reply({ content: '❌ Le nouveau nom d\'affichage dépasse la limite de 32 caractères. Veuillez utiliser un numéro plus court.', ephemeral: true });
+            return interaction.reply({ content: ' Le nouveau nom d\'affichage dépasse la limite de 32 caractères. Veuillez utiliser un numéro plus court.', ephemeral: true });
         }
 
         try {
@@ -326,13 +347,12 @@ client.on('interactionCreate', async interaction => {
             const rawEmoji = interaction.fields.getTextInputValue('button_emoji').trim() || null;
             const url = interaction.fields.getTextInputValue('button_url');
             
-            // Résolution intelligente des emojis personnalisés du serveur
             let resolvedEmoji = rawEmoji;
             if (rawEmoji && /^:\w+:$/.test(rawEmoji)) {
                 const emojiName = rawEmoji.slice(1, -1).toLowerCase();
                 const customEmoji = interaction.guild.emojis.cache.find(e => e.name.toLowerCase() === emojiName);
                 if (customEmoji) resolvedEmoji = customEmoji.id;
-                else resolvedEmoji = null; // Ignore si l'emoji n'existe pas pour éviter le crash
+                else resolvedEmoji = null;
             }
             
             embedData.buttons.push({ label, emoji: resolvedEmoji, url });
