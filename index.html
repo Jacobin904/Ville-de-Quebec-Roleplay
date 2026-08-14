@@ -1,347 +1,465 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ville de Québec Roleplay | Imagine une expérience ERLC</title>
-    <link rel="icon" type="image/webp" href="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024">
-    <meta name="description" content="Ville de Québec Roleplay (VQC) — Serveur ERLC 100% québécois.">
-    <meta name="theme-color" content="#5865F2">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --brand: #5865F2;
-            --brand-hover: #4752C4;
-            --green: #57F287;
-            --fuchsia: #EB459E;
-            --bg-dark: #23272A;
-            --bg-darker: #2C2F33;
-            --bg-card: #2B2D31;
-            --text-normal: #DBDEE1;
-            --text-header: #FFFFFF;
-            --text-muted: #949BA4;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-normal);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-        
-        /* Navbar style Discord */
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            background: transparent;
-            transition: background 0.3s;
-        }
-        .navbar.scrolled { background: var(--bg-darker); }
-        .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-header); font-weight: 800; font-size: 1.2rem; }
-        .nav-brand img { width: 40px; height: 40px; border-radius: 50%; }
-        .nav-links { display: flex; gap: 32px; list-style: none; }
-        .nav-links a { color: var(--text-header); text-decoration: none; font-weight: 600; font-size: 1rem; transition: color 0.2s; }
-        .nav-links a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
-        .nav-cta {
-            background: #FFFFFF;
-            color: var(--bg-dark);
-            padding: 10px 24px;
-            border-radius: 9999px; /* Pill shape Discord */
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-        .nav-cta:hover { color: var(--brand); box-shadow: 0 4px 15px rgba(255,255,255,0.2); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ville de Québec Roleplay — Imagine un roleplay où tu peux être qui tu veux</title>
+<meta name="description" content="Ville de Québec Roleplay (VQC) : serveur ERLC immersif 100% québécois. Police, pompiers, et services d'urgence réalistes. Code : VQC">
+<meta property="og:title" content="Ville de Québec Roleplay — Roleplay Québécois">
+<meta property="og:description" content="Imagine un serveur où tu peux vivre ton roleplay idéal. SPVQ, SQ, SPCIQ. Code : VQC">
+<meta property="og:image" content="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024">
+<meta name="theme-color" content="#003DA5">
+<link rel="icon" href="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-        /* Hero Section style Discord.com */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 120px 20px 80px;
-            background: var(--bg-dark);
-            position: relative;
-        }
-        .hero h1 {
-            font-size: 5rem;
-            font-weight: 900;
-            color: var(--text-header);
-            line-height: 1.1;
-            margin-bottom: 24px;
-            letter-spacing: -2px;
-        }
-        .hero h1 span {
-            background: linear-gradient(90deg, var(--brand), var(--fuchsia));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hero p {
-            font-size: 1.5rem;
-            color: var(--text-normal);
-            max-width: 700px;
-            margin-bottom: 40px;
-            font-weight: 500;
-        }
-        .hero-buttons { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
-        .btn-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 16px 36px;
-            border-radius: 9999px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-        .btn-brand { background: var(--brand); color: white; }
-        .btn-brand:hover { background: var(--brand-hover); transform: translateY(-2px); }
-        .btn-white { background: white; color: var(--bg-dark); }
-        .btn-white:hover { color: var(--brand); transform: translateY(-2px); }
+:root{
+  --brand:#003DA5; --brand-hover:#002b75;
+  --dark:#23272A; --gray:#99AAB5; --light:#F6F6F6;
+  --white:#FFFFFF; --black:#000000;
+}
 
-        /* Features Section */
-        .section { padding: 100px 40px; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        .section-header { text-align: center; margin-bottom: 60px; }
-        .section-header h2 { font-size: 3rem; font-weight: 900; color: var(--text-header); margin-bottom: 16px; letter-spacing: -1px; }
-        .section-header p { font-size: 1.2rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; }
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:'Inter',sans-serif;background:var(--white);color:var(--dark);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+button{font-family:'Inter',sans-serif;cursor:pointer;border:none}
 
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; }
-        .feature-card {
-            background: var(--bg-card);
-            border-radius: 24px;
-            padding: 40px 32px;
-            text-align: left;
-            transition: transform 0.3s;
-        }
-        .feature-card:hover { transform: translateY(-8px); }
-        .feature-icon {
-            width: 60px; height: 60px;
-            background: linear-gradient(135deg, var(--brand), var(--fuchsia));
-            border-radius: 16px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem; color: white; margin-bottom: 24px;
-        }
-        .feature-card h3 { font-size: 1.5rem; font-weight: 800; color: var(--text-header); margin-bottom: 12px; }
-        .feature-card p { color: var(--text-muted); line-height: 1.7; }
+/* ===== HEADER ===== */
+header{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--white);border-bottom:1px solid transparent;transition:all .3s}
+header.scrolled{border-color:#E5E5E5;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.nav{width:100%;padding:0 48px;display:flex;align-items:center;justify-content:space-between;gap:32px;height:80px;flex-wrap:nowrap}
+.logo{display:flex;align-items:center;gap:14px;font-weight:800;font-size:1.1rem;color:var(--dark);flex-shrink:0;white-space:nowrap}
+.logo img{width:48px;height:48px;border-radius:14px}
+.nav-links{display:flex;gap:36px;list-style:none;flex:1;justify-content:center;min-width:0}
+.nav-links a{color:var(--dark);font-weight:600;font-size:.95rem;transition:color .2s;white-space:nowrap;padding:8px 0}
+.nav-links a:hover{color:var(--brand)}
+.nav-cta{display:flex;gap:14px;align-items:center;flex-shrink:0}
 
-        /* Team Section */
-        .team { background: var(--bg-darker); }
-        .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px; max-width: 800px; margin: 0 auto; }
-        .team-card {
-            background: var(--bg-card);
-            border-radius: 24px;
-            padding: 40px 32px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .team-avatar {
-            width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 24px;
-            border: 4px solid var(--brand); overflow: hidden;
-        }
-        .team-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .team-card h3 { font-size: 1.5rem; font-weight: 800; color: var(--text-header); margin-bottom: 8px; }
-        .team-role {
-            display: inline-block; background: var(--brand); color: white;
-            padding: 6px 16px; border-radius: 9999px; font-size: 0.85rem; font-weight: 700; margin-bottom: 16px;
-        }
-        .team-card p { color: var(--text-muted); line-height: 1.6; }
+/* ===== BOUTONS ===== */
+.btn{display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:.95rem;border-radius:40px;padding:12px 24px;transition:all .2s;white-space:nowrap}
+.btn-primary{background:var(--brand);color:#fff;box-shadow:0 8px 16px rgba(0,61,165,.24)}
+.btn-primary:hover{background:var(--brand-hover);transform:translateY(-2px);box-shadow:0 12px 24px rgba(0,61,165,.32)}
+.btn-secondary{background:var(--dark);color:#fff}
+.btn-secondary:hover{background:#36393F;transform:translateY(-2px)}
+.btn-white{background:#fff;color:var(--dark);border:2px solid #E5E5E5}
+.btn-white:hover{border-color:var(--brand);color:var(--brand);transform:translateY(-2px)}
+.btn-sm{padding:10px 20px;font-size:.88rem}
+.btn-lg{padding:16px 32px;font-size:1.05rem}
+.burger{display:none;background:none;font-size:1.5rem;color:var(--dark)}
 
-        /* Actions Section */
-        .actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; max-width: 900px; margin: 0 auto; }
-        .action-card {
-            background: var(--bg-card);
-            border-radius: 24px;
-            padding: 48px 32px;
-            text-align: center;
-            border: 2px dashed var(--brand);
-            transition: all 0.3s;
-        }
-        .action-card:hover { border-style: solid; background: rgba(88, 101, 242, 0.1); }
-        .action-icon {
-            width: 80px; height: 80px; background: var(--bg-darker); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; color: var(--brand); margin: 0 auto 24px;
-        }
-        .action-card h3 { font-size: 1.5rem; font-weight: 800; color: var(--text-header); margin-bottom: 12px; }
-        .action-card p { color: var(--text-muted); margin-bottom: 24px; }
-        .action-btn {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: var(--brand); color: white; padding: 14px 28px;
-            border-radius: 9999px; text-decoration: none; font-weight: 600;
-            transition: all 0.2s;
-        }
-        .action-btn:hover { background: var(--brand-hover); transform: translateY(-2px); }
+@media(max-width:1200px){
+  .nav{padding:0 32px}
+  .nav-links{display:none;position:absolute;top:80px;left:0;right:0;background:var(--white);flex-direction:column;padding:24px 32px;gap:20px;border-bottom:1px solid #E5E5E5;box-shadow:0 8px 24px rgba(0,0,0,.1)}
+  .nav-links.open{display:flex}
+  .burger{display:block}
+}
 
-        /* Footer */
-        footer {
-            background: #1E2022;
-            padding: 80px 40px 40px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-        }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto 60px; }
-        .footer-col h4 { font-size: 1.2rem; font-weight: 800; color: var(--brand); margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; }
-        .footer-col p { color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
-        .footer-col ul { list-style: none; }
-        .footer-col ul li { margin-bottom: 12px; }
-        .footer-col ul li a { color: var(--text-muted); text-decoration: none; font-weight: 600; transition: color 0.2s; }
-        .footer-col ul li a:hover { color: var(--text-header); }
-        .footer-bottom { text-align: center; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.05); color: var(--text-muted); font-size: 0.9rem; }
+/* ===== HERO ===== */
+.hero{background:linear-gradient(180deg,#E8F0FE 0%,#FFF 100%);padding:140px 0 120px;overflow:hidden;position:relative}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,rgba(0,61,165,.08),transparent 50%);pointer-events:none}
+.hero .wrap{max-width:1264px;margin:0 auto;padding:0 40px;position:relative;z-index:1}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:80px;align-items:center}
+.hero h1{font-size:clamp(2.8rem,5.5vw,4.5rem);font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-bottom:24px;color:var(--dark)}
+.hero h1 .brand{color:var(--brand)}
+.hero .lead{font-size:1.25rem;color:var(--gray);max-width:560px;margin-bottom:40px;line-height:1.7}
+.hero-btns{display:flex;gap:16px;flex-wrap:wrap}
+.hero-visual{position:relative}
+.hero-visual img{border-radius:24px;box-shadow:0 32px 80px rgba(0,0,0,.15);transform:perspective(1000px) rotateY(-5deg) rotateX(2deg);width:100%}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;margin-top:80px;padding:48px;background:var(--white);border-radius:24px;box-shadow:0 8px 32px rgba(0,0,0,.08)}
+.stat{text-align:center}
+.stat b{display:block;font-size:2.5rem;font-weight:900;color:var(--brand);letter-spacing:-.02em;line-height:1}
+.stat span{font-size:.95rem;color:var(--gray);font-weight:600;margin-top:8px;display:block}
 
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 3rem; }
-            .nav-links, .nav-cta { display: none; }
-            .section { padding: 60px 20px; }
-        }
-    </style>
+/* ===== SECTIONS ===== */
+section{padding:120px 0}
+.wrap{max-width:1264px;margin:0 auto;padding:0 40px}
+.sec-head{text-align:center;max-width:720px;margin:0 auto 80px}
+.sec-eyebrow{display:inline-block;color:var(--brand);font-size:.85rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px}
+.sec-head h2{font-size:clamp(2.2rem,4vw,3.2rem);font-weight:900;letter-spacing:-.02em;line-height:1.1;margin-bottom:20px}
+.sec-head p{font-size:1.15rem;color:var(--gray);line-height:1.7}
+
+/* ===== HOW IT WORKS ===== */
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:48px}
+.how-card{text-align:center;padding:40px 32px;border-radius:20px;transition:all .3s}
+.how-card:hover{transform:translateY(-8px);box-shadow:0 24px 64px rgba(0,0,0,.1)}
+.how-icon{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--brand),#002b75);color:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 28px;box-shadow:0 12px 32px rgba(0,61,165,.3)}
+.how-card h3{font-size:1.4rem;font-weight:800;margin-bottom:14px}
+.how-card p{font-size:1rem;color:var(--gray);line-height:1.7}
+
+/* ===== DEPARTMENTS ===== */
+#departments{background:var(--light)}
+.dpt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.dpt-card{background:var(--white);border-radius:20px;padding:40px 36px;transition:all .3s;box-shadow:0 4px 16px rgba(0,0,0,.06);position:relative;overflow:hidden}
+.dpt-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--brand),#002b75);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.dpt-card:hover{transform:translateY(-8px);box-shadow:0 24px 64px rgba(0,0,0,.12)}
+.dpt-card:hover::before{transform:scaleX(1)}
+.dpt-head{display:flex;align-items:center;gap:18px;margin-bottom:24px}
+.dpt-logo{width:72px;height:72px;border-radius:18px;object-fit:cover;box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.dpt-head h3{font-size:1.3rem;font-weight:800;margin-bottom:4px}
+.dpt-head small{color:var(--gray);font-weight:600;font-size:.85rem;text-transform:uppercase;letter-spacing:.05em}
+.dpt-card>p{font-size:.95rem;color:var(--gray);line-height:1.7;margin-bottom:24px}
+.dpt-tags{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px}
+.dpt-tags i{font-style:normal;background:var(--light);color:var(--dark);font-weight:700;font-size:.78rem;border-radius:20px;padding:6px 14px}
+.dpt-link{display:inline-flex;align-items:center;gap:8px;color:var(--brand);font-weight:700;font-size:.95rem}
+.dpt-link i{transition:transform .2s}
+.dpt-card:hover .dpt-link i{transform:translateX(4px)}
+
+/* ===== RULES ===== */
+#rules{background:linear-gradient(180deg,var(--dark) 0%,#36393F 100%);color:#fff;position:relative;overflow:hidden}
+#rules::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(0,61,165,.15),transparent 50%);pointer-events:none}
+#rules .wrap{position:relative;z-index:1}
+#rules .sec-head h2{color:#fff}
+#rules .sec-head p{color:#B9BBBE}
+.rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.rule-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:40px;backdrop-filter:blur(10px)}
+.rule-card h3{display:flex;align-items:center;gap:14px;font-size:1.4rem;font-weight:800;margin-bottom:32px;color:#fff}
+.rule-card h3 i{color:#7289DA;font-size:1.6rem}
+.rule-list{list-style:none;display:flex;flex-direction:column;gap:18px}
+.rule-list li{display:flex;gap:16px;font-size:.95rem;color:#B9BBBE;line-height:1.7}
+.rule-list li i{color:#7289DA;margin-top:4px;font-size:1rem;flex-shrink:0}
+.rule-list li b{color:#fff;font-weight:700}
+.rule-list li.danger i{color:#ED4245}
+
+/* ===== TEAM ===== */
+#team{background:var(--light)}
+.team-block{margin-bottom:64px}
+.team-block:last-child{margin-bottom:0}
+.team-label{display:flex;align-items:center;gap:16px;font-size:1.2rem;font-weight:800;color:var(--dark);margin-bottom:32px}
+.team-label i{color:var(--brand);font-size:1.4rem}
+.team-label::after{content:'';flex:1;height:2px;background:#E5E5E5}
+.team-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:32px;max-width:800px;margin:0 auto}
+.team-card{background:var(--white);border-radius:20px;padding:48px 32px;text-align:center;transition:all .3s;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.team-card:hover{transform:translateY(-8px);box-shadow:0 24px 64px rgba(0,0,0,.12)}
+.team-card img{width:96px;height:96px;border-radius:50%;margin:0 auto 20px;border:4px solid var(--light);box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.team-card h3{font-size:1.15rem;font-weight:800;margin-bottom:12px}
+.role-pill{display:inline-block;border-radius:20px;padding:6px 16px;font-size:.78rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin-bottom:12px}
+.rp-founder{background:var(--brand);color:#fff}
+.rp-dev{background:var(--light);color:var(--brand);border:2px solid var(--brand)}
+.team-card small{color:var(--gray);font-weight:600;font-size:.88rem}
+
+/* ===== FAQ ===== */
+.faq-list{max-width:840px;margin:0 auto}
+.faq-item{background:var(--white);border:2px solid #E5E5E5;border-radius:16px;margin-bottom:16px;overflow:hidden;transition:all .2s}
+.faq-item:hover{border-color:var(--brand)}
+.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:28px 32px;font-weight:700;font-size:1.05rem;color:var(--dark);background:none;text-align:left}
+.faq-q i{color:var(--gray);transition:transform .3s;font-size:1.1rem}
+.faq-item.open .faq-q i{transform:rotate(180deg);color:var(--brand)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.faq-a p{padding:0 32px 28px;color:var(--gray);font-size:.98rem;line-height:1.7}
+.faq-a a{color:var(--brand);font-weight:700}
+.faq-item.open .faq-a{max-height:320px}
+
+/* ===== CTA ===== */
+.cta-section{background:linear-gradient(135deg,var(--brand),#002b75);padding:120px 0;text-align:center;color:#fff;position:relative;overflow:hidden}
+.cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,rgba(255,255,255,.1),transparent 50%);pointer-events:none}
+.cta-section .wrap{position:relative;z-index:1}
+.cta-section h2{font-size:clamp(2.4rem,5vw,3.8rem);font-weight:900;margin-bottom:24px;letter-spacing:-.02em;line-height:1.1}
+.cta-section p{font-size:1.3rem;color:rgba(255,255,255,.9);max-width:640px;margin:0 auto 48px;line-height:1.7}
+.cta-btns{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+
+/* ===== FOOTER ===== */
+footer{background:var(--dark);color:#B9BBBE;padding:80px 0 40px}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:64px;margin-bottom:64px}
+.foot-grid h4{color:#fff;font-size:.9rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:24px}
+.foot-grid ul{list-style:none}
+.foot-grid li{margin-bottom:14px}
+.foot-grid a{font-size:.95rem;font-weight:600;transition:color .2s}
+.foot-grid a:hover{color:#fff}
+.foot-logo{display:flex;align-items:center;gap:14px;color:#fff;font-weight:800;font-size:1.1rem;margin-bottom:20px}
+.foot-logo img{width:48px;height:48px;border-radius:14px}
+.foot-grid p{font-size:.95rem;max-width:320px;line-height:1.7}
+.socials{display:flex;gap:12px;margin-top:24px}
+.socials a{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;transition:all .2s}
+.socials a:hover{background:var(--brand);transform:translateY(-4px)}
+.copy{border-top:1px solid rgba(255,255,255,.1);padding-top:32px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:.88rem}
+.copy b{color:#fff}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1000px){
+  .nav-links{display:none;position:absolute;top:80px;left:0;right:0;background:var(--white);flex-direction:column;padding:24px 40px;gap:20px;border-bottom:1px solid #E5E5E5;box-shadow:0 8px 24px rgba(0,0,0,.1)}
+  .nav-links.open{display:flex}
+  .burger{display:block}
+  .hero-grid,.rules-grid,.how-grid{grid-template-columns:1fr}
+  .dpt-grid{grid-template-columns:repeat(2,1fr)}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .foot-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .dpt-grid,.team-grid,.foot-grid,.stats{grid-template-columns:1fr}
+  .hero{padding:120px 0 80px}
+  section{padding:80px 0}
+}
+</style>
 </head>
 <body>
-    <nav class="navbar" id="navbar">
-        <a href="#" class="nav-brand">
-            <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="Logo">
-            Ville de Québec Roleplay
-        </a>
-        <ul class="nav-links">
-            <li><a href="#features">Fonctionnalités</a></li>
-            <li><a href="#team">Équipe</a></li>
-            <li><a href="#actions">Rejoindre</a></li>
+
+<header id="header">
+  <div class="nav">
+    <a class="logo" href="#top">
+      <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="Logo VQC">
+      Ville de Québec RP
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#how">Comment ça marche</a></li>
+      <li><a href="#departments">Départements</a></li>
+      <li><a href="#rules">Règlements</a></li>
+      <li><a href="#team">Équipe</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button class="btn btn-white btn-sm" onclick="copyCode(this)"><i class="fa-solid fa-copy"></i> Code : VQC</button>
+      <a class="btn btn-secondary btn-sm" href="Candidature/">Recrutement</a>
+      <a class="btn btn-primary btn-sm" href="https://discord.gg/UEf3epPwXS" target="_blank" rel="noopener"><i class="fa-brands fa-discord"></i> Rejoindre</a>
+      <button class="burger" id="burger" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <h1>Imagine un roleplay où tu peux <span class="brand">être qui tu veux.</span></h1>
+        <p class="lead">Ville de Québec Roleplay est un serveur ERLC immersif 100% québécois. Police, pompiers, et services d'urgence réalistes : trouve ta place dans la capitale et écris ton histoire.</p>
+        <div class="hero-btns">
+          <a class="btn btn-primary btn-lg" href="https://discord.gg/UEf3epPwXS" target="_blank" rel="noopener"><i class="fa-brands fa-discord"></i> Rejoindre le Discord</a>
+          <button class="btn btn-white btn-lg" onclick="copyCode(this)"><i class="fa-solid fa-gamepad"></i> Code Roblox : VQC</button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="Ville de Québec Roleplay">
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>2024</b><span>Année de fondation</span></div>
+      <div class="stat"><b>4</b><span>Départements actifs</span></div>
+      <div class="stat"><b>100%</b><span>Communauté québécoise</span></div>
+      <div class="stat"><b>24/7</b><span>Sessions immersives</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-eyebrow">Comment ça marche</span>
+      <h2>Trois étapes pour commencer</h2>
+      <p>De ton arrivée sur le Discord à ta première histoire en ville, tout est encadré pour que tu puisses te concentrer sur ce qui compte : le roleplay.</p>
+    </div>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-icon"><i class="fa-brands fa-discord"></i></div>
+        <h3>Rejoins le Discord</h3>
+        <p>Passe la vérification Melonly, lis les règlements de la ville et choisis tes rôles de notification pour ne rien manquer.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-icon"><i class="fa-solid fa-id-badge"></i></div>
+        <h3>Choisis ton département</h3>
+        <p>SPVQ, Sûreté du Québec ou SPCIQ : dépose ta candidature et suis la formation pour obtenir ton uniforme et tes accès.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-icon"><i class="fa-solid fa-clapperboard"></i></div>
+        <h3>Vis ton histoire</h3>
+        <p>Entre en ville avec le code <b>VQC</b> et écris ton propre chapitre du roleplay québécois avec des centaines d'autres joueurs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="departments">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-eyebrow">Départements</span>
+      <h2>Choisis ton uniforme</h2>
+      <p>Chaque département possède son propre serveur, sa formation et sa hiérarchie complète. Trouve celui qui te correspond.</p>
+    </div>
+    <div class="dpt-grid">
+      <div class="dpt-card">
+        <div class="dpt-head">
+          <img class="dpt-logo" src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="Logo SPVQ">
+          <div><h3>SPVQ</h3><small>Police de la Ville</small></div>
+        </div>
+        <p>Service de Police de la Ville de Québec. Patrouille, enquêtes et unités spécialisées. Formation complète offerte aux recrues.</p>
+        <div class="dpt-tags"><i>Cadet</i><i>Agent</i><i>Enquêteur</i></div>
+        <a class="dpt-link" href="https://discord.gg/UEf3epPwXS" target="_blank" rel="noopener">Déposer ma candidature <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <div class="dpt-card">
+        <div class="dpt-head">
+          <img class="dpt-logo" src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="Logo Sûreté du Québec">
+          <div><h3>Sûreté du Québec</h3><small>Police provinciale</small></div>
+        </div>
+        <p>Candidature à l'écrit, cadet en prévention, formation accélérée, puis agent probatoire. Maintiens l'ordre sur les routes.</p>
+        <div class="dpt-tags"><i>Cadet</i><i>Agent probatoire</i><i>Formation</i></div>
+        <a class="dpt-link" href="https://discord.gg/UEf3epPwXS" target="_blank" rel="noopener">Rejoindre le serveur <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <div class="dpt-card">
+        <div class="dpt-head">
+          <img class="dpt-logo" src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="Logo SPCIQ">
+          <div><h3>SPCIQ</h3><small>Services d'incendie</small></div>
+        </div>
+        <p>Incendies, désincarcération, assistance aux citoyens. Chaque seconde compte. Toujours prêts à intervenir pour sauver des vies.</p>
+        <div class="dpt-tags"><i>Pompier</i><i>Désincarcération</i><i>Secours</i></div>
+        <a class="dpt-link" href="https://discord.gg/UEf3epPwXS" target="_blank" rel="noopener">Recrutement via Discord <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="rules">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-eyebrow">Règlements</span>
+      <h2>Un RP encadré, une ville respectueuse</h2>
+      <p>Deux règlements simples : côté Discord et côté Roblox. Le non-respect entraîne des sanctions pour que tout le monde puisse profiter du roleplay.</p>
+    </div>
+    <div class="rules-grid">
+      <div class="rule-card">
+        <h3><i class="fa-brands fa-discord"></i> Règlement Discord</h3>
+        <ul class="rule-list">
+          <li><i class="fa-solid fa-heart"></i><span><b>Respect obligatoire.</b> Pas d'insultes, de harcèlement ou de discrimination.</span></li>
+          <li><i class="fa-solid fa-ban"></i><span><b>Pas de spam</b> ni de messages inutiles ou identiques.</span></li>
+          <li><i class="fa-solid fa-shield-halved"></i><span><b>Contenu inapproprié interdit,</b> tolérance zéro (NSFW, gore).</span></li>
+          <li><i class="fa-solid fa-bullhorn"></i><span><b>Aucune publicité</b> en MP ou sur le serveur. Sanction : ban.</span></li>
+          <li><i class="fa-solid fa-user-secret"></i><span><b>Pas d'usurpation d'identité</b> ni de faux comptes.</span></li>
+          <li><i class="fa-solid fa-user-shield"></i><span><b>Les décisions du staff</b> sont finales et doivent être respectées.</span></li>
         </ul>
-        <a href="https://discord.gg/UEf3epPwXS" class="nav-cta" target="_blank">Ouvrir Discord</a>
-    </nav>
+      </div>
+      <div class="rule-card">
+        <h3><i class="fa-solid fa-gamepad"></i> Règlement Roblox</h3>
+        <ul class="rule-list">
+          <li class="danger"><i class="fa-solid fa-skull"></i><span><b>RDM & VDM :</b> pas de kill ou de renversement sans raison RP valable.</span></li>
+          <li><i class="fa-solid fa-masks-theater"></i><span><b>NITRP :</b> reste dans ton personnage, en tout temps. Pas de metagaming.</span></li>
+          <li><i class="fa-solid fa-house-chimney"></i><span><b>Safe zones :</b> rien d'illégal aux spawns, tribunal, hôpital, postes et casernes.</span></li>
+          <li class="danger"><i class="fa-solid fa-gauge-high"></i><span><b>Conduite réaliste :</b> la conduite dangereuse ou le crash volontaire est interdit.</span></li>
+          <li><i class="fa-solid fa-dove"></i><span><b>Peace Timer :</b> aucune action illégale pendant un temps de paix.</span></li>
+          <li><i class="fa-solid fa-hand"></i><span><b>Pain RP :</b> joue la douleur. « AIE » puis attends 5 secondes.</span></li>
+          <li class="danger"><i class="fa-solid fa-bullhorn"></i><span><b>Cop Baiting :</b> provoquer ou insulter la police sans raison RP est interdit.</span></li>
+          <li><i class="fa-solid fa-clock"></i><span><b>NLR :</b> à ta mort, 15 minutes sans revenir sur la scène du crime.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <section class="hero">
-        <h1>Imagine une expérience<br><span>ERLC 100% Québécoise.</span></h1>
-        <p>Ville de Québec Roleplay est un serveur immersif, structuré et encadré. Rejoins les services d'urgence et vis des histoires uniques.</p>
-        <div class="hero-buttons">
-            <a href="https://discord.gg/UEf3epPwXS" class="btn-pill btn-brand" target="_blank">
-                <i class="fab fa-discord"></i> Rejoindre le serveur
-            </a>
-            <a href="#features" class="btn-pill btn-white">
-                <i class="fas fa-info-circle"></i> En savoir plus
-            </a>
-        </div>
-    </section>
+<section id="team">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-eyebrow">Équipe</span>
+      <h2>Ceux qui portent la vision</h2>
+      <p>Une équipe investie et passionnée pour faire de VQC la référence du roleplay québécois.</p>
+    </div>
 
-    <section class="section" id="features">
-        <div class="container">
-            <div class="section-header">
-                <h2>Pourquoi nous choisir ?</h2>
-                <p>Un environnement conçu pour le roleplay sérieux et l'immersion totale.</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-masks-theater"></i></div>
-                    <h3>Roleplay Structuré</h3>
-                    <p>Des scénarios réalistes et un encadrement professionnel pour garantir une expérience de qualité à chaque session.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-truck-medical"></i></div>
-                    <h3>Services d'Urgence</h3>
-                    <p>Rejoins le SPVQ, la Sûreté du Québec ou le SPCIQ. Des départements actifs avec des protocoles réalistes.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-gears"></i></div>
-                    <h3>Systèmes Immersifs</h3>
-                    <p>Conduite réaliste, interactions poussées et mécaniques de jeu pensées pour l'immersion totale.</p>
-                </div>
-            </div>
+    <div class="team-block">
+      <div class="team-label"><i class="fa-solid fa-crown"></i> Direction</div>
+      <div class="team-grid">
+        <div class="team-card">
+          <img src="https://cdn.discordapp.com/avatars/1271541606759006332/cea78458445000372d4a4fef56b9ab52.webp?size=1024" alt="Lieutenant_Jacky">
+          <h3>Lieutenant_Jacky</h3>
+          <span class="role-pill rp-founder">Fondateur</span><br>
+          <small>@lieutenant_jacky</small>
         </div>
-    </section>
+        <div class="team-card">
+          <img src="https://cdn.discordapp.com/avatars/1281784488854159421/85109e1b8945496f3e802e5a8d8208aa.webp?size=1024" alt="Jacobin Babouain">
+          <h3>Jacobin Babouain</h3>
+          <span class="role-pill rp-dev">Co-Fondateur & Développeur</span><br>
+          <small>@jacobin904</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <section class="section team" id="team">
-        <div class="container">
-            <div class="section-header">
-                <h2>L'Équipe de Direction</h2>
-                <p>Les personnes qui rendent ce projet possible.</p>
-            </div>
-            <div class="team-grid">
-                <div class="team-card">
-                    <div class="team-avatar">
-                        <img src="https://cdn.discordapp.com/avatars/1271541606759006332/cea78458445000372d4a4fef56b9ab52.webp?size=1024" alt="Lieutenant_Jacky">
-                    </div>
-                    <h3>Lieutenant_Jacky</h3>
-                    <span class="team-role">Fondateur</span>
-                    <p>Porteur de la vision du projet. Il veille à offrir une expérience ERLC fidèle et immersive inspirée de la Ville de Québec.</p>
-                </div>
-                <div class="team-card">
-                    <div class="team-avatar">
-                        <img src="https://cdn.discordapp.com/avatars/1281784488854159421/85109e1b8945496f3e802e5a8d8208aa.webp?size=1024" alt="Jacobin Babouain">
-                    </div>
-                    <h3>Jacobin Babouain</h3>
-                    <span class="team-role">Co-Fondateur & Développeur</span>
-                    <p>En charge du développement web, de l'organisation et de la gestion technique pour un serveur optimisé.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-eyebrow">FAQ</span>
+      <h2>Questions fréquentes</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item"><button class="faq-q">Comment rejoindre le serveur ? <i class="fa-solid fa-chevron-down"></i></button><div class="faq-a"><p>Rejoins le <a href="https://discord.gg/UEf3epPwXS" target="_blank" rel="noopener">Discord</a>, passe la vérification Melonly, lis les règlements, puis entre le code <b>VQC</b> dans Roblox.</p></div></div>
+      <div class="faq-item"><button class="faq-q">Faut-il de l'expérience pour rejoindre un département ? <i class="fa-solid fa-chevron-down"></i></button><div class="faq-a"><p>Non. Chaque département forme ses recrues. Tu devras simplement faire une candidature et suivre la formation interne du département choisi.</p></div></div>
+      <div class="faq-item"><button class="faq-q">Comment devenir staff ? <i class="fa-solid fa-chevron-down"></i></button><div class="faq-a"><p>Attends l'ouverture des recrutements et remplis la <a href="Candidature/" target="_blank">candidature modérateur</a> avec sérieux et honnêteté. Les candidatures incomplètes seront refusées.</p></div></div>
+      <div class="faq-item"><button class="faq-q">Que faire si quelqu'un ne respecte pas les règles ? <i class="fa-solid fa-chevron-down"></i></button><div class="faq-a"><p>Va dans le salon #support sur Discord, choisis l'option « Report un Joueur », ouvre un ticket et envoie une preuve vidéo ou screenshot. Le staff s'occupe du reste.</p></div></div>
+    </div>
+  </div>
+</section>
 
-    <section class="section" id="actions">
-        <div class="container">
-            <div class="section-header">
-                <h2>Rejoins l'aventure</h2>
-                <p>Plusieurs façons de t'impliquer dans la communauté VQC.</p>
-            </div>
-            <div class="actions-grid">
-                <div class="action-card">
-                    <div class="action-icon"><i class="fas fa-user-shield"></i></div>
-                    <h3>Devenir Modérateur</h3>
-                    <p>Tu souhaites rejoindre l'équipe ? Remplis la candidature avec sérieux. Les réponses courtes seront refusées.</p>
-                    <a href="Candidature/" class="action-btn">Postuler maintenant <i class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="action-card">
-                    <div class="action-icon"><i class="fas fa-id-badge"></i></div>
-                    <h3>Intégrer un Département</h3>
-                    <p>SPVQ, SQ, SPCIQ : rejoins un serveur whitelisted et suis les étapes de formation pour obtenir ton accès.</p>
-                    <a href="https://discord.gg/UEf3epPwXS" class="action-btn" target="_blank">Voir les départements <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-        </div>
-    </section>
+<section class="cta-section">
+  <div class="wrap">
+    <h2>Prêt à commencer ton histoire ?</h2>
+    <p>Rejoins la communauté roleplay la plus immersive du Québec. La ville t'attend.</p>
+    <div class="cta-btns">
+      <a class="btn btn-white btn-lg" href="https://discord.gg/UEf3epPwXS" target="_blank" rel="noopener"><i class="fa-brands fa-discord"></i> Rejoindre le Discord</a>
+      <button class="btn btn-secondary btn-lg" onclick="copyCode(this)"><i class="fa-solid fa-copy"></i> Copier le code VQC</button>
+    </div>
+  </div>
+</section>
 
-    <footer>
-        <div class="footer-grid">
-            <div class="footer-col">
-                <h4>VQC</h4>
-                <p>Un serveur ERLC 100% québécois offrant une expérience fidèle, immersive et entièrement inspirée de la Ville de Québec.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Liens</h4>
-                <ul>
-                    <li><a href="#features">Fonctionnalités</a></li>
-                    <li><a href="#team">Équipe</a></li>
-                    <li><a href="Candidature/">Candidature</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Communauté</h4>
-                <ul>
-                    <li><a href="https://discord.gg/UEf3epPwXS" target="_blank">Discord</a></li>
-                </ul>
-            </div>
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-logo"><img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt=""> Ville de Québec RP</div>
+        <p>Serveur ERLC immersif 100% québécois. Staff responsable, sessions actives, roleplay de qualité et respectueux.</p>
+        <div class="socials">
+          <a href="https://discord.gg/UEf3epPwXS" target="_blank" rel="noopener" aria-label="Discord"><i class="fa-brands fa-discord"></i></a>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 Ville de Québec Roleplay. Conçu avec passion par Jacobin Babouain.</p>
-        </div>
-    </footer>
+      </div>
+      <div>
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="#how">Comment ça marche</a></li>
+          <li><a href="#departments">Départements</a></li>
+          <li><a href="#rules">Règlements</a></li>
+          <li><a href="#team">Équipe</a></li>
+          <li><a href="Candidature/">Recrutement staff</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Départements</h4>
+        <ul>
+          <li><a href="https://discord.gg/UEf3epPwXS" target="_blank" rel="noopener">SPVQ — Postuler</a></li>
+          <li><a href="https://discord.gg/UEf3epPwXS" target="_blank" rel="noopener">Sûreté du Québec</a></li>
+          <li><a href="https://discord.gg/UEf3epPwXS" target="_blank" rel="noopener">SPCIQ (Pompiers)</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Communauté</h4>
+        <ul>
+          <li><a href="https://discord.gg/UEf3epPwXS" target="_blank" rel="noopener">Discord</a></li>
+          <li><a href="#faq">FAQ & Support</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="copy">
+      <span>© 2026 Ville de Québec Roleplay — Tous droits réservés.</span>
+      <span>Conçu par <b>Jacobin Babouain</b> — Code Roblox : <b>VQC</b></span>
+    </div>
+  </div>
+</footer>
 
-    <script>
-        window.addEventListener('scroll', () => {
-            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
-        });
-    </script>
+<script>
+function copyCode(btn){
+  const old = btn.innerHTML;
+  const done = () => { btn.innerHTML = '<i class="fa-solid fa-check"></i> Code copié'; setTimeout(()=>btn.innerHTML = old, 1800); };
+  if(navigator.clipboard){ navigator.clipboard.writeText('VQC').then(done).catch(()=>prompt('Copie le code :','VQC')); }
+  else { prompt('Copie le code :','VQC'); }
+}
+const header = document.getElementById('header');
+window.addEventListener('scroll', ()=> header.classList.toggle('scrolled', window.scrollY > 20), {passive:true});
+const burger = document.getElementById('burger'), navLinks = document.getElementById('navLinks');
+burger.addEventListener('click', ()=> navLinks.classList.toggle('open'));
+navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>navLinks.classList.remove('open')));
+document.querySelectorAll('.faq-item').forEach(item=>{
+  item.querySelector('.faq-q').addEventListener('click', ()=>{
+    const open = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+    if(!open) item.classList.add('open');
+  });
+});
+</script>
 </body>
 </html>
