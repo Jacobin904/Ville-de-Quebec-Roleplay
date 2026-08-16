@@ -110,7 +110,7 @@ const commands = [
     new SlashCommandBuilder().setName('claimvc').setDescription('Réclamer la propriété du salon si le proprio a quitté.'),
     new SlashCommandBuilder().setName('vcinfo').setDescription('Voir les infos du salon vocal.'),
     
-    new SlashCommandBuilder().setName('scan').setDescription('🔒 Scanner complet du serveur en 2 fichiers (Jacobin904 uniquement)')
+    new SlashCommandBuilder().setName('scan').setDescription('🔒 Scanner complet du serveur en 10 fichiers (Jacobin904 uniquement)')
 ];
 
 // 4. Enregistrement des commandes
@@ -217,7 +217,7 @@ function isVoiceOwner(member, channel) {
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
-    // === COMMANDE SCAN (JACOBIN904 UNIQUEMENT - 2 FICHIERS) ===
+    // === COMMANDE SCAN (JACOBIN904 UNIQUEMENT - 10 FICHIERS) ===
     if (interaction.commandName === 'scan') {
         if (interaction.user.id !== JACOBIN_ID) {
             return interaction.reply({ content: '❌ Cette commande est réservée à Jacobin904.', ephemeral: true });
@@ -227,87 +227,107 @@ client.on('interactionCreate', async interaction => {
         
         try {
             const guild = interaction.guild;
-            
-            // Données pour le fichier 1 : Structure
-            const structureData = {
-                serverInfo: {
-                    id: guild.id, name: guild.name, iconURL: guild.iconURL({ size: 4096, dynamic: true }),
-                    bannerURL: guild.bannerURL({ size: 4096, dynamic: true }), ownerId: guild.ownerId,
-                    ownerTag: (await guild.fetchOwner()).user.tag, memberCount: guild.memberCount,
-                    createdAt: guild.createdAt.toISOString(), features: guild.features,
-                    verificationLevel: guild.verificationLevel, afkChannelId: guild.afkChannelId,
-                    afkTimeout: guild.afkTimeout, systemChannelId: guild.systemChannelId
-                },
-                categories: [], textChannels: [], voiceChannels: [], announcementChannels: [],
-                stageChannels: [], forumChannels: [], roles: [], emojis: [], stickers: [], webhooks: [], invites: []
+            const timestamp = Date.now();
+            const safeName = guild.name.replace(/\s+/g, '_');
+            const files = [];
+
+            // 1. Server Info
+            const serverInfo = {
+                id: guild.id, name: guild.name, iconURL: guild.iconURL({ size: 4096, dynamic: true }),
+                bannerURL: guild.bannerURL({ size: 4096, dynamic: true }), ownerId: guild.ownerId,
+                ownerTag: (await guild.fetchOwner()).user.tag, memberCount: guild.memberCount,
+                createdAt: guild.createdAt.toISOString(), features: guild.features,
+                verificationLevel: guild.verificationLevel, afkChannelId: guild.afkChannelId,
+                afkTimeout: guild.afkTimeout, systemChannelId: guild.systemChannelId
             };
-            
-            // Données pour le fichier 2 : Membres et Bans
-            const membersData = { members: [], bans: [] };
-            
+            files.push({ attachment: Buffer.from(JSON.stringify(serverInfo, null, 2), 'utf-8'), name: `01_server_info_${safeName}_${timestamp}.json` });
+
+            // 2. Categories
+            const categories = [];
             guild.channels.cache.filter(ch => ch.type === ChannelType.GuildCategory).forEach(cat => {
-                structureData.categories.push({ id: cat.id, name: cat.name, position: cat.position, permissionOverwrites: cat.permissionOverwrites.cache.map(ow => ({ id: ow.id, type: ow.type, allow: ow.allow.toArray(), deny: ow.deny.toArray() })) });
+                categories.push({ id: cat.id, name: cat.name, position: cat.position, permissionOverwrites: cat.permissionOverwrites.cache.map(ow => ({ id: ow.id, type: ow.type, allow: ow.allow.toArray(), deny: ow.deny.toArray() })) });
             });
+            files.push({ attachment: Buffer.from(JSON.stringify(categories, null, 2), 'utf-8'), name: `02_categories_${safeName}_${timestamp}.json` });
+
+            // 3. Text Channels
+            const textChannels = [];
             guild.channels.cache.filter(ch => ch.type === ChannelType.GuildText).forEach(ch => {
-                structureData.textChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, topic: ch.topic || null, nsfw: ch.nsfw, rateLimitPerUser: ch.rateLimitPerUser, permissionOverwrites: ch.permissionOverwrites.cache.map(ow => ({ id: ow.id, type: ow.type, allow: ow.allow.toArray(), deny: ow.deny.toArray() })) });
+                textChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, topic: ch.topic || null, nsfw: ch.nsfw, rateLimitPerUser: ch.rateLimitPerUser, permissionOverwrites: ch.permissionOverwrites.cache.map(ow => ({ id: ow.id, type: ow.type, allow: ow.allow.toArray(), deny: ow.deny.toArray() })) });
             });
+            files.push({ attachment: Buffer.from(JSON.stringify(textChannels, null, 2), 'utf-8'), name: `03_text_channels_${safeName}_${timestamp}.json` });
+
+            // 4. Voice Channels
+            const voiceChannels = [];
             guild.channels.cache.filter(ch => ch.type === ChannelType.GuildVoice).forEach(ch => {
-                structureData.voiceChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, bitrate: ch.bitrate, userLimit: ch.userLimit, permissionOverwrites: ch.permissionOverwrites.cache.map(ow => ({ id: ow.id, type: ow.type, allow: ow.allow.toArray(), deny: ow.deny.toArray() })) });
+                voiceChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, bitrate: ch.bitrate, userLimit: ch.userLimit, permissionOverwrites: ch.permissionOverwrites.cache.map(ow => ({ id: ow.id, type: ow.type, allow: ow.allow.toArray(), deny: ow.deny.toArray() })) });
             });
-            guild.channels.cache.filter(ch => ch.type === ChannelType.GuildAnnouncement).forEach(ch => {
-                structureData.announcementChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, topic: ch.topic || null });
-            });
-            guild.channels.cache.filter(ch => ch.type === ChannelType.GuildStageVoice).forEach(ch => {
-                structureData.stageChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, topic: ch.topic || null });
-            });
-            guild.channels.cache.filter(ch => ch.type === ChannelType.GuildForum).forEach(ch => {
-                structureData.forumChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, topic: ch.topic || null });
-            });
-            
+            files.push({ attachment: Buffer.from(JSON.stringify(voiceChannels, null, 2), 'utf-8'), name: `04_voice_channels_${safeName}_${timestamp}.json` });
+
+            // 5. Other Channels
+            const otherChannels = {
+                announcements: guild.channels.cache.filter(ch => ch.type === ChannelType.GuildAnnouncement).map(ch => ({ id: ch.id, name: ch.name, parentId: ch.parentId, topic: ch.topic || null })),
+                stages: guild.channels.cache.filter(ch => ch.type === ChannelType.GuildStageVoice).map(ch => ({ id: ch.id, name: ch.name, parentId: ch.parentId, topic: ch.topic || null })),
+                forums: guild.channels.cache.filter(ch => ch.type === ChannelType.GuildForum).map(ch => ({ id: ch.id, name: ch.name, parentId: ch.parentId, topic: ch.topic || null }))
+            };
+            files.push({ attachment: Buffer.from(JSON.stringify(otherChannels, null, 2), 'utf-8'), name: `05_other_channels_${safeName}_${timestamp}.json` });
+
+            // 6. Roles
+            const roles = [];
             guild.roles.cache.sort((a, b) => b.position - a.position).forEach(role => {
-                structureData.roles.push({ id: role.id, name: role.name, color: `#${role.color.toString(16).padStart(6, '0')}`, position: role.position, permissions: role.permissions.toArray(), mentionable: role.mentionable, hoist: role.hoist });
+                roles.push({ id: role.id, name: role.name, color: `#${role.color.toString(16).padStart(6, '0')}`, position: role.position, permissions: role.permissions.toArray(), mentionable: role.mentionable, hoist: role.hoist });
             });
-            guild.emojis.cache.forEach(emoji => {
-                structureData.emojis.push({ id: emoji.id, name: emoji.name, animated: emoji.animated, url: emoji.imageURL({ size: 4096, dynamic: true }), managed: emoji.managed });
-            });
-            guild.stickers.cache.forEach(sticker => {
-                structureData.stickers.push({ id: sticker.id, name: sticker.name, format: sticker.format, url: sticker.url });
-            });
-            
+            files.push({ attachment: Buffer.from(JSON.stringify(roles, null, 2), 'utf-8'), name: `06_roles_${safeName}_${timestamp}.json` });
+
+            // 7. Emojis & Stickers
+            const emojisAndStickers = {
+                emojis: guild.emojis.cache.map(emoji => ({ id: emoji.id, name: emoji.name, animated: emoji.animated, url: emoji.imageURL({ size: 4096, dynamic: true }), managed: emoji.managed })),
+                stickers: guild.stickers.cache.map(sticker => ({ id: sticker.id, name: sticker.name, format: sticker.format, url: sticker.url }))
+            };
+            files.push({ attachment: Buffer.from(JSON.stringify(emojisAndStickers, null, 2), 'utf-8'), name: `07_emojis_stickers_${safeName}_${timestamp}.json` });
+
+            // 8. Webhooks & Invites
+            let webhooksData = 'Permission insuffisante';
+            let invitesData = 'Permission insuffisante';
+            try {
+                const invites = await guild.invites.fetch();
+                invitesData = invites.map(inv => ({ code: inv.code, uses: inv.uses, maxUses: inv.maxUses, inviter: inv.inviter?.username }));
+            } catch (e) {}
+            try {
+                const webhooks = await guild.fetchWebhooks();
+                webhooksData = webhooks.map(wh => ({ id: wh.id, name: wh.name, channelId: wh.channelId }));
+            } catch (e) {}
+            files.push({ attachment: Buffer.from(JSON.stringify({ webhooks: webhooksData, invites: invitesData }, null, 2), 'utf-8'), name: `08_webhooks_invites_${safeName}_${timestamp}.json` });
+
+            // 9 & 10. Members (Split in half) + Bans
             await guild.members.fetch();
+            const membersArray = [];
             guild.members.cache.forEach(member => {
-                membersData.members.push({
+                membersArray.push({
                     id: member.id, username: member.user.username, displayName: member.displayName,
                     roles: member.roles.cache.filter(r => r.id !== guild.id).map(r => ({ id: r.id, name: r.name })),
                     joinedAt: member.joinedAt?.toISOString(), createdAt: member.user.createdAt.toISOString()
                 });
             });
-            
+
+            const midPoint = Math.ceil(membersArray.length / 2);
+            const membersPart1 = membersArray.slice(0, midPoint);
+            const membersPart2 = membersArray.slice(midPoint);
+
+            files.push({ attachment: Buffer.from(JSON.stringify(membersPart1, null, 2), 'utf-8'), name: `09_members_part1_${safeName}_${timestamp}.json` });
+
+            let bansData = 'Permission insuffisante';
             try {
                 const bans = await guild.bans.fetch();
-                bans.forEach(ban => membersData.bans.push({ userId: ban.user.id, username: ban.user.username, reason: ban.reason || 'Aucune' }));
-            } catch (e) { membersData.bans = 'Permission insuffisante'; }
-            
-            try {
-                const invites = await guild.invites.fetch();
-                invites.forEach(inv => structureData.invites.push({ code: inv.code, uses: inv.uses, maxUses: inv.maxUses, inviter: inv.inviter?.username }));
-            } catch (e) { structureData.invites = 'Permission insuffisante'; }
-            
-            // Création des 2 fichiers JSON
-            const structureBuffer = Buffer.from(JSON.stringify(structureData, null, 2), 'utf-8');
-            const membersBuffer = Buffer.from(JSON.stringify(membersData, null, 2), 'utf-8');
-            
-            const timestamp = Date.now();
-            const safeName = guild.name.replace(/\s+/g, '_');
-            
-            const attachments = [
-                { attachment: structureBuffer, name: `scan_structure_${safeName}_${timestamp}.json` },
-                { attachment: membersBuffer, name: `scan_members_${safeName}_${timestamp}.json` }
-            ];
-            
+                bansData = bans.map(ban => ({ userId: ban.user.id, username: ban.user.username, reason: ban.reason || 'Aucune' }));
+            } catch (e) {}
+
+            const membersPart2AndBans = { members: membersPart2, bans: bansData };
+            files.push({ attachment: Buffer.from(JSON.stringify(membersPart2AndBans, null, 2), 'utf-8'), name: `10_members_part2_and_bans_${safeName}_${timestamp}.json` });
+
+            // Envoi des 10 fichiers
             await interaction.followUp({
-                content: `✅ **Scan complet terminé en 2 fichiers !**\n\n📊 **Statistiques :**\n• ${structureData.categories.length} catégories\n• ${structureData.textChannels.length} salons texte\n• ${structureData.voiceChannels.length} salons vocaux\n• ${structureData.roles.length} rôles\n• ${structureData.emojis.length} emojis\n• ${membersData.members.length} membres\n• ${Array.isArray(membersData.bans) ? membersData.bans.length : 0} bans\n\n📎 Fichiers JSON ci-joints :`,
-                files: attachments,
+                content: `✅ **Scan complet terminé en 10 fichiers organisés !**\n\n📊 **Résumé des fichiers :**\n1️⃣ Infos Serveur\n2️⃣ Catégories\n3️⃣ Salons Texte\n4️⃣ Salons Vocaux\n5️⃣ Autres Salons\n6️⃣ Rôles\n7️⃣ Emojis & Stickers\n8️⃣ Webhooks & Invitations\n9️⃣ Membres (Partie 1)\n🔟 Membres (Partie 2) & Bans\n\n📎 Fichiers ci-joints :`,
+                files: files,
                 ephemeral: true
             });
         } catch (error) {
