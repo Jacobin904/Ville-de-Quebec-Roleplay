@@ -28,32 +28,89 @@ const client = new Client({
 // Stockage
 client.pendingEmbeds = new Map();
 client.tempVoiceChannels = new Map();
+client.afkUsers = new Map();
+client.reminders = new Map();
 
-// ID du salon "Créer ton vocal" (MIS À JOUR)
+// ID du salon "Créer ton vocal"
 const JOIN_CHANNEL_ID = '1537569455754969188';
 
 // 3. Commandes Slash
 const commands = [
+    // === COMMANDES GÉNÉRALES ===
     new SlashCommandBuilder().setName('ping').setDescription('Vérifie la latence du bot.'),
+    new SlashCommandBuilder().setName('help').setDescription('Affiche la liste des commandes.'),
+    new SlashCommandBuilder().setName('invite').setDescription('Obtenir le lien d\'invitation du bot.'),
+    new SlashCommandBuilder().setName('avatar').setDescription('Voir l\'avatar d\'un utilisateur.')
+        .addUserOption(option => option.setName('utilisateur').setDescription('L\'utilisateur')),
+    new SlashCommandBuilder().setName('banner').setDescription('Voir la bannière d\'un utilisateur.')
+        .addUserOption(option => option.setName('utilisateur').setDescription('L\'utilisateur')),
+    new SlashCommandBuilder().setName('serverbanner').setDescription('Voir la bannière du serveur.'),
+    new SlashCommandBuilder().setName('roleinfo').setDescription('Infos sur un rôle.')
+        .addRoleOption(option => option.setName('role').setDescription('Le rôle').setRequired(true)),
+    new SlashCommandBuilder().setName('channelinfo').setDescription('Infos sur un salon.')
+        .addChannelOption(option => option.setName('salon').setDescription('Le salon')),
+    new SlashCommandBuilder().setName('say').setDescription('Faire dire quelque chose au bot.')
+        .addStringOption(option => option.setName('message').setDescription('Le message').setRequired(true)),
+    new SlashCommandBuilder().setName('announce').setDescription('Créer une annonce.')
+        .addStringOption(option => option.setName('titre').setDescription('Titre').setRequired(true))
+        .addStringOption(option => option.setName('description').setDescription('Description').setRequired(true))
+        .addChannelOption(option => option.setName('salon').setDescription('Salon de destination').setRequired(true)),
+    new SlashCommandBuilder().setName('poll').setDescription('Créer un sondage.')
+        .addStringOption(option => option.setName('question').setDescription('La question').setRequired(true))
+        .addStringOption(option => option.setName('options').setDescription('Options séparées par des virgules').setRequired(true)),
+    new SlashCommandBuilder().setName('suggest').setDescription('Faire une suggestion.')
+        .addStringOption(option => option.setName('suggestion').setDescription('Ta suggestion').setRequired(true)),
+    new SlashCommandBuilder().setName('8ball').setDescription('Pose une question à la boule magique.')
+        .addStringOption(option => option.setName('question').setDescription('Ta question').setRequired(true)),
+    new SlashCommandBuilder().setName('coinflip').setDescription('Pile ou face.'),
+    new SlashCommandBuilder().setName('dice').setDescription('Lancer un dé.'),
+    new SlashCommandBuilder().setName('rps').setDescription('Pierre papier ciseaux.')
+        .addStringOption(option => option.setName('choix').setDescription('Pierre, papier ou ciseaux').setRequired(true).addChoices(
+            { name: 'Pierre', value: 'pierre' },
+            { name: 'Papier', value: 'papier' },
+            { name: 'Ciseaux', value: 'ciseaux' }
+        )),
+    new SlashCommandBuilder().setName('remind').setDescription('Définir un rappel.')
+        .addIntegerOption(option => option.setName('minutes').setDescription('Dans combien de minutes').setRequired(true))
+        .addStringOption(option => option.setName('message').setDescription('Le rappel').setRequired(true)),
+    new SlashCommandBuilder().setName('afk').setDescription('Définir ton statut AFK.')
+        .addStringOption(option => option.setName('raison').setDescription('Raison de ton AFK')),
+    new SlashCommandBuilder().setName('meme').setDescription('Meme aléatoire.'),
+    new SlashCommandBuilder().setName('cat').setDescription('Image de chat aléatoire.'),
+    new SlashCommandBuilder().setName('dog').setDescription('Image de chien aléatoire.'),
+    
+    // === COMMANDES DE MODÉRATION ===
     new SlashCommandBuilder().setName('embed').setDescription('Crée un embed interactif avec previsualisation.'),
     new SlashCommandBuilder().setName('ticket').setDescription('Ouvre un ticket de support.'),
     new SlashCommandBuilder().setName('close').setDescription('Ferme le ticket actuel.').setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
-    new SlashCommandBuilder().setName('warn').setDescription('Avertir un membre.')
+    new SlashCommandBuilder().setName('warn').setDescription('Avertir un membre.').setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
         .addUserOption(option => option.setName('membre').setDescription('Le membre a avertir').setRequired(true))
         .addStringOption(option => option.setName('raison').setDescription('Raison de l\'avertissement').setRequired(true)),
-    new SlashCommandBuilder().setName('clear').setDescription('Supprime des messages.')
+    new SlashCommandBuilder().setName('clear').setDescription('Supprime des messages.').setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
         .addIntegerOption(option => option.setName('nombre').setDescription('Nombre de messages a supprimer (max 100)').setRequired(true).setMinValue(1).setMaxValue(100)),
     new SlashCommandBuilder().setName('userinfo').setDescription('Affiche les informations d\'un utilisateur.')
         .addUserOption(option => option.setName('membre').setDescription('Le membre dont voir les infos')),
     new SlashCommandBuilder().setName('serverinfo').setDescription('Affiche les informations du serveur.'),
-    new SlashCommandBuilder()
-        .setName('matricule')
-        .setDescription('Définit ou met à jour votre matricule dans votre nom d\'affichage.')
-        .addStringOption(option => 
-            option.setName('numero')
-                  .setDescription('Votre numéro de matricule (ex: 12-43)')
-                  .setRequired(true)
-        )
+    new SlashCommandBuilder().setName('matricule').setDescription('Définit ou met à jour votre matricule.')
+        .addStringOption(option => option.setName('numero').setDescription('Votre numéro de matricule (ex: 12-43)').setRequired(true)),
+    
+    // === COMMANDES DE SALON VOCAL (PROPRIÉTAIRE) ===
+    new SlashCommandBuilder().setName('lockvc').setDescription('Verrouiller le salon vocal.'),
+    new SlashCommandBuilder().setName('unlockvc').setDescription('Déverrouiller le salon vocal.'),
+    new SlashCommandBuilder().setName('hidevc').setDescription('Cacher le salon vocal.'),
+    new SlashCommandBuilder().setName('showvc').setDescription('Rendre le salon vocal visible.'),
+    new SlashCommandBuilder().setName('limitvc').setDescription('Limiter le nombre de personnes dans le salon.')
+        .addIntegerOption(option => option.setName('limite').setDescription('Nombre maximum de personnes (0 = illimité)').setRequired(true).setMinValue(0).setMaxValue(99)),
+    new SlashCommandBuilder().setName('renamevc').setDescription('Renommer le salon vocal.')
+        .addStringOption(option => option.setName('nom').setDescription('Nouveau nom du salon').setRequired(true)),
+    new SlashCommandBuilder().setName('kickvc').setDescription('Kick quelqu\'un du salon vocal.')
+        .addUserOption(option => option.setName('membre').setDescription('Le membre a kick').setRequired(true)),
+    new SlashCommandBuilder().setName('banvc').setDescription('Bannir quelqu\'un du salon vocal.')
+        .addUserOption(option => option.setName('membre').setDescription('Le membre a bannir').setRequired(true)),
+    new SlashCommandBuilder().setName('unbanvc').setDescription('Débannir quelqu\'un du salon vocal.')
+        .addUserOption(option => option.setName('membre').setDescription('Le membre a débannir').setRequired(true)),
+    new SlashCommandBuilder().setName('claimvc').setDescription('Réclamer la propriété du salon si le proprio a quitté.'),
+    new SlashCommandBuilder().setName('vcinfo').setDescription('Voir les infos du salon vocal.')
 ];
 
 // 4. Enregistrement des commandes
@@ -87,24 +144,45 @@ client.on('messageDelete', async message => {
     await logsChannel.send({ embeds: [new EmbedBuilder().setColor('#003DA5').setTitle('Message supprime').addFields({ name: 'Auteur', value: `${message.author.tag} (${message.author.id})`, inline: true }, { name: 'Canal', value: `<#${message.channel.id}>`, inline: true }, { name: 'Contenu', value: message.content.substring(0, 1000) || 'Message sans texte' }).setTimestamp()] });
 });
 
-// ============================================================
-// 6. Système de Salon Vocal Temporaire (CORRIGÉ)
-// ============================================================
+// Système AFK
+client.on('messageCreate', async message => {
+    if (message.author.bot) return;
+    
+    // Vérifier si quelqu'un mentionne un utilisateur AFK
+    if (message.mentions.users.size > 0) {
+        for (const [userId, afkData] of client.afkUsers) {
+            if (message.mentions.users.has(userId)) {
+                await message.reply(`${afkData.username} est AFK : ${afkData.reason} (depuis <t:${Math.floor(afkData.timestamp / 1000)}:R>)`);
+            }
+        }
+    }
+    
+    // Si l'utilisateur qui parle est AFK, on retire son statut
+    if (client.afkUsers.has(message.author.id)) {
+        const afkData = client.afkUsers.get(message.author.id);
+        client.afkUsers.delete(message.author.id);
+        await message.reply(`Bienvenue de retour ${message.author} ! Tu n'es plus AFK.`);
+        
+        // Retirer [AFK] du pseudo
+        if (message.member.displayName.startsWith('[AFK] ')) {
+            const newName = message.member.displayName.replace('[AFK] ', '');
+            await message.member.setNickname(newName).catch(() => {});
+        }
+    }
+});
+
+// 6. Système de Salon Vocal Temporaire
 client.on('voiceStateUpdate', async (oldState, newState) => {
     const member = newState.member;
     if (!member) return;
 
-    // Si le membre rejoint le salon "Créer ton vocal"
     if (newState.channelId === JOIN_CHANNEL_ID && oldState.channelId !== JOIN_CHANNEL_ID) {
         try {
             const joinChannel = newState.channel;
             const category = joinChannel.parent;
             const displayName = member.displayName;
             
-            // Récupérer les permissions de la catégorie parente
             const categoryOverwrites = category ? category.permissionOverwrites.cache : new Map();
-            
-            // Convertir les overwrites de la catégorie en format utilisable
             const inheritedOverwrites = [];
             categoryOverwrites.forEach((overwrite) => {
                 inheritedOverwrites.push({
@@ -115,7 +193,6 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
                 });
             });
 
-            // Permissions spécifiques du propriétaire (priorité à la parole + gestion)
             const ownerPermissions = new PermissionsBitField([
                 PermissionFlagsBits.ViewChannel,
                 PermissionFlagsBits.Connect,
@@ -127,39 +204,29 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
                 PermissionFlagsBits.ManageChannels
             ]);
 
-            // Créer le nouveau salon avec les permissions héritées + celles du propriétaire
             const newChannel = await newState.guild.channels.create({
                 name: `Vocal ${displayName}`,
                 type: ChannelType.GuildVoice,
                 parent: category ? category.id : null,
                 permissionOverwrites: [
-                    // Hériter les permissions de la catégorie
                     ...inheritedOverwrites,
-                    // Ajouter/écraser les permissions du propriétaire
                     {
                         id: member.id,
-                        type: 0, // 0 = member
+                        type: 0,
                         allow: ownerPermissions
-                        // ✅ PAS DE "deny: 0" - on omet simplement le champ deny
                     }
                 ]
             });
 
-            // Déplacer le membre dans son nouveau salon
             await member.voice.setChannel(newChannel);
-            
-            // Enregistrer le propriétaire
             client.tempVoiceChannels.set(newChannel.id, member.id);
-            
-            // Message de bienvenue dans le salon
-            await newChannel.send(`Bienvenue **${displayName}** ! Tu es le propriétaire de ce salon vocal. Tu as la priorité à la parole et les permissions de gestion.`).catch(() => {});
+            await newChannel.send(`Bienvenue **${displayName}** ! Tu es le propriétaire de ce salon vocal.`).catch(() => {});
             
         } catch (error) {
             console.error('Erreur création salon vocal:', error);
         }
     }
 
-    // Nettoyage : Si quelqu'un quitte un salon temporaire et qu'il est vide, on le supprime
     if (oldState.channelId && client.tempVoiceChannels.has(oldState.channelId)) {
         const channel = oldState.channel;
         if (channel && channel.members.size === 0) {
@@ -169,37 +236,316 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
     }
 });
 
-// ============================================================
+// Fonction utilitaire pour vérifier si l'utilisateur est le propriétaire du salon vocal
+function isVoiceOwner(member, channel) {
+    if (!channel || !client.tempVoiceChannels.has(channel.id)) return false;
+    return client.tempVoiceChannels.get(channel.id) === member.id;
+}
+
 // 7. Gestion des commandes Slash
-// ============================================================
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
+    // === COMMANDES GÉNÉRALES ===
     if (interaction.commandName === 'ping') {
         await interaction.reply(`Pong ! Latence : ${client.ws.ping}ms`);
     }
 
-    // === COMMANDE MATRICULE ===
+    if (interaction.commandName === 'help') {
+        const embed = new EmbedBuilder()
+            .setTitle('📖 Liste des commandes')
+            .setDescription('Voici toutes les commandes disponibles :')
+            .setColor('#003DA5')
+            .addFields(
+                { name: '🎤 Commandes Salon Vocal (Propriétaire)', value: '`/lockvc` `/unlockvc` `/hidevc` `/showvc` `/limitvc` `/renamevc` `/kickvc` `/banvc` `/unbanvc` `/claimvc` `/vcinfo`', inline: false },
+                { name: '🎮 Commandes Fun', value: '`/8ball` `/coinflip` `/dice` `/rps` `/meme` `/cat` `/dog`', inline: false },
+                { name: '🔧 Commandes Utilitaires', value: '`/help` `/avatar` `/banner` `/serverbanner` `/roleinfo` `/channelinfo` `/invite` `/suggest` `/poll` `/say` `/announce` `/remind` `/afk`', inline: false },
+                { name: '🛡️ Commandes Modération', value: '`/warn` `/clear` `/ticket` `/close` `/embed` `/matricule`', inline: false },
+                { name: 'ℹ️ Commandes Info', value: '`/ping` `/userinfo` `/serverinfo`', inline: false }
+            )
+            .setTimestamp();
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+    }
+
+    if (interaction.commandName === 'invite') {
+        const embed = new EmbedBuilder()
+            .setTitle('🔗 Invitation du bot')
+            .setDescription(`[Clique ici pour inviter le bot](https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands)`)
+            .setColor('#003DA5');
+        await interaction.reply({ embeds: [embed] });
+    }
+
+    if (interaction.commandName === 'avatar') {
+        const user = interaction.options.getUser('utilisateur') || interaction.user;
+        const embed = new EmbedBuilder()
+            .setTitle(`Avatar de ${user.username}`)
+            .setImage(user.displayAvatarURL({ size: 4096, dynamic: true }))
+            .setColor('#003DA5');
+        await interaction.reply({ embeds: [embed] });
+    }
+
+    if (interaction.commandName === 'banner') {
+        const user = interaction.options.getUser('utilisateur') || interaction.user;
+        const fetchedUser = await client.users.fetch(user.id, { force: true });
+        if (fetchedUser.banner) {
+            const embed = new EmbedBuilder()
+                .setTitle(`Bannière de ${user.username}`)
+                .setImage(fetchedUser.bannerURL({ size: 4096, dynamic: true }))
+                .setColor('#003DA5');
+            await interaction.reply({ embeds: [embed] });
+        } else {
+            await interaction.reply({ content: 'Cet utilisateur n\'a pas de bannière.', ephemeral: true });
+        }
+    }
+
+    if (interaction.commandName === 'serverbanner') {
+        const banner = interaction.guild.bannerURL({ size: 4096, dynamic: true });
+        if (banner) {
+            const embed = new EmbedBuilder()
+                .setTitle(`Bannière de ${interaction.guild.name}`)
+                .setImage(banner)
+                .setColor('#003DA5');
+            await interaction.reply({ embeds: [embed] });
+        } else {
+            await interaction.reply({ content: 'Ce serveur n\'a pas de bannière.', ephemeral: true });
+        }
+    }
+
+    if (interaction.commandName === 'roleinfo') {
+        const role = interaction.options.getRole('role');
+        const embed = new EmbedBuilder()
+            .setTitle(`Infos sur le rôle : ${role.name}`)
+            .setColor(role.color || '#003DA5')
+            .addFields(
+                { name: 'ID', value: role.id, inline: true },
+                { name: 'Couleur', value: `#${role.color.toString(16).padStart(6, '0')}`, inline: true },
+                { name: 'Position', value: `${role.position}`, inline: true },
+                { name: 'Membres', value: `${role.members.size}`, inline: true },
+                { name: 'Mentionnable', value: role.mentionable ? 'Oui' : 'Non', inline: true },
+                { name: 'Créé le', value: `<t:${Math.floor(role.createdTimestamp / 1000)}:D>`, inline: true }
+            )
+            .setTimestamp();
+        await interaction.reply({ embeds: [embed] });
+    }
+
+    if (interaction.commandName === 'channelinfo') {
+        const channel = interaction.options.getChannel('salon') || interaction.channel;
+        const embed = new EmbedBuilder()
+            .setTitle(`Infos sur le salon : ${channel.name}`)
+            .setColor('#003DA5')
+            .addFields(
+                { name: 'ID', value: channel.id, inline: true },
+                { name: 'Type', value: ChannelType[channel.type], inline: true },
+                { name: 'Créé le', value: `<t:${Math.floor(channel.createdTimestamp / 1000)}:D>`, inline: true }
+            )
+            .setTimestamp();
+        if (channel.topic) embed.addFields({ name: 'Sujet', value: channel.topic });
+        await interaction.reply({ embeds: [embed] });
+    }
+
+    if (interaction.commandName === 'say') {
+        const message = interaction.options.getString('message');
+        await interaction.channel.send(message);
+        await interaction.reply({ content: 'Message envoyé !', ephemeral: true });
+    }
+
+    if (interaction.commandName === 'announce') {
+        const titre = interaction.options.getString('titre');
+        const description = interaction.options.getString('description');
+        const channel = interaction.options.getChannel('salon');
+        
+        const embed = new EmbedBuilder()
+            .setTitle(titre)
+            .setDescription(description)
+            .setColor('#003DA5')
+            .setTimestamp()
+            .setFooter({ text: `Annonce par ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
+        
+        await channel.send({ embeds: [embed] });
+        await interaction.reply({ content: `Annonce envoyée dans ${channel} !`, ephemeral: true });
+    }
+
+    if (interaction.commandName === 'poll') {
+        const question = interaction.options.getString('question');
+        const options = interaction.options.getString('options').split(',').map(o => o.trim());
+        
+        if (options.length < 2 || options.length > 10) {
+            return interaction.reply({ content: 'Tu dois fournir entre 2 et 10 options séparées par des virgules.', ephemeral: true });
+        }
+        
+        const emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+        const description = options.map((opt, i) => `${emojis[i]} ${opt}`).join('\n');
+        
+        const embed = new EmbedBuilder()
+            .setTitle(`📊 ${question}`)
+            .setDescription(description)
+            .setColor('#003DA5')
+            .setFooter({ text: `Sondage par ${interaction.user.username}` })
+            .setTimestamp();
+        
+        const message = await interaction.reply({ embeds: [embed], fetchReply: true });
+        for (let i = 0; i < options.length; i++) {
+            await message.react(emojis[i]);
+        }
+    }
+
+    if (interaction.commandName === 'suggest') {
+        const suggestion = interaction.options.getString('suggestion');
+        const suggestChannel = interaction.guild.channels.cache.find(c => c.name === 'suggestions');
+        
+        if (!suggestChannel) {
+            return interaction.reply({ content: 'Le salon #suggestions n\'existe pas.', ephemeral: true });
+        }
+        
+        const embed = new EmbedBuilder()
+            .setTitle('💡 Nouvelle suggestion')
+            .setDescription(suggestion)
+            .setColor('#003DA5')
+            .setFooter({ text: `Par ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() })
+            .setTimestamp();
+        
+        const message = await suggestChannel.send({ embeds: [embed] });
+        await message.react('✅');
+        await message.react('❌');
+        await interaction.reply({ content: 'Suggestion envoyée !', ephemeral: true });
+    }
+
+    if (interaction.commandName === '8ball') {
+        const question = interaction.options.getString('question');
+        const responses = [
+            'Oui, absolument !', 'Non, jamais.', 'Peut-être...', 'C\'est certain.',
+            'Je ne pense pas.', 'Absolument !', 'Demande plus tard.', 'Concentre-toi et redemande.',
+            'Ne compte pas dessus.', 'Oui, dans un futur proche.', 'Très douteux.', 'Sans aucun doute.',
+            'Ma réponse est non.', 'Il est certain que oui.', 'Les perspectives ne sont pas si bonnes.',
+            'C\'est décidément le cas.', 'Oui, définitivement.', 'Mieux vaut ne pas te le dire maintenant.',
+            'Mes sources disent non.', 'Oui, tu peux y compter.'
+        ];
+        const response = responses[Math.floor(Math.random() * responses.length)];
+        
+        const embed = new EmbedBuilder()
+            .setTitle('🎱 Boule Magique')
+            .addFields(
+                { name: 'Question', value: question },
+                { name: 'Réponse', value: response }
+            )
+            .setColor('#003DA5');
+        await interaction.reply({ embeds: [embed] });
+    }
+
+    if (interaction.commandName === 'coinflip') {
+        const result = Math.random() < 0.5 ? 'Pile ! 🪙' : 'Face ! 🪙';
+        await interaction.reply(result);
+    }
+
+    if (interaction.commandName === 'dice') {
+        const result = Math.floor(Math.random() * 6) + 1;
+        const emojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+        await interaction.reply(`${emojis[result - 1]} Tu as obtenu : **${result}**`);
+    }
+
+    if (interaction.commandName === 'rps') {
+        const choix = interaction.options.getString('choix');
+        const choixBot = ['pierre', 'papier', 'ciseaux'][Math.floor(Math.random() * 3)];
+        const emojis = { pierre: '🪨', papier: '📄', ciseaux: '✂️' };
+        
+        let result;
+        if (choix === choixBot) result = 'Match nul !';
+        else if ((choix === 'pierre' && choixBot === 'ciseaux') || (choix === 'papier' && choixBot === 'pierre') || (choix === 'ciseaux' && choixBot === 'papier')) result = 'Tu as gagné !';
+        else result = 'Tu as perdu !';
+        
+        await interaction.reply(`${emojis[choix]} vs ${emojis[choixBot]}\n**${result}**`);
+    }
+
+    if (interaction.commandName === 'remind') {
+        const minutes = interaction.options.getInteger('minutes');
+        const message = interaction.options.getString('message');
+        
+        const reminderTime = Date.now() + (minutes * 60 * 1000);
+        client.reminders.set(interaction.user.id, { message, time: reminderTime });
+        
+        await interaction.reply({ content: `⏰ Rappel défini dans ${minutes} minute(s) : "${message}"`, ephemeral: true });
+        
+        setTimeout(async () => {
+            try {
+                await interaction.user.send(`⏰ **Rappel** : ${message}`);
+                client.reminders.delete(interaction.user.id);
+            } catch (e) {
+                console.log('Impossible d\'envoyer le rappel (MP désactivés)');
+            }
+        }, minutes * 60 * 1000);
+    }
+
+    if (interaction.commandName === 'afk') {
+        const reason = interaction.options.getString('raison') || 'AFK';
+        client.afkUsers.set(interaction.user.id, { username: interaction.user.username, reason, timestamp: Date.now() });
+        
+        const newName = `[AFK] ${interaction.member.displayName}`;
+        if (newName.length <= 32) {
+            await interaction.member.setNickname(newName).catch(() => {});
+        }
+        
+        await interaction.reply(`Tu es maintenant AFK : ${reason}`);
+    }
+
+    if (interaction.commandName === 'meme') {
+        try {
+            const response = await require('axios').get('https://meme-api.com/gimme');
+            const meme = response.data;
+            const embed = new EmbedBuilder()
+                .setTitle(meme.title)
+                .setImage(meme.url)
+                .setURL(meme.postLink)
+                .setFooter({ text: `r/${meme.subreddit}` })
+                .setColor('#003DA5');
+            await interaction.reply({ embeds: [embed] });
+        } catch (e) {
+            await interaction.reply({ content: 'Erreur lors de la récupération du meme.', ephemeral: true });
+        }
+    }
+
+    if (interaction.commandName === 'cat') {
+        try {
+            const response = await require('axios').get('https://api.thecatapi.com/v1/images/search');
+            const embed = new EmbedBuilder()
+                .setTitle('🐱 Chat aléatoire')
+                .setImage(response.data[0].url)
+                .setColor('#003DA5');
+            await interaction.reply({ embeds: [embed] });
+        } catch (e) {
+            await interaction.reply({ content: 'Erreur lors de la récupération de l\'image.', ephemeral: true });
+        }
+    }
+
+    if (interaction.commandName === 'dog') {
+        try {
+            const response = await require('axios').get('https://dog.ceo/api/breeds/image/random');
+            const embed = new EmbedBuilder()
+                .setTitle('🐶 Chien aléatoire')
+                .setImage(response.data.message)
+                .setColor('#003DA5');
+            await interaction.reply({ embeds: [embed] });
+        } catch (e) {
+            await interaction.reply({ content: 'Erreur lors de la récupération de l\'image.', ephemeral: true });
+        }
+    }
+
+    // === COMMANDES DE MODÉRATION ===
     if (interaction.commandName === 'matricule') {
         const numero = interaction.options.getString('numero');
         const member = interaction.member;
-        
-        // Récupérer le nom de base (sans l'ancien matricule)
         const parts = member.displayName.split(' | ');
         const baseName = parts.length > 1 ? parts.slice(1).join(' | ') : member.displayName;
-        
         const newName = `${numero} | ${baseName}`;
         
         if (newName.length > 32) {
-            return interaction.reply({ content: ' Le nouveau nom d\'affichage dépasse la limite de 32 caractères. Veuillez utiliser un numéro plus court.', ephemeral: true });
+            return interaction.reply({ content: '❌ Le nouveau nom d\'affichage dépasse la limite de 32 caractères.', ephemeral: true });
         }
 
         try {
             await member.setNickname(newName);
             await interaction.reply({ content: `✅ Votre nom d'affichage a été mis à jour : **${newName}**`, ephemeral: true });
         } catch (error) {
-            console.error(error);
-            await interaction.reply({ content: '❌ Je n\'ai pas la permission de modifier votre surnom. Vérifiez que mes rôles sont au-dessus des vôtres.', ephemeral: true });
+            await interaction.reply({ content: '❌ Je n\'ai pas la permission de modifier votre surnom.', ephemeral: true });
         }
     }
 
@@ -282,11 +628,111 @@ client.on('interactionCreate', async interaction => {
         const guild = interaction.guild;
         await interaction.reply({ embeds: [new EmbedBuilder().setTitle(`Informations du serveur : ${guild.name}`).setColor('#003DA5').setThumbnail(guild.iconURL()).addFields({ name: 'ID', value: guild.id, inline: true }, { name: 'Proprietaire', value: `<@${guild.ownerId}>`, inline: true }, { name: 'Membres', value: `${guild.memberCount}`, inline: true }).setTimestamp()] });
     }
+
+    // === COMMANDES DE SALON VOCAL (PROPRIÉTAIRE) ===
+    const voiceCommands = ['lockvc', 'unlockvc', 'hidevc', 'showvc', 'limitvc', 'renamevc', 'kickvc', 'banvc', 'unbanvc', 'claimvc', 'vcinfo'];
+    
+    if (voiceCommands.includes(interaction.commandName)) {
+        const member = interaction.member;
+        const voiceChannel = member.voice.channel;
+        
+        if (!voiceChannel) {
+            return interaction.reply({ content: '❌ Tu dois être dans un salon vocal pour utiliser cette commande.', ephemeral: true });
+        }
+        
+        if (interaction.commandName !== 'claimvc' && !isVoiceOwner(member, voiceChannel)) {
+            return interaction.reply({ content: '❌ Tu n\'es pas le propriétaire de ce salon vocal.', ephemeral: true });
+        }
+        
+        if (interaction.commandName === 'lockvc') {
+            await voiceChannel.permissionOverwrites.edit(interaction.guild.id, { Connect: false });
+            await interaction.reply('🔒 Salon vocal verrouillé.');
+        }
+        
+        if (interaction.commandName === 'unlockvc') {
+            await voiceChannel.permissionOverwrites.edit(interaction.guild.id, { Connect: null });
+            await interaction.reply('🔓 Salon vocal déverrouillé.');
+        }
+        
+        if (interaction.commandName === 'hidevc') {
+            await voiceChannel.permissionOverwrites.edit(interaction.guild.id, { ViewChannel: false });
+            await interaction.reply('👻 Salon vocal masqué.');
+        }
+        
+        if (interaction.commandName === 'showvc') {
+            await voiceChannel.permissionOverwrites.edit(interaction.guild.id, { ViewChannel: null });
+            await interaction.reply('👁️ Salon vocal rendu visible.');
+        }
+        
+        if (interaction.commandName === 'limitvc') {
+            const limit = interaction.options.getInteger('limite');
+            await voiceChannel.setUserLimit(limit);
+            await interaction.reply(`👥 Limite du salon définie à ${limit === 0 ? 'illimité' : limit} personne(s).`);
+        }
+        
+        if (interaction.commandName === 'renamevc') {
+            const nom = interaction.options.getString('nom');
+            await voiceChannel.setName(nom);
+            await interaction.reply(`✏️ Salon vocal renommé en **${nom}**.`);
+        }
+        
+        if (interaction.commandName === 'kickvc') {
+            const target = interaction.options.getMember('membre');
+            if (!target.voice.channel || target.voice.channel.id !== voiceChannel.id) {
+                return interaction.reply({ content: '❌ Ce membre n\'est pas dans ton salon vocal.', ephemeral: true });
+            }
+            await target.voice.disconnect();
+            await interaction.reply(`👢 ${target.user.tag} a été kick du salon vocal.`);
+        }
+        
+        if (interaction.commandName === 'banvc') {
+            const target = interaction.options.getMember('membre');
+            if (!target.voice.channel || target.voice.channel.id !== voiceChannel.id) {
+                return interaction.reply({ content: '❌ Ce membre n\'est pas dans ton salon vocal.', ephemeral: true });
+            }
+            await voiceChannel.permissionOverwrites.edit(target.id, { Connect: false, ViewChannel: false });
+            await target.voice.disconnect();
+            await interaction.reply(`🚫 ${target.user.tag} a été banni du salon vocal.`);
+        }
+        
+        if (interaction.commandName === 'unbanvc') {
+            const target = interaction.options.getMember('membre');
+            await voiceChannel.permissionOverwrites.delete(target.id);
+            await interaction.reply(`✅ ${target.user.tag} a été débanni du salon vocal.`);
+        }
+        
+        if (interaction.commandName === 'claimvc') {
+            if (!client.tempVoiceChannels.has(voiceChannel.id)) {
+                return interaction.reply({ content: '❌ Ce salon n\'est pas un salon temporaire.', ephemeral: true });
+            }
+            const currentOwner = client.tempVoiceChannels.get(voiceChannel.id);
+            if (voiceChannel.members.has(currentOwner)) {
+                return interaction.reply({ content: '❌ Le propriétaire est toujours dans le salon.', ephemeral: true });
+            }
+            client.tempVoiceChannels.set(voiceChannel.id, member.id);
+            await interaction.reply(`👑 Tu as réclamé la propriété de ce salon vocal.`);
+        }
+        
+        if (interaction.commandName === 'vcinfo') {
+            const owner = client.tempVoiceChannels.get(voiceChannel.id);
+            const ownerMember = owner ? interaction.guild.members.cache.get(owner) : null;
+            const embed = new EmbedBuilder()
+                .setTitle(`Infos du salon : ${voiceChannel.name}`)
+                .setColor('#003DA5')
+                .addFields(
+                    { name: 'ID', value: voiceChannel.id, inline: true },
+                    { name: 'Propriétaire', value: ownerMember ? ownerMember.user.tag : 'Aucun', inline: true },
+                    { name: 'Membres', value: `${voiceChannel.members.size}`, inline: true },
+                    { name: 'Limite', value: voiceChannel.userLimit === 0 ? 'Illimité' : `${voiceChannel.userLimit}`, inline: true },
+                    { name: 'Bitrate', value: `${voiceChannel.bitrate / 1000} kbps`, inline: true }
+                )
+                .setTimestamp();
+            await interaction.reply({ embeds: [embed] });
+        }
+    }
 });
 
-// ============================================================
 // 8. Gestion des boutons et modals (Embed)
-// ============================================================
 client.on('interactionCreate', async interaction => {
     if (interaction.isButton()) {
         const embedData = client.pendingEmbeds.get(interaction.user.id);
@@ -430,9 +876,7 @@ async function updatePreview(interaction, embedData) {
     } catch (e) { await interaction.reply({ content: 'Erreur lors de la mise a jour.', ephemeral: true }); }
 }
 
-// ============================================================
 // 9. Base de données GitHub (Candidatures)
-// ============================================================
 app.use(express.json());
 app.post('/submit-application', async (req, res) => {
     try {
