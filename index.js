@@ -254,12 +254,14 @@ const verifyApi = (req, res, next) => {
     return res.status(401).json({ error: 'Non autorise' });
 };
 
-app.get('/api/stats', verifyApi, (req, res) => {
+// Endpoint public pour les stats du site web (pas de clé requise pour l'affichage simple)
+app.get('/api/stats', (req, res) => {
     const guild = client.guilds.cache.get(GUILD_ID);
     const onlineCount = guild ? guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline').size : 0;
     res.json({ totalMembers: guild?.memberCount || 0, onlineMembers: onlineCount, botPing: client.ws.ping });
 });
 
+// Endpoints sécurisés
 app.get('/api/staff', verifyApi, (req, res) => {
     const guild = client.guilds.cache.get(GUILD_ID);
     const staffRoles = ['1521217940035473429', '1533823925752959189', '1533824053935341598', '1490530623201345556', '1490530523083182250'];
@@ -267,7 +269,7 @@ app.get('/api/staff', verifyApi, (req, res) => {
     res.json({ staffOnline: onlineStaff });
 });
 
-app.post('/api/log', async (req, res) => {
+app.post('/api/log', verifyApi, async (req, res) => {
     const { source, level, message, details } = req.body;
     const colors = { info: '#003DA5', warn: '#D97706', error: '#DC2626', success: '#059669' };
     const emojis = { info: 'ℹ️', warn: '⚠️', error: '🚨', success: '✅' };
