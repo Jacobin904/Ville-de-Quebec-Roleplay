@@ -31,13 +31,12 @@ client.tempVoiceChannels = new Map();
 client.afkUsers = new Map();
 client.reminders = new Map();
 
-// ID du salon "Créer ton vocal"
+// ID du salon "Créer ton vocal" et de l'admin
 const JOIN_CHANNEL_ID = '1537569455754969188';
-const JACOBIN_ID = '1281784488854159421'; // Ton ID Discord pour la commande /scan
+const JACOBIN_ID = '1281784488854159421'; 
 
 // 3. Commandes Slash
 const commands = [
-    // === COMMANDES GÉNÉRALES ===
     new SlashCommandBuilder().setName('ping').setDescription('Vérifie la latence du bot.'),
     new SlashCommandBuilder().setName('help').setDescription('Affiche la liste des commandes.'),
     new SlashCommandBuilder().setName('invite').setDescription('Obtenir le lien d\'invitation du bot.'),
@@ -80,7 +79,6 @@ const commands = [
     new SlashCommandBuilder().setName('cat').setDescription('Image de chat aléatoire.'),
     new SlashCommandBuilder().setName('dog').setDescription('Image de chien aléatoire.'),
     
-    // === COMMANDES DE MODÉRATION & UTILITAIRES ===
     new SlashCommandBuilder().setName('embed').setDescription('Crée un embed interactif avec previsualisation.'),
     new SlashCommandBuilder().setName('ticket').setDescription('Ouvre un ticket de support.'),
     new SlashCommandBuilder().setName('close').setDescription('Ferme le ticket actuel.').setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
@@ -95,7 +93,6 @@ const commands = [
     new SlashCommandBuilder().setName('matricule').setDescription('Définit ou met à jour votre matricule.')
         .addStringOption(option => option.setName('numero').setDescription('Votre numéro de matricule (ex: 12-43)').setRequired(true)),
     
-    // === COMMANDES DE SALON VOCAL (PROPRIÉTAIRE) ===
     new SlashCommandBuilder().setName('lockvc').setDescription('Verrouiller le salon vocal.'),
     new SlashCommandBuilder().setName('unlockvc').setDescription('Déverrouiller le salon vocal.'),
     new SlashCommandBuilder().setName('hidevc').setDescription('Cacher le salon vocal.'),
@@ -113,8 +110,7 @@ const commands = [
     new SlashCommandBuilder().setName('claimvc').setDescription('Réclamer la propriété du salon si le proprio a quitté.'),
     new SlashCommandBuilder().setName('vcinfo').setDescription('Voir les infos du salon vocal.'),
     
-    // === COMMANDE ADMIN (JACOBIN904 UNIQUEMENT) ===
-    new SlashCommandBuilder().setName('scan').setDescription('🔒 Scanner complet du serveur (Jacobin904 uniquement)')
+    new SlashCommandBuilder().setName('scan').setDescription('🔒 Scanner complet du serveur en 2 fichiers (Jacobin904 uniquement)')
 ];
 
 // 4. Enregistrement des commandes
@@ -221,7 +217,7 @@ function isVoiceOwner(member, channel) {
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
-    // === COMMANDE SCAN (JACOBIN904 UNIQUEMENT) ===
+    // === COMMANDE SCAN (JACOBIN904 UNIQUEMENT - 2 FICHIERS) ===
     if (interaction.commandName === 'scan') {
         if (interaction.user.id !== JACOBIN_ID) {
             return interaction.reply({ content: '❌ Cette commande est réservée à Jacobin904.', ephemeral: true });
@@ -231,7 +227,9 @@ client.on('interactionCreate', async interaction => {
         
         try {
             const guild = interaction.guild;
-            const scanData = {
+            
+            // Données pour le fichier 1 : Structure
+            const structureData = {
                 serverInfo: {
                     id: guild.id, name: guild.name, iconURL: guild.iconURL({ size: 4096, dynamic: true }),
                     bannerURL: guild.bannerURL({ size: 4096, dynamic: true }), ownerId: guild.ownerId,
@@ -241,41 +239,44 @@ client.on('interactionCreate', async interaction => {
                     afkTimeout: guild.afkTimeout, systemChannelId: guild.systemChannelId
                 },
                 categories: [], textChannels: [], voiceChannels: [], announcementChannels: [],
-                stageChannels: [], forumChannels: [], roles: [], emojis: [], stickers: [], members: [], bans: [], webhooks: [], invites: []
+                stageChannels: [], forumChannels: [], roles: [], emojis: [], stickers: [], webhooks: [], invites: []
             };
             
+            // Données pour le fichier 2 : Membres et Bans
+            const membersData = { members: [], bans: [] };
+            
             guild.channels.cache.filter(ch => ch.type === ChannelType.GuildCategory).forEach(cat => {
-                scanData.categories.push({ id: cat.id, name: cat.name, position: cat.position, permissionOverwrites: cat.permissionOverwrites.cache.map(ow => ({ id: ow.id, type: ow.type, allow: ow.allow.toArray(), deny: ow.deny.toArray() })) });
+                structureData.categories.push({ id: cat.id, name: cat.name, position: cat.position, permissionOverwrites: cat.permissionOverwrites.cache.map(ow => ({ id: ow.id, type: ow.type, allow: ow.allow.toArray(), deny: ow.deny.toArray() })) });
             });
             guild.channels.cache.filter(ch => ch.type === ChannelType.GuildText).forEach(ch => {
-                scanData.textChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, topic: ch.topic || null, nsfw: ch.nsfw, rateLimitPerUser: ch.rateLimitPerUser, permissionOverwrites: ch.permissionOverwrites.cache.map(ow => ({ id: ow.id, type: ow.type, allow: ow.allow.toArray(), deny: ow.deny.toArray() })) });
+                structureData.textChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, topic: ch.topic || null, nsfw: ch.nsfw, rateLimitPerUser: ch.rateLimitPerUser, permissionOverwrites: ch.permissionOverwrites.cache.map(ow => ({ id: ow.id, type: ow.type, allow: ow.allow.toArray(), deny: ow.deny.toArray() })) });
             });
             guild.channels.cache.filter(ch => ch.type === ChannelType.GuildVoice).forEach(ch => {
-                scanData.voiceChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, bitrate: ch.bitrate, userLimit: ch.userLimit, permissionOverwrites: ch.permissionOverwrites.cache.map(ow => ({ id: ow.id, type: ow.type, allow: ow.allow.toArray(), deny: ow.deny.toArray() })) });
+                structureData.voiceChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, bitrate: ch.bitrate, userLimit: ch.userLimit, permissionOverwrites: ch.permissionOverwrites.cache.map(ow => ({ id: ow.id, type: ow.type, allow: ow.allow.toArray(), deny: ow.deny.toArray() })) });
             });
             guild.channels.cache.filter(ch => ch.type === ChannelType.GuildAnnouncement).forEach(ch => {
-                scanData.announcementChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, topic: ch.topic || null });
+                structureData.announcementChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, topic: ch.topic || null });
             });
             guild.channels.cache.filter(ch => ch.type === ChannelType.GuildStageVoice).forEach(ch => {
-                scanData.stageChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, topic: ch.topic || null });
+                structureData.stageChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, topic: ch.topic || null });
             });
             guild.channels.cache.filter(ch => ch.type === ChannelType.GuildForum).forEach(ch => {
-                scanData.forumChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, topic: ch.topic || null });
+                structureData.forumChannels.push({ id: ch.id, name: ch.name, parentId: ch.parentId, topic: ch.topic || null });
             });
             
             guild.roles.cache.sort((a, b) => b.position - a.position).forEach(role => {
-                scanData.roles.push({ id: role.id, name: role.name, color: `#${role.color.toString(16).padStart(6, '0')}`, position: role.position, permissions: role.permissions.toArray(), mentionable: role.mentionable, hoist: role.hoist });
+                structureData.roles.push({ id: role.id, name: role.name, color: `#${role.color.toString(16).padStart(6, '0')}`, position: role.position, permissions: role.permissions.toArray(), mentionable: role.mentionable, hoist: role.hoist });
             });
             guild.emojis.cache.forEach(emoji => {
-                scanData.emojis.push({ id: emoji.id, name: emoji.name, animated: emoji.animated, url: emoji.imageURL({ size: 4096, dynamic: true }), managed: emoji.managed });
+                structureData.emojis.push({ id: emoji.id, name: emoji.name, animated: emoji.animated, url: emoji.imageURL({ size: 4096, dynamic: true }), managed: emoji.managed });
             });
             guild.stickers.cache.forEach(sticker => {
-                scanData.stickers.push({ id: sticker.id, name: sticker.name, format: sticker.format, url: sticker.url });
+                structureData.stickers.push({ id: sticker.id, name: sticker.name, format: sticker.format, url: sticker.url });
             });
             
             await guild.members.fetch();
             guild.members.cache.forEach(member => {
-                scanData.members.push({
+                membersData.members.push({
                     id: member.id, username: member.user.username, displayName: member.displayName,
                     roles: member.roles.cache.filter(r => r.id !== guild.id).map(r => ({ id: r.id, name: r.name })),
                     joinedAt: member.joinedAt?.toISOString(), createdAt: member.user.createdAt.toISOString()
@@ -284,31 +285,39 @@ client.on('interactionCreate', async interaction => {
             
             try {
                 const bans = await guild.bans.fetch();
-                bans.forEach(ban => scanData.bans.push({ userId: ban.user.id, username: ban.user.username, reason: ban.reason || 'Aucune' }));
-            } catch (e) { scanData.bans = 'Permission insuffisante'; }
+                bans.forEach(ban => membersData.bans.push({ userId: ban.user.id, username: ban.user.username, reason: ban.reason || 'Aucune' }));
+            } catch (e) { membersData.bans = 'Permission insuffisante'; }
             
             try {
                 const invites = await guild.invites.fetch();
-                invites.forEach(inv => scanData.invites.push({ code: inv.code, uses: inv.uses, maxUses: inv.maxUses, inviter: inv.inviter?.username }));
-            } catch (e) { scanData.invites = 'Permission insuffisante'; }
+                invites.forEach(inv => structureData.invites.push({ code: inv.code, uses: inv.uses, maxUses: inv.maxUses, inviter: inv.inviter?.username }));
+            } catch (e) { structureData.invites = 'Permission insuffisante'; }
             
-            const jsonData = JSON.stringify(scanData, null, 2);
-            const buffer = Buffer.from(jsonData, 'utf-8');
-            const attachment = { attachment: buffer, name: `scan_${guild.name.replace(/\s+/g, '_')}_${Date.now()}.json` };
+            // Création des 2 fichiers JSON
+            const structureBuffer = Buffer.from(JSON.stringify(structureData, null, 2), 'utf-8');
+            const membersBuffer = Buffer.from(JSON.stringify(membersData, null, 2), 'utf-8');
+            
+            const timestamp = Date.now();
+            const safeName = guild.name.replace(/\s+/g, '_');
+            
+            const attachments = [
+                { attachment: structureBuffer, name: `scan_structure_${safeName}_${timestamp}.json` },
+                { attachment: membersBuffer, name: `scan_members_${safeName}_${timestamp}.json` }
+            ];
             
             await interaction.followUp({
-                content: `✅ **Scan complet terminé !**\n\n📊 **Statistiques :**\n• ${scanData.categories.length} catégories\n• ${scanData.textChannels.length} salons texte\n• ${scanData.voiceChannels.length} salons vocaux\n• ${scanData.roles.length} rôles\n• ${scanData.emojis.length} emojis\n• ${scanData.members.length} membres\n\n📎 Fichier JSON ci-joint :`,
-                files: [attachment],
+                content: `✅ **Scan complet terminé en 2 fichiers !**\n\n📊 **Statistiques :**\n• ${structureData.categories.length} catégories\n• ${structureData.textChannels.length} salons texte\n• ${structureData.voiceChannels.length} salons vocaux\n• ${structureData.roles.length} rôles\n• ${structureData.emojis.length} emojis\n• ${membersData.members.length} membres\n• ${Array.isArray(membersData.bans) ? membersData.bans.length : 0} bans\n\n📎 Fichiers JSON ci-joints :`,
+                files: attachments,
                 ephemeral: true
             });
         } catch (error) {
             console.error('Erreur scan:', error);
             await interaction.followUp({ content: `❌ **Erreur lors du scan :**\n\`\`\`${error.message}\`\`\``, ephemeral: true });
         }
-        return; // Fin de la commande scan
+        return;
     }
 
-    // === AUTRES COMMANDES (Résumé pour la brièveté, le reste fonctionne comme avant) ===
+    // === AUTRES COMMANDES ===
     if (interaction.commandName === 'ping') await interaction.reply(`Pong ! Latence : ${client.ws.ping}ms`);
     
     if (interaction.commandName === 'help') {
