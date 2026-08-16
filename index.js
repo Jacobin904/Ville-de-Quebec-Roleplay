@@ -674,4 +674,61 @@ async function updatePreview(interaction, embedData) {
     } catch (e) { await interaction.reply({ content: 'Erreur lors de la mise a jour.', ephemeral: true }); }
 }
 
-// 9. Base
+// 9. Base de données GitHub (Candidatures)
+app.post('/submit-application', async (req, res) => {
+    try {
+        const d = req.body;
+        const githubToken = process.env.GITHUB_TOKEN;
+        const repoOwner = "Jacobin904";
+        const repoName = "Ville-de-Quebec-Roleplay";
+        if (!githubToken) return res.status(500).json({ error: "Configuration serveur incomplete" });
+
+        const issueBody = `
+### 📋 Nouvelle Candidature Modérateur
+**Date :** ${d.date}
+**Roblox :** \`${d.roblox}\`
+**Discord :** \`${d.discord}\`
+
+---
+**1. Pourquoi voulez-vous être modérateur ?**
+${d.q1}
+
+**2. Avez-vous déjà été modérateur auparavant ? Si oui, où ?**
+${d.q2}
+
+**3. Comment vous décririez-vous en tant que joueur ? (Min 2 phrases)**
+${d.q3}
+
+**4. Quelles sont les qualités les plus importantes d'un bon modérateur ? (Min 2 phrases)**
+${d.q4}
+
+**5. Gestion d'un modérateur qui enfreint les règles :**
+${d.q5}
+
+**6. Encourager les nouveaux membres :**
+${d.q6}
+
+**7. Comment amélioreriez-vous le serveur :**
+${d.q7}
+
+**8. Gestion d'une erreur personnelle :**
+${d.q8}
+        `.trim();
+
+        await axios.post(`https://api.github.com/repos/${repoOwner}/${repoName}/issues`, {
+            title: `📝 Candidature: ${d.roblox}`,
+            body: issueBody,
+            labels: ["candidature", "en-attente"]
+        }, { headers: { 'Authorization': `token ${githubToken}`, 'Accept': 'application/vnd.github.v3+json' } });
+
+        sendUniversalLog('✅ Nouvelle Candidature', `**${d.roblox}** (${d.discord}) a soumis une candidature.\nUn Issue GitHub a été créé.`, '#059669');
+        res.status(200).json({ success: true });
+    } catch (error) {
+        sendUniversalLog('❌ Erreur Candidature', `Échec de l'enregistrement de la candidature:\n\`\`\`js\n${error.message}\n\`\`\``, '#DC2626');
+        res.status(500).json({ error: "Échec de l'enregistrement" });
+    }
+});
+
+// 10. Connexion
+client.login(process.env.DISCORD_TOKEN);
+app.listen(port, () => console.log(`Serveur API actif sur le port ${port}`));
