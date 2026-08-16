@@ -296,13 +296,13 @@ let melonlyData = {
 async function fetchMelonlyData() {
     try {
         const token = process.env.MELONLY_API_TOKEN;
-        if (!token) {
-            console.log('Token Melonly non configure');
-            return;
-        }
+        if (!token) return;
 
-        // Récupérer les stats du serveur ERLC
-        const response = await axios.get('https://api.melonly.xyz/v1/servers/1490410149213507804/stats', {
+        // ⚠️ REMPLACE CETTE URL PAR LA VRAIE URL DE L'ENDPOINT MELONLY
+        // (Je l'ai laissée en exemple, mais elle renvoie 404 pour l'instant)
+        const apiUrl = 'https://api.melonly.xyz/v1/servers/1490410149213507804/stats'; 
+        
+        const response = await axios.get(apiUrl, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -313,10 +313,15 @@ async function fetchMelonlyData() {
                 staffOnDuty: response.data.staffOnDuty || [],
                 lastUpdate: new Date().toISOString()
             };
-            console.log('Donnees Melonly mises a jour:', melonlyData);
+            console.log('✅ Données Melonly mises à jour avec succès.');
         }
     } catch (error) {
-        console.error('Erreur API Melonly:', error.message);
+        // Gestion silencieuse des erreurs pour ne pas spammer les logs
+        if (error.response && error.response.status === 404) {
+            console.warn('⚠️ API Melonly: URL introuvable (404). En attente de la bonne URL.');
+        } else {
+            console.warn('⚠️ API Melonly: Erreur de connexion temporaire.');
+        }
     }
 }
 
