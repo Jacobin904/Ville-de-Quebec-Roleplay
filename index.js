@@ -6,7 +6,6 @@ const {
     ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, 
     TextInputBuilder, TextInputStyle, PermissionsBitField
 } = require('discord.js');
-const axios = require('axios');
 
 // 1. Serveur web pour Render (API + Site)
 const app = express();
@@ -45,67 +44,7 @@ const JOIN_CHANNEL_ID = '1537569455754969188';
 const JACOBIN_ID = '1281784488854159421';
 const GUILD_ID = process.env.GUILD_ID;
 
-// ============================================================
-// MAPPING DES EMOJIS PERSONNALISÉS VQC (UNIQUEMENT CEUX-CI)
-// ============================================================
-const EMOJIS = {
-    // Emojis de base du serveur
-    VQC: '<:VQC:1534547164351696896>',
-    Melonly: '<:Melonly:1534663288531587284>',
-    Discord: '<:Discord:1533813811839242270>',
-    Check: '<:Check:1533814742643249242>',
-    X_: '<:X_:1533815546900910211>',
-    Feu: '<:Feu:1533815548201271346>',
-    Etoile: '<:Etoile:1533815549434531953>',
-    Ticket: '<:Ticket:1533814739900039270>',
-    Droite: '<:Droite:1533814741431091200>',
-    main: '<:main:1533817670343065832>',
-    pouce: '<:pouce:1533817242758811809>',
-    loupe: '<:loupe:1533817833870463096>',
-    tropher: '<:tropher:1533817672217661601>',
-    vicage: '<:vicage:1533817240917512283>',
-    camera: '<:camera:1533817193475866734>',
-    image: '<:image:1533817197380501564>',
-    fichier: '<:fichier:1533817195874750642>',
-    lettre: '<:lettre:1533817674348363946>',
-    boite: '<:boite:1533817846109311160>',
-    valise: '<:valise:1533817837557387455>',
-    installer: '<:installer:1533817832154988665>',
-    imprimer: '<:imprimer:1533817843592990771>',
-    volume: '<:volume:1533817836190040165>',
-    ecouteur: '<:ecouteur:1533817239604564071>',
-    sonnerie: '<:sonnerie:1533817238199472158>',
-    alarme: '<:alarme:1533817182109175929>',
-    calendrier: '<:calendrier:1533817186588823613>',
-    couronne: '<:couronne:1533817971431182407>',
-    drapeau: '<:drapeau:1533817973003784342>',
-    maison: '<:maison:1533817189356933171>',
-    truck: '<:truck:1533817244855832696>',
-    oeuil: '<:oeuil:1533817668065431663>',
-    commentaire: '<:commentaire:1533817676147855470>',
-    utilisateur: '<:utilisateur:1533817235355729930>',
-    utilisateurv2: '<:utilisateurv2:1533817198903169155>',
-    bruuuh: '<:bruuuh:1532174758186192927>',
-    DOG: '<:DOG:1532174625176555685>',
-    
-    // Emojis de départements
-    spvq: '<:spvq:1534283798089306153>',
-    sq: '<:sq:1534283834567295026>',
-    SPCIQ: '<:SPCIQ:1531132190077747220>',
-    CTAQ: '<:CTAQ:1531133395587961014>',
-    enpq: '<:enpq:1534283758620901396>',
-    CRQ: '<:CRQ:1531133620193067139>',
-    
-    // Emojis de bienvenue
-    BIENVENUE1: '<:BIENVENUE1:1537269130602741790>',
-    BIENVENUE2: '<:BIENVENUE2:1537269128736542770>',
-    BIENVENUE3: '<:BIENVENUE3:1537269127008231434>',
-    BIENVENUE4: '<:BIENVENUE4:1537269511248674916>'
-};
-
-// ============================================================
 // 3. Commandes Slash
-// ============================================================
 const commands = [
     new SlashCommandBuilder().setName('ping').setDescription('Vérifie la latence du bot.'),
     new SlashCommandBuilder().setName('help').setDescription('Affiche la liste des commandes.'),
@@ -194,11 +133,11 @@ client.once('clientReady', async () => {
     } catch (error) { console.error('Erreur:', error); }
 });
 
-// 5. Système de logs (avec emojis VQC)
+// 5. Système de logs
 client.on('guildMemberAdd', async member => {
     const logsChannel = member.guild.channels.cache.find(c => c.name === 'logs' || c.name === 'journaux');
     if (!logsChannel) return;
-    await logsChannel.send({ embeds: [new EmbedBuilder().setColor('#003DA5').setTitle(`${EMOJIS.BIENVENUE1} Nouveau membre`).addFields({ name: 'Membre', value: `${member.user.tag} (${member.id})`, inline: true }, { name: 'Compte cree', value: `<t:${Math.floor(member.user.createdTimestamp / 1000)}:R>`, inline: true }).setThumbnail(member.user.displayAvatarURL()).setTimestamp()] });
+    await logsChannel.send({ embeds: [new EmbedBuilder().setColor('#003DA5').setTitle('Nouveau membre').addFields({ name: 'Membre', value: `${member.user.tag} (${member.id})`, inline: true }, { name: 'Compte cree', value: `<t:${Math.floor(member.user.createdTimestamp / 1000)}:R>`, inline: true }).setThumbnail(member.user.displayAvatarURL()).setTimestamp()] });
 });
 
 client.on('guildMemberRemove', async member => {
@@ -284,78 +223,30 @@ function isVoiceOwner(member, channel) {
 }
 
 // ============================================================
-// 7. API MELONLY (Récupération des données en temps réel)
+// 7. API POUR LE SITE WEB (Données Discord en temps réel)
 // ============================================================
-let melonlyData = {
-    sessionActive: false,
-    playersOnline: 0,
-    staffOnDuty: [],
-    lastUpdate: null
-};
-
-async function fetchMelonlyData() {
-    try {
-        const token = process.env.MELONLY_API_TOKEN;
-        if (!token) return;
-
-        // ⚠️ REMPLACE CETTE URL PAR LA VRAIE URL DE L'ENDPOINT MELONLY
-        // (Je l'ai laissée en exemple, mais elle renvoie 404 pour l'instant)
-        const apiUrl = 'https://api.melonly.xyz/v1/servers/1490410149213507804/stats'; 
-        
-        const response = await axios.get(apiUrl, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (response.data) {
-            melonlyData = {
-                sessionActive: response.data.isSessionActive || false,
-                playersOnline: response.data.playerCount || 0,
-                staffOnDuty: response.data.staffOnDuty || [],
-                lastUpdate: new Date().toISOString()
-            };
-            console.log('✅ Données Melonly mises à jour avec succès.');
-        }
-    } catch (error) {
-        // Gestion silencieuse des erreurs pour ne pas spammer les logs
-        if (error.response && error.response.status === 404) {
-            console.warn('⚠️ API Melonly: URL introuvable (404). En attente de la bonne URL.');
-        } else {
-            console.warn('⚠️ API Melonly: Erreur de connexion temporaire.');
-        }
-    }
-}
-
-// Mettre à jour les données Melonly toutes les 5 minutes
-setInterval(fetchMelonlyData, 300000);
-fetchMelonlyData(); // Premier appel au démarrage
-
-// ============================================================
-// 8. API POUR LE SITE WEB
-// ============================================================
-
-// Middleware pour vérifier la clé API
 const verifyApi = (req, res, next) => {
     const key = req.headers['x-api-key'];
     if (key === process.env.API_SECRET) return next();
     return res.status(401).json({ error: 'Non autorise' });
 };
 
-// Endpoint : Statistiques globales (incluant Melonly)
 app.get('/api/stats', verifyApi, (req, res) => {
     const guild = client.guilds.cache.get(GUILD_ID);
+    const onlineCount = guild ? guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline').size : 0;
+    
     res.json({
         totalMembers: guild?.memberCount || 0,
-        onlineMembers: guild?.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline').size || 0,
-        melonly: melonlyData,
+        onlineMembers: onlineCount,
         botPing: client.ws.ping
     });
 });
 
-// Endpoint : Staff en ligne
 app.get('/api/staff', verifyApi, (req, res) => {
     const guild = client.guilds.cache.get(GUILD_ID);
     const staffRoles = ['1521217940035473429', '1533823925752959189', '1533824053935341598', '1490530623201345556', '1490530523083182250'];
-    const onlineStaff = guild?.members.cache.filter(m => 
+    
+    const onlineStaff = guild ? guild.members.cache.filter(m => 
         !m.user.bot && 
         m.presence?.status !== 'offline' &&
         m.roles.cache.some(r => staffRoles.includes(r.id))
@@ -363,13 +254,13 @@ app.get('/api/staff', verifyApi, (req, res) => {
         username: m.user.username,
         displayName: m.displayName,
         roles: m.roles.cache.filter(r => staffRoles.includes(r.id)).map(r => r.name)
-    })) || [];
+    })) : [];
 
-    res.json({ staffOnline: onlineStaff, melonlyStaff: melonlyData.staffOnDuty });
+    res.json({ staffOnline: onlineStaff });
 });
 
 // ============================================================
-// 9. Gestion des commandes Slash
+// 8. Gestion des commandes Slash
 // ============================================================
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
@@ -619,7 +510,7 @@ client.on('interactionCreate', async interaction => {
         const question = interaction.options.getString('question');
         const options = interaction.options.getString('options').split(',').map(o => o.trim());
         if (options.length < 2 || options.length > 10) return interaction.reply({ content: 'Entre 2 et 10 options separees par des virgules.', ephemeral: true });
-        const emojis = ['1️⃣', '2️⃣', '3️', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️', '9️⃣', ''];
+        const emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
         const message = await interaction.reply({ embeds: [new EmbedBuilder().setTitle(`Sondage : ${question}`).setDescription(options.map((opt, i) => `${emojis[i]} ${opt}`).join('\n')).setColor('#003DA5').setFooter({ text: `Sondage par ${interaction.user.username}` }).setTimestamp()], fetchReply: true });
         for (let i = 0; i < options.length; i++) await message.react(emojis[i]);
     }
@@ -630,7 +521,7 @@ client.on('interactionCreate', async interaction => {
         if (!suggestChannel) return interaction.reply({ content: 'Le salon #suggestions n\'existe pas.', ephemeral: true });
         const message = await suggestChannel.send({ embeds: [new EmbedBuilder().setTitle('Nouvelle suggestion').setDescription(suggestion).setColor('#003DA5').setFooter({ text: `Par ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() }).setTimestamp()] });
         await message.react('✅');
-        await message.react('');
+        await message.react('❌');
         await interaction.reply({ content: 'Suggestion envoyee !', ephemeral: true });
     }
 
@@ -672,21 +563,21 @@ client.on('interactionCreate', async interaction => {
 
     if (interaction.commandName === 'meme') {
         try {
-            const res = await axios.get('https://meme-api.com/gimme');
+            const res = await require('axios').get('https://meme-api.com/gimme');
             await interaction.reply({ embeds: [new EmbedBuilder().setTitle(res.data.title).setImage(res.data.url).setURL(res.data.postLink).setFooter({ text: `r/${res.data.subreddit}` }).setColor('#003DA5')] });
         } catch (e) { await interaction.reply({ content: 'Erreur meme.', ephemeral: true }); }
     }
 
     if (interaction.commandName === 'cat') {
         try {
-            const res = await axios.get('https://api.thecatapi.com/v1/images/search');
+            const res = await require('axios').get('https://api.thecatapi.com/v1/images/search');
             await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Chat aleatoire').setImage(res.data[0].url).setColor('#003DA5')] });
         } catch (e) { await interaction.reply({ content: 'Erreur image.', ephemeral: true }); }
     }
 
     if (interaction.commandName === 'dog') {
         try {
-            const res = await axios.get('https://dog.ceo/api/breeds/image/random');
+            const res = await require('axios').get('https://dog.ceo/api/breeds/image/random');
             await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Chien aleatoire').setImage(res.data.message).setColor('#003DA5')] });
         } catch (e) { await interaction.reply({ content: 'Erreur image.', ephemeral: true }); }
     }
@@ -786,10 +677,201 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-// 10. Gestion des boutons et modals (Embed) - (code identique à avant, je ne le répète pas pour économiser de l'espace)
+// 9. Gestion des boutons et modals (Embed)
+client.on('interactionCreate', async interaction => {
+    if (interaction.isButton()) {
+        const embedData = client.pendingEmbeds.get(interaction.user.id);
+        if (!embedData || interaction.user.id !== embedData.authorId) return;
+        
+        if (interaction.customId === 'edit_title') {
+            const modal = new ModalBuilder().setCustomId('modal_title').setTitle('Modifier le titre');
+            modal.addComponents(new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('title_input').setLabel('Titre').setStyle(TextInputStyle.Short).setMaxLength(256).setRequired(true)));
+            await interaction.showModal(modal);
+        }
+        if (interaction.customId === 'edit_description') {
+            const modal = new ModalBuilder().setCustomId('modal_description').setTitle('Modifier la description');
+            modal.addComponents(new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('description_input').setLabel('Description').setStyle(TextInputStyle.Paragraph).setMaxLength(4000).setRequired(false)));
+            await interaction.showModal(modal);
+        }
+        if (interaction.customId === 'edit_image') {
+            const modal = new ModalBuilder().setCustomId('modal_image').setTitle('Modifier l\'image');
+            modal.addComponents(new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('image_input').setLabel('URL de l\'image').setStyle(TextInputStyle.Short).setMaxLength(2048).setRequired(true)));
+            await interaction.showModal(modal);
+        }
+        if (interaction.customId === 'add_button') {
+            if (embedData.buttons.length >= 5) return interaction.reply({ content: 'Maximum 5 boutons atteint.', ephemeral: true });
+            const modal = new ModalBuilder().setCustomId('modal_add_button').setTitle('Ajouter un bouton');
+            modal.addComponents(
+                new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('button_label').setLabel('Texte du bouton').setStyle(TextInputStyle.Short).setMaxLength(80).setRequired(true)),
+                new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('button_emoji').setLabel('Emoji (optionnel)').setStyle(TextInputStyle.Short).setMaxLength(50).setRequired(false)),
+                new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('button_url').setLabel('URL du lien').setStyle(TextInputStyle.Short).setMaxLength(2048).setRequired(true))
+            );
+            await interaction.showModal(modal);
+        }
+        if (interaction.customId === 'remove_button') {
+            if (embedData.buttons.length === 0) return interaction.reply({ content: 'Aucun bouton a retirer.', ephemeral: true });
+            embedData.buttons.pop();
+            await updatePreview(interaction, embedData);
+        }
+        if (interaction.customId === 'send_embed') {
+            const modal = new ModalBuilder().setCustomId('modal_send').setTitle('Envoyer l\'embed');
+            modal.addComponents(new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('channel_input').setLabel('ID ou nom du salon').setStyle(TextInputStyle.Short).setMaxLength(100).setRequired(true)));
+            await interaction.showModal(modal);
+        }
+        if (interaction.customId === 'cancel_embed') {
+            client.pendingEmbeds.delete(interaction.user.id);
+            await interaction.reply({ content: 'Creation annulee.', ephemeral: true });
+            try { const message = await interaction.channel.messages.fetch(embedData.messageId); await message.delete(); } catch (e) {}
+        }
+    }
 
-// 11. Base de données GitHub (Candidatures) - (code identique à avant)
+    if (interaction.isModalSubmit()) {
+        const embedData = client.pendingEmbeds.get(interaction.user.id);
+        if (!embedData) return;
+        
+        if (interaction.customId === 'modal_title') { embedData.embed.title = interaction.fields.getTextInputValue('title_input'); await updatePreview(interaction, embedData); }
+        if (interaction.customId === 'modal_description') { embedData.embed.description = interaction.fields.getTextInputValue('description_input') || null; await updatePreview(interaction, embedData); }
+        if (interaction.customId === 'modal_image') { embedData.embed.image = interaction.fields.getTextInputValue('image_input'); await updatePreview(interaction, embedData); }
+        
+        if (interaction.customId === 'modal_add_button') {
+            const label = interaction.fields.getTextInputValue('button_label');
+            const rawEmoji = interaction.fields.getTextInputValue('button_emoji').trim() || null;
+            const url = interaction.fields.getTextInputValue('button_url');
+            let resolvedEmoji = rawEmoji;
+            if (rawEmoji && /^:\w+:$/.test(rawEmoji)) {
+                const emojiName = rawEmoji.slice(1, -1).toLowerCase();
+                const customEmoji = interaction.guild.emojis.cache.find(e => e.name.toLowerCase() === emojiName);
+                if (customEmoji) resolvedEmoji = customEmoji.id;
+                else resolvedEmoji = null;
+            }
+            embedData.buttons.push({ label, emoji: resolvedEmoji, url });
+            await updatePreview(interaction, embedData);
+        }
+        
+        if (interaction.customId === 'modal_send') {
+            const channelInput = interaction.fields.getTextInputValue('channel_input');
+            let targetChannel;
+            if (channelInput.match(/^\d+$/)) targetChannel = await interaction.client.channels.fetch(channelInput).catch(() => null);
+            else targetChannel = interaction.guild.channels.cache.find(c => c.name.toLowerCase() === channelInput.toLowerCase());
+            if (!targetChannel || !targetChannel.isTextBased()) return interaction.reply({ content: 'Salon introuvable.', ephemeral: true });
+            
+            const finalEmbed = new EmbedBuilder();
+            if (embedData.embed.title) finalEmbed.setTitle(embedData.embed.title);
+            if (embedData.embed.description) finalEmbed.setDescription(embedData.embed.description);
+            if (embedData.embed.image) finalEmbed.setImage(embedData.embed.image);
+            finalEmbed.setColor('#003DA5').setTimestamp();
+            
+            const components = [];
+            if (embedData.buttons.length > 0) {
+                const buttonRow = new ActionRowBuilder();
+                embedData.buttons.forEach(btn => {
+                    const button = new ButtonBuilder().setLabel(btn.label).setURL(btn.url).setStyle(ButtonStyle.Link);
+                    if (btn.emoji) button.setEmoji(btn.emoji);
+                    buttonRow.addComponents(button);
+                });
+                components.push(buttonRow);
+            }
+            await targetChannel.send({ embeds: [finalEmbed], components: components });
+            client.pendingEmbeds.delete(interaction.user.id);
+            await interaction.reply({ content: `Embed envoye dans ${targetChannel}`, ephemeral: true });
+            try { const message = await interaction.channel.messages.fetch(embedData.messageId); await message.delete(); } catch (e) {}
+        }
+    }
+});
 
-// 12. Connexion
+async function updatePreview(interaction, embedData) {
+    const previewEmbed = new EmbedBuilder();
+    if (embedData.embed.title) previewEmbed.setTitle(embedData.embed.title);
+    if (embedData.embed.description) previewEmbed.setDescription(embedData.embed.description);
+    if (embedData.embed.image) previewEmbed.setImage(embedData.embed.image);
+    previewEmbed.setColor('#003DA5').setTimestamp();
+    
+    const row1 = new ActionRowBuilder().addComponents(
+        new ButtonBuilder().setCustomId('edit_title').setLabel('Titre').setStyle(ButtonStyle.Primary),
+        new ButtonBuilder().setCustomId('edit_description').setLabel('Description').setStyle(ButtonStyle.Primary),
+        new ButtonBuilder().setCustomId('edit_image').setLabel('Image').setStyle(ButtonStyle.Primary),
+        new ButtonBuilder().setCustomId('add_button').setLabel('Ajouter Bouton').setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder().setCustomId('remove_button').setLabel('Retirer Bouton').setStyle(ButtonStyle.Secondary)
+    );
+    const row2 = new ActionRowBuilder().addComponents(
+        new ButtonBuilder().setCustomId('send_embed').setLabel('Envoyer').setStyle(ButtonStyle.Success),
+        new ButtonBuilder().setCustomId('cancel_embed').setLabel('Annuler').setStyle(ButtonStyle.Danger)
+    );
+    
+    const buttonRows = [];
+    if (embedData.buttons.length > 0) {
+        const btnRow = new ActionRowBuilder();
+        embedData.buttons.forEach(btn => {
+            const button = new ButtonBuilder().setLabel(btn.label).setURL(btn.url).setStyle(ButtonStyle.Link).setDisabled(true);
+            if (btn.emoji) button.setEmoji(btn.emoji);
+            btnRow.addComponents(button);
+        });
+        buttonRows.push(btnRow);
+    }
+    
+    try {
+        const message = await interaction.channel.messages.fetch(embedData.messageId);
+        await message.edit({ embeds: [previewEmbed], components: [row1, ...buttonRows, row2] });
+        await interaction.reply({ content: `Previsualisation mise a jour (${embedData.buttons.length} bouton(s))`, ephemeral: true });
+    } catch (e) { await interaction.reply({ content: 'Erreur lors de la mise a jour.', ephemeral: true }); }
+}
+
+// 10. Base de données GitHub (Candidatures)
+app.use(express.json());
+app.post('/submit-application', async (req, res) => {
+    try {
+        const d = req.body;
+        const githubToken = process.env.GITHUB_TOKEN;
+        const repoOwner = "Jacobin904";
+        const repoName = "Ville-de-Quebec-Roleplay";
+        if (!githubToken) return res.status(500).json({ error: "Configuration serveur incomplete" });
+
+        const issueBody = `
+### 📋 Nouvelle Candidature Modérateur
+**Date :** ${d.date}
+**Roblox :** \`${d.roblox}\`
+**Discord :** \`${d.discord}\`
+
+---
+**1. Pourquoi voulez-vous être modérateur ?**
+${d.q1}
+
+**2. Avez-vous déjà été modérateur auparavant ? Si oui, où ?**
+${d.q2}
+
+**3. Comment vous décririez-vous en tant que joueur ? (Min 2 phrases)**
+${d.q3}
+
+**4. Quelles sont les qualités les plus importantes d'un bon modérateur ? (Min 2 phrases)**
+${d.q4}
+
+**5. Gestion d'un modérateur qui enfreint les règles :**
+${d.q5}
+
+**6. Encourager les nouveaux membres :**
+${d.q6}
+
+**7. Comment amélioreriez-vous le serveur :**
+${d.q7}
+
+**8. Gestion d'une erreur personnelle :**
+${d.q8}
+        `.trim();
+
+        await require('axios').post(`https://api.github.com/repos/${repoOwner}/${repoName}/issues`, {
+            title: `📝 Candidature: ${d.roblox}`,
+            body: issueBody,
+            labels: ["candidature", "en-attente"]
+        }, { headers: { 'Authorization': `token ${githubToken}`, 'Accept': 'application/vnd.github.v3+json' } });
+
+        console.log(`✅ Nouvelle candidature enregistrée: ${d.roblox}`);
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error("❌ Erreur candidature:", error.message);
+        res.status(500).json({ error: "Échec de l'enregistrement" });
+    }
+});
+
+// 11. Connexion
 client.login(process.env.DISCORD_TOKEN);
 app.listen(port, () => console.log(`Serveur API actif sur le port ${port}`));
