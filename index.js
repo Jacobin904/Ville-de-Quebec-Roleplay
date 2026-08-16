@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const axios = require('axios'); // Nécessaire pour le fallback webhook
+const axios = require('axios');
 const { 
     Client, GatewayIntentBits, EmbedBuilder, SlashCommandBuilder, 
     REST, Routes, ChannelType, PermissionFlagsBits, 
@@ -265,6 +265,22 @@ app.get('/api/staff', verifyApi, (req, res) => {
     const staffRoles = ['1521217940035473429', '1533823925752959189', '1533824053935341598', '1490530623201345556', '1490530523083182250'];
     const onlineStaff = guild ? guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline' && m.roles.cache.some(r => staffRoles.includes(r.id))).map(m => ({ username: m.user.username, displayName: m.displayName, roles: m.roles.cache.filter(r => staffRoles.includes(r.id)).map(r => r.name) })) : [];
     res.json({ staffOnline: onlineStaff });
+});
+
+app.post('/api/log', async (req, res) => {
+    const { source, level, message, details } = req.body;
+    const colors = { info: '#003DA5', warn: '#D97706', error: '#DC2626', success: '#059669' };
+    const emojis = { info: 'ℹ️', warn: '⚠️', error: '🚨', success: '✅' };
+    
+    const logFields = details ? [{ name: 'Détails', value: `\`\`\`json\n${JSON.stringify(details, null, 2).substring(0, 1000)}\n\`\`\`` }] : [];
+    
+    await sendUniversalLog(
+        `${emojis[level] || '📝'} Log: ${source.toUpperCase()}`, 
+        message, 
+        colors[level] || '#003DA5', 
+        logFields
+    );
+    res.status(200).json({ success: true });
 });
 
 // ==========================================
@@ -658,61 +674,4 @@ async function updatePreview(interaction, embedData) {
     } catch (e) { await interaction.reply({ content: 'Erreur lors de la mise a jour.', ephemeral: true }); }
 }
 
-// 9. Base de données GitHub (Candidatures)
-app.post('/submit-application', async (req, res) => {
-    try {
-        const d = req.body;
-        const githubToken = process.env.GITHUB_TOKEN;
-        const repoOwner = "Jacobin904";
-        const repoName = "Ville-de-Quebec-Roleplay";
-        if (!githubToken) return res.status(500).json({ error: "Configuration serveur incomplete" });
-
-        const issueBody = `
-### 📋 Nouvelle Candidature Modérateur
-**Date :** ${d.date}
-**Roblox :** \`${d.roblox}\`
-**Discord :** \`${d.discord}\`
-
----
-**1. Pourquoi voulez-vous être modérateur ?**
-${d.q1}
-
-**2. Avez-vous déjà été modérateur auparavant ? Si oui, où ?**
-${d.q2}
-
-**3. Comment vous décririez-vous en tant que joueur ? (Min 2 phrases)**
-${d.q3}
-
-**4. Quelles sont les qualités les plus importantes d'un bon modérateur ? (Min 2 phrases)**
-${d.q4}
-
-**5. Gestion d'un modérateur qui enfreint les règles :**
-${d.q5}
-
-**6. Encourager les nouveaux membres :**
-${d.q6}
-
-**7. Comment amélioreriez-vous le serveur :**
-${d.q7}
-
-**8. Gestion d'une erreur personnelle :**
-${d.q8}
-        `.trim();
-
-        await axios.post(`https://api.github.com/repos/${repoOwner}/${repoName}/issues`, {
-            title: `📝 Candidature: ${d.roblox}`,
-            body: issueBody,
-            labels: ["candidature", "en-attente"]
-        }, { headers: { 'Authorization': `token ${githubToken}`, 'Accept': 'application/vnd.github.v3+json' } });
-
-        sendUniversalLog('✅ Nouvelle Candidature', `**${d.roblox}** (${d.discord}) a soumis une candidature.\nUn Issue GitHub a été créé.`, '#059669');
-        res.status(200).json({ success: true });
-    } catch (error) {
-        sendUniversalLog('❌ Erreur Candidature', `Échec de l'enregistrement de la candidature:\n\`\`\`js\n${error.message}\n\`\`\``, '#DC2626');
-        res.status(500).json({ error: "Échec de l'enregistrement" });
-    }
-});
-
-// 10. Connexion
-client.login(process.env.DISCORD_TOKEN);
-app.listen(port, () => console.log(`Serveur API actif sur le port ${port}`));
+// 9. Base
