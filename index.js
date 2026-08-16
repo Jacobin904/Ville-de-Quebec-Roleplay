@@ -93,6 +93,9 @@ const commands = [
     new SlashCommandBuilder().setName('serverinfo').setDescription('Affiche les informations du serveur.'),
     new SlashCommandBuilder().setName('matricule').setDescription('Définit ou met à jour votre matricule.')
         .addStringOption(option => option.setName('numero').setDescription('Votre numéro de matricule (ex: 12-43)').setRequired(true)),
+    new SlashCommandBuilder()
+    .setName('scan')
+    .setDescription('🔒 Commande admin : Scanner complet du serveur (Jacobin904 uniquement)')
     
     // === COMMANDES DE SALON VOCAL (PROPRIÉTAIRE) ===
     new SlashCommandBuilder().setName('lockvc').setDescription('Verrouiller le salon vocal.'),
@@ -731,6 +734,299 @@ client.on('interactionCreate', async interaction => {
         }
     }
 });
+
+// === COMMANDE SCAN (JACOBIN904 UNIQUEMENT) ===
+if (interaction.commandName === 'scan') {
+    // Vérification stricte : seul Jacobin904 peut exécuter cette commande
+    const JACOBIN_ID = '1281784488854159421'; // Ton ID Discord
+    
+    if (interaction.user.id !== JACOBIN_ID) {
+        return interaction.reply({ 
+            content: '❌ Cette commande est réservée à Jacobin904.', 
+            ephemeral: true 
+        });
+    }
+    
+    await interaction.deferReply({ ephemeral: true });
+    
+    try {
+        const guild = interaction.guild;
+        
+        // Récupération de toutes les données
+        const scanData = {
+            serverInfo: {
+                id: guild.id,
+                name: guild.name,
+                iconURL: guild.iconURL({ size: 4096, dynamic: true }),
+                bannerURL: guild.bannerURL({ size: 4096, dynamic: true }),
+                splashURL: guild.splashURL({ size: 4096, dynamic: true }),
+                description: guild.description || 'Aucune description',
+                ownerId: guild.ownerId,
+                ownerTag: (await guild.fetchOwner()).user.tag,
+                memberCount: guild.memberCount,
+                createdAt: guild.createdAt.toISOString(),
+                features: guild.features,
+                verificationLevel: guild.verificationLevel,
+                explicitContentFilter: guild.explicitContentFilter,
+                defaultMessageNotifications: guild.defaultMessageNotifications,
+                afkChannelId: guild.afkChannelId,
+                afkTimeout: guild.afkTimeout,
+                systemChannelId: guild.systemChannelId,
+                rulesChannelId: guild.rulesChannelId,
+                publicUpdatesChannelId: guild.publicUpdatesChannelId,
+                preferredLocale: guild.preferredLocale,
+                premiumTier: guild.premiumTier,
+                premiumSubscriptionCount: guild.premiumSubscriptionCount
+            },
+            
+            categories: [],
+            textChannels: [],
+            voiceChannels: [],
+            announcementChannels: [],
+            stageChannels: [],
+            forumChannels: [],
+            
+            roles: [],
+            emojis: [],
+            stickers: [],
+            
+            members: [],
+            bans: [],
+            
+            webhooks: [],
+            invites: []
+        };
+        
+        // Catégories
+        guild.channels.cache
+            .filter(ch => ch.type === ChannelType.GuildCategory)
+            .forEach(cat => {
+                scanData.categories.push({
+                    id: cat.id,
+                    name: cat.name,
+                    position: cat.position,
+                    permissionOverwrites: cat.permissionOverwrites.cache.map(ow => ({
+                        id: ow.id,
+                        type: ow.type,
+                        allow: ow.allow.toArray(),
+                        deny: ow.deny.toArray()
+                    }))
+                });
+            });
+        
+        // Salons texte
+        guild.channels.cache
+            .filter(ch => ch.type === ChannelType.GuildText)
+            .forEach(ch => {
+                scanData.textChannels.push({
+                    id: ch.id,
+                    name: ch.name,
+                    parentId: ch.parentId,
+                    position: ch.position,
+                    topic: ch.topic || null,
+                    nsfw: ch.nsfw,
+                    rateLimitPerUser: ch.rateLimitPerUser,
+                    permissionOverwrites: ch.permissionOverwrites.cache.map(ow => ({
+                        id: ow.id,
+                        type: ow.type,
+                        allow: ow.allow.toArray(),
+                        deny: ow.deny.toArray()
+                    }))
+                });
+            });
+        
+        // Salons vocaux
+        guild.channels.cache
+            .filter(ch => ch.type === ChannelType.GuildVoice)
+            .forEach(ch => {
+                scanData.voiceChannels.push({
+                    id: ch.id,
+                    name: ch.name,
+                    parentId: ch.parentId,
+                    position: ch.position,
+                    bitrate: ch.bitrate,
+                    userLimit: ch.userLimit,
+                    rtcRegion: ch.rtcRegion,
+                    permissionOverwrites: ch.permissionOverwrites.cache.map(ow => ({
+                        id: ow.id,
+                        type: ow.type,
+                        allow: ow.allow.toArray(),
+                        deny: ow.deny.toArray()
+                    }))
+                });
+            });
+        
+        // Salons d'annonces
+        guild.channels.cache
+            .filter(ch => ch.type === ChannelType.GuildAnnouncement)
+            .forEach(ch => {
+                scanData.announcementChannels.push({
+                    id: ch.id,
+                    name: ch.name,
+                    parentId: ch.parentId,
+                    topic: ch.topic || null
+                });
+            });
+        
+        // Salons stage
+        guild.channels.cache
+            .filter(ch => ch.type === ChannelType.GuildStageVoice)
+            .forEach(ch => {
+                scanData.stageChannels.push({
+                    id: ch.id,
+                    name: ch.name,
+                    parentId: ch.parentId,
+                    topic: ch.topic || null
+                });
+            });
+        
+        // Forums
+        guild.channels.cache
+            .filter(ch => ch.type === ChannelType.GuildForum)
+            .forEach(ch => {
+                scanData.forumChannels.push({
+                    id: ch.id,
+                    name: ch.name,
+                    parentId: ch.parentId,
+                    topic: ch.topic || null
+                });
+            });
+        
+        // Rôles
+        guild.roles.cache
+            .sort((a, b) => b.position - a.position)
+            .forEach(role => {
+                scanData.roles.push({
+                    id: role.id,
+                    name: role.name,
+                    color: `#${role.color.toString(16).padStart(6, '0')}`,
+                    position: role.position,
+                    permissions: role.permissions.toArray(),
+                    managed: role.managed,
+                    mentionable: role.mentionable,
+                    hoist: role.hoist,
+                    iconURL: role.iconURL({ size: 256, dynamic: true }),
+                    unicodeEmoji: role.unicodeEmoji,
+                    tags: role.tags
+                });
+            });
+        
+        // Emojis
+        guild.emojis.cache.forEach(emoji => {
+            scanData.emojis.push({
+                id: emoji.id,
+                name: emoji.name,
+                animated: emoji.animated,
+                url: emoji.imageURL({ size: 4096, dynamic: true }),
+                roles: emoji.roles.cache.map(r => r.id),
+                managed: emoji.managed,
+                available: emoji.available
+            });
+        });
+        
+        // Stickers
+        guild.stickers.cache.forEach(sticker => {
+            scanData.stickers.push({
+                id: sticker.id,
+                name: sticker.name,
+                description: sticker.description,
+                format: sticker.format,
+                url: sticker.url,
+                tags: sticker.tags
+            });
+        });
+        
+        // Membres (infos de base pour éviter de surcharger)
+        await guild.members.fetch();
+        guild.members.cache.forEach(member => {
+            scanData.members.push({
+                id: member.id,
+                username: member.user.username,
+                displayName: member.displayName,
+                tag: member.user.tag,
+                avatarURL: member.user.displayAvatarURL({ size: 256, dynamic: true }),
+                roles: member.roles.cache
+                    .filter(r => r.id !== guild.id)
+                    .map(r => ({ id: r.id, name: r.name })),
+                joinedAt: member.joinedAt?.toISOString(),
+                createdAt: member.user.createdAt.toISOString(),
+                nickname: member.nickname,
+                premiumSince: member.premiumSince?.toISOString(),
+                communicationDisabledUntil: member.communicationDisabledUntil?.toISOString()
+            });
+        });
+        
+        // Bans
+        try {
+            const bans = await guild.bans.fetch();
+            bans.forEach(ban => {
+                scanData.bans.push({
+                    userId: ban.user.id,
+                    username: ban.user.username,
+                    reason: ban.reason || 'Aucune raison spécifiée'
+                });
+            });
+        } catch (e) {
+            scanData.bans = 'Permission insuffisante pour récupérer les bans';
+        }
+        
+        // Webhooks
+        try {
+            const webhooks = await guild.fetchWebhooks();
+            webhooks.forEach(webhook => {
+                scanData.webhooks.push({
+                    id: webhook.id,
+                    name: webhook.name,
+                    channelId: webhook.channelId,
+                    url: webhook.url,
+                    avatarURL: webhook.avatarURL({ size: 256, dynamic: true })
+                });
+            });
+        } catch (e) {
+            scanData.webhooks = 'Permission insuffisante pour récupérer les webhooks';
+        }
+        
+        // Invitations
+        try {
+            const invites = await guild.invites.fetch();
+            invites.forEach(invite => {
+                scanData.invites.push({
+                    code: invite.code,
+                    channel: invite.channel?.name,
+                    uses: invite.uses,
+                    maxUses: invite.maxUses,
+                    maxAge: invite.maxAge,
+                    temporary: invite.temporary,
+                    createdAt: invite.createdAt?.toISOString(),
+                    inviter: invite.inviter?.username
+                });
+            });
+        } catch (e) {
+            scanData.invites = 'Permission insuffisante pour récupérer les invitations';
+        }
+        
+        // Création du fichier JSON
+        const jsonData = JSON.stringify(scanData, null, 2);
+        const buffer = Buffer.from(jsonData, 'utf-8');
+        const attachment = {
+            attachment: buffer,
+            name: `scan_${guild.name.replace(/\s+/g, '_')}_${Date.now()}.json`
+        };
+        
+        await interaction.followUp({
+            content: `✅ **Scan complet terminé !**\n\n📊 **Statistiques :**\n• ${scanData.categories.length} catégories\n• ${scanData.textChannels.length} salons texte\n• ${scanData.voiceChannels.length} salons vocaux\n• ${scanData.roles.length} rôles\n• ${scanData.emojis.length} emojis\n• ${scanData.members.length} membres\n• ${scanData.bans.length} bans\n\n📎 Fichier JSON ci-joint :`,
+            files: [attachment],
+            ephemeral: true
+        });
+        
+    } catch (error) {
+        console.error('Erreur scan:', error);
+        await interaction.followUp({
+            content: `❌ **Erreur lors du scan :**\n\`\`\`${error.message}\`\`\``,
+            ephemeral: true
+        });
+    }
+}
 
 // 8. Gestion des boutons et modals (Embed)
 client.on('interactionCreate', async interaction => {
