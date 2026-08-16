@@ -97,9 +97,9 @@
             <a href="#" class="logo"><img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="Logo"><h1>Ville de Québec RP</h1></a>
             <ul class="nav-links">
                 <li><a href="#features">Fonctionnalités</a></li>
+                <li><a href="#stats">Statistiques</a></li>
                 <li><a href="#team">Équipe</a></li>
                 <li><a href="#actions">Rejoindre</a></li>
-                <li><a href="admin/">Administration</a></li>
             </ul>
         </nav></div>
     </header>
@@ -126,7 +126,31 @@
         </div>
     </section>
 
-    <section id="team" style="background:var(--nuit-1)">
+    <!-- Section Statistiques en Direct (Connectée au Bot) -->
+    <section id="stats" style="background:var(--nuit-1)">
+        <div class="container">
+            <div class="section-header"><h2>Statistiques en Direct</h2><p>Données mises à jour en temps réel par notre système.</p></div>
+            <div class="features-grid">
+                <div class="feature-card" style="text-align:center">
+                    <div class="feature-icon" style="margin:0 auto 24px"><i class="fas fa-users"></i></div>
+                    <h3 id="stat-members">Chargement...</h3>
+                    <p>Membres Totaux</p>
+                </div>
+                <div class="feature-card" style="text-align:center">
+                    <div class="feature-icon" style="margin:0 auto 24px"><i class="fas fa-signal"></i></div>
+                    <h3 id="stat-online">Chargement...</h3>
+                    <p>En Ligne</p>
+                </div>
+                <div class="feature-card" style="text-align:center">
+                    <div class="feature-icon" style="margin:0 auto 24px"><i class="fas fa-robot"></i></div>
+                    <h3 id="stat-ping">Chargement...</h3>
+                    <p>Latence du Bot</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="team">
         <div class="container">
             <div class="section-header"><h2>L'Équipe de Direction</h2><p>Une équipe passionnée pour faire vivre VQC.</p></div>
             <div class="team-grid">
@@ -146,7 +170,7 @@
         </div>
     </section>
 
-    <section id="actions">
+    <section id="actions" style="background:var(--nuit-1)">
         <div class="container">
             <div class="section-header"><h2>Rejoins-nous</h2><p>Des opportunités pour t'impliquer dans la communauté.</p></div>
             <div class="actions-grid">
@@ -175,9 +199,9 @@
                     <h4>Navigation</h4>
                     <ul>
                         <li><a href="#features">Fonctionnalités</a></li>
+                        <li><a href="#stats">Statistiques</a></li>
                         <li><a href="#team">Équipe</a></li>
                         <li><a href="#actions">Rejoindre</a></li>
-                        <li><a href="admin/">Administration</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -191,5 +215,26 @@
             <p style="border-top:1px solid var(--border);padding-top:30px;margin-top:20px">&copy; 2026 Ville de Québec Roleplay. Tous droits réservés. | Conçu par Jacobin Babouain</p>
         </div>
     </footer>
+
+    <script>
+        // Script pour récupérer les stats en direct depuis le bot Render
+        async function fetchLiveStats() {
+            try {
+                const res = await fetch('https://ville-de-quebec-roleplay.onrender.com/api/stats');
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('stat-members').innerText = data.totalMembers;
+                    document.getElementById('stat-online').innerText = data.onlineMembers;
+                    document.getElementById('stat-ping').innerText = data.botPing + ' ms';
+                }
+            } catch (e) {
+                document.getElementById('stat-members').innerText = 'Hors ligne';
+                document.getElementById('stat-online').innerText = 'Hors ligne';
+                document.getElementById('stat-ping').innerText = 'Hors ligne';
+            }
+        }
+        fetchLiveStats();
+        setInterval(fetchLiveStats, 30000); // Mise à jour toutes les 30 secondes
+    </script>
 </body>
 </html>
