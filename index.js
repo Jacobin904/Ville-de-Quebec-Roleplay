@@ -88,7 +88,7 @@ client.on('messageDelete', async message => {
 });
 
 // ============================================================
-// 6. Système de Salon Vocal Temporaire (AMÉLIORÉ)
+// 6. Système de Salon Vocal Temporaire (CORRIGÉ)
 // ============================================================
 client.on('voiceStateUpdate', async (oldState, newState) => {
     const member = newState.member;
@@ -101,17 +101,17 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
             const category = joinChannel.parent;
             const displayName = member.displayName;
             
-            // Récupérer les permissions de la catégorie parente pour les hériter
+            // Récupérer les permissions de la catégorie parente
             const categoryOverwrites = category ? category.permissionOverwrites.cache : new Map();
             
-            // Convertir les permissions de la catégorie en format utilisable
+            // Convertir les overwrites de la catégorie en format utilisable
             const inheritedOverwrites = [];
             categoryOverwrites.forEach((overwrite) => {
                 inheritedOverwrites.push({
                     id: overwrite.id,
                     type: overwrite.type,
-                    allow: overwrite.allow.bitfield,
-                    deny: overwrite.deny.bitfield
+                    allow: overwrite.allow,
+                    deny: overwrite.deny
                 });
             });
 
@@ -120,7 +120,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
                 PermissionFlagsBits.ViewChannel,
                 PermissionFlagsBits.Connect,
                 PermissionFlagsBits.Speak,
-                PermissionFlagsBits.PrioritySpeaker,  // ✅ PRIORITÉ À LA PAROLE
+                PermissionFlagsBits.PrioritySpeaker,
                 PermissionFlagsBits.MuteMembers,
                 PermissionFlagsBits.DeafenMembers,
                 PermissionFlagsBits.MoveMembers,
@@ -139,8 +139,8 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
                     {
                         id: member.id,
                         type: 0, // 0 = member
-                        allow: ownerPermissions.bitfield,
-                        deny: 0
+                        allow: ownerPermissions
+                        // ✅ PAS DE "deny: 0" - on omet simplement le champ deny
                     }
                 ]
             });
@@ -151,7 +151,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
             // Enregistrer le propriétaire
             client.tempVoiceChannels.set(newChannel.id, member.id);
             
-            // Message de bienvenue dans le salon (optionnel)
+            // Message de bienvenue dans le salon
             await newChannel.send(`Bienvenue **${displayName}** ! Tu es le propriétaire de ce salon vocal. Tu as la priorité à la parole et les permissions de gestion.`).catch(() => {});
             
         } catch (error) {
