@@ -1,7 +1,7 @@
 {
   "name": "vqc-discord-bot",
   "version": "3.0.0",
-  "description": "Bot Discord pour Ville de Québec Roleplay",
+  "description": "Bot Discord et API pour Ville de Québec Roleplay",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
