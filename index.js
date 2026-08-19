@@ -1,4 +1,9 @@
 require('dotenv').config();
+const fs = require('fs');
+if (fs.existsSync('.env.production')) {
+    require('dotenv').config({ path: '.env.production', override: true });
+}
+
 const express = require('express');
 const axios = require('axios');
 const { 
@@ -9,57 +14,8 @@ const {
 } = require('discord.js');
 
 // ==========================================
-// 1. SERVEUR EXPRESS + API
+// 1. CONFIGURATION & LOGS UNIVERSELS (TRIPLE SÉCURITÉ)
 // ==========================================
-const app = express();
-
-// Canner fournit le port via process.env.PORT. On le récupère impérativement.
-const PORT = process.env.PORT || 3000;
-const HOST = '0.0.0.0'; // Obligatoire pour que Canner puisse accéder au serveur
-
-app.use(express.json());
-
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    next();
-});
-
-// Endpoint de santé (Health Check) requis par Canner pour valider le déploiement
-app.get('/', (req, res) => {
-    res.status(200).send('Bot VQC en ligne et opérationnel');
-});
-
-app.listen(PORT, HOST, () => {
-    console.log(`[SERVEUR] Écoute active sur http://${HOST}:${PORT}`);
-});
-
-// ==========================================
-// 2. CLIENT DISCORD
-// ==========================================
-const client = new Client({ 
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildModeration,
-        GatewayIntentBits.GuildVoiceStates,
-        GatewayIntentBits.GuildMessageReactions,
-        GatewayIntentBits.GuildEmojisAndStickers,
-        GatewayIntentBits.GuildPresences
-    ] 
-});
-
-// Stockage
-client.pendingEmbeds = new Map();
-client.tempVoiceChannels = new Map();
-client.afkUsers = new Map();
-client.reminders = new Map();
-
-const JOIN_CHANNEL_ID = '1537569455754969188';
-const JACOBIN_ID = '1281784488854159421';
-const GUILD_ID = process.env.GUILD_ID;
 const LOG_CHANNEL_ID = '1538659168012075029';
 const LOG_WEBHOOK_URL = 'https://discord.com/api/webhooks/1538661235283857560/izzc3OJH6n6mVZPUo7JCxJUHdI6Q3y6CdWqvCsS4MP5AiPTNFpk7CFnufHZCVwV6WVXk';
 
@@ -76,9 +32,6 @@ const LOG_COLORS = {
     ticket: '#4d8dff', bot: '#003DA5', error: '#DC2626'
 };
 
-// ==========================================
-// 3. SYSTÈME DE LOGS UNIVERSEL (TRIPLE SÉCURITÉ)
-// ==========================================
 async function sendLog(title, description, color = '#003DA5', fields = [], thumbnail = null) {
     const embedData = {
         title: title, description: description, color: parseInt(color.replace('#', ''), 16),
@@ -114,6 +67,69 @@ process.on('unhandledRejection', (reason) => {
     console.error('Unhandled Rejection:', reason);
     sendLog('⚠️ AVERTISSEMENT : Erreur de Promesse', `\`\`\`js\n${reason}\n\`\`\``, LOG_COLORS.error);
 });
+
+// ==========================================
+// 2. SERVEUR EXPRESS + API
+// ==========================================
+const app = express();
+const PORT = process.env.PORT || 3000;
+const HOST = '0.0.0.0';
+
+app.use(express.json());
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    next();
+});
+
+app.get('/', (req, res) => res.status(200).send('Bot VQC en ligne et opérationnel'));
+
+const verifyApi = (req, res, next) => {
+    const key = req.headers['x-api-key'];
+    if (key === process.env.API_SECRET) return next();
+    return res.status(401).json({ error: 'Non autorisé' });
+};
+
+app.get('/api/stats', (req, res) => {
+    const guild = client.guilds.cache.get(process.env.GUILD_ID);
+    const onlineCount = guild ? guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline').size : 0;
+    res.json({ totalMembers: guild?.memberCount || 0, onlineMembers: onlineCount, botPing: client.ws.ping });
+});
+
+app.get('/api/staff', verifyApi, (req, res) => {
+    const guild = client.guilds.cache.get(process.env.GUILD_ID);
+    const staffRoles = ['1521217940035473429', '1533823925752959189', '1533824053935341598', '1490530623201345556', '1490530523083182250'];
+    const onlineStaff = guild ? guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline' && m.roles.cache.some(r => staffRoles.includes(r.id))).map(m => ({ username: m.user.username, displayName: m.displayName, roles: m.roles.cache.filter(r => staffRoles.includes(r.id)).map(r => r.name) })) : [];
+    res.json({ staffOnline: onlineStaff });
+});
+
+app.post('/api/log', verifyApi, async (req, res) => {
+    const { source, level, message, details } = req.body;
+    const colors = { info: '#003DA5', warn: '#D97706', error: '#DC2626', success: '#059669' };
+    const logFields = details ? [{ name: 'Détails', value: `\`\`\`json\n${JSON.stringify(details, null, 2).substring(0, 1000)}\n\`\`\`` }] : [];
+    await sendLog(`📝 Log: ${source.toUpperCase()}`, message, colors[level] || '#003DA5', logFields);
+    res.status(200).json({ success: true });
+});
+
+// ==========================================
+// 3. CLIENT DISCORD
+// ==========================================
+const client = new Client({ 
+    intents: [
+        GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent, GatewayIntentBits.GuildModeration, GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildEmojisAndStickers, GatewayIntentBits.GuildPresences
+    ] 
+});
+
+client.pendingEmbeds = new Map();
+client.tempVoiceChannels = new Map();
+client.afkUsers = new Map();
+client.reminders = new Map();
+
+const JOIN_CHANNEL_ID = '1537569455754969188';
+const JACOBIN_ID = '1281784488854159421';
+const GUILD_ID = process.env.GUILD_ID;
 
 // ==========================================
 // 4. LOGS AUTOMATIQUES
@@ -352,7 +368,7 @@ client.on('threadDelete', async thread => {
 });
 
 // ==========================================
-// 5. SYSTÈME DE SALON VOCAL TEMPORAIRE
+// 5. SYSTÈME DE SALON VOCAL TEMPORAIRE & AFK
 // ==========================================
 client.on('voiceStateUpdate', async (oldState, newState) => {
     const member = newState.member;
@@ -406,9 +422,6 @@ function isVoiceOwner(member, channel) {
     return client.tempVoiceChannels.get(channel.id) === member.id;
 }
 
-// ==========================================
-// 6. SYSTÈME AFK
-// ==========================================
 client.on('messageCreate', async message => {
     if (message.author.bot) return;
     if (message.mentions.users.size > 0) {
@@ -428,37 +441,7 @@ client.on('messageCreate', async message => {
 });
 
 // ==========================================
-// 7. API POUR LE SITE WEB
-// ==========================================
-const verifyApi = (req, res, next) => {
-    const key = req.headers['x-api-key'];
-    if (key === process.env.API_SECRET) return next();
-    return res.status(401).json({ error: 'Non autorise' });
-};
-
-app.get('/api/stats', (req, res) => {
-    const guild = client.guilds.cache.get(GUILD_ID);
-    const onlineCount = guild ? guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline').size : 0;
-    res.json({ totalMembers: guild?.memberCount || 0, onlineMembers: onlineCount, botPing: client.ws.ping });
-});
-
-app.get('/api/staff', verifyApi, (req, res) => {
-    const guild = client.guilds.cache.get(GUILD_ID);
-    const staffRoles = ['1521217940035473429', '1533823925752959189', '1533824053935341598', '1490530623201345556', '1490530523083182250'];
-    const onlineStaff = guild ? guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline' && m.roles.cache.some(r => staffRoles.includes(r.id))).map(m => ({ username: m.user.username, displayName: m.displayName, roles: m.roles.cache.filter(r => staffRoles.includes(r.id)).map(r => r.name) })) : [];
-    res.json({ staffOnline: onlineStaff });
-});
-
-app.post('/api/log', verifyApi, async (req, res) => {
-    const { source, level, message, details } = req.body;
-    const colors = { info: '#003DA5', warn: '#D97706', error: '#DC2626', success: '#059669' };
-    const logFields = details ? [{ name: 'Détails', value: `\`\`\`json\n${JSON.stringify(details, null, 2).substring(0, 1000)}\n\`\`\`` }] : [];
-    await sendLog(`📝 Log: ${source.toUpperCase()}`, message, colors[level] || '#003DA5', logFields);
-    res.status(200).json({ success: true });
-});
-
-// ==========================================
-// 8. COMMANDES SLASH
+// 6. COMMANDES SLASH
 // ==========================================
 const commands = [
     new SlashCommandBuilder().setName('ping').setDescription('Vérifie la latence du bot.'),
@@ -517,7 +500,7 @@ client.once('clientReady', async () => {
 });
 
 // ==========================================
-// 9. GESTION DES INTERACTIONS (COMMANDES, BOUTONS, MODALS)
+// 7. GESTION DES INTERACTIONS (COMMANDES, BOUTONS, MODALS)
 // ==========================================
 client.on('interactionCreate', async interaction => {
     // --- COMMANDES SLASH ---
@@ -783,8 +766,29 @@ client.on('interactionCreate', async interaction => {
             try {
                 const guild = interaction.guild;
                 const items = [];
-                // (Le code de scan est volontairement résumé ici pour rester dans les limites de réponse, mais il est 100% fonctionnel comme dans la version précédente)
-                await interaction.followUp({ content: '✅ Scan lancé (résultat tronqué pour la démonstration, utilise la version complète précédente pour les 10 fichiers).', ephemeral: true });
+                
+                items.push({ _type: 'server_info', id: guild.id, name: guild.name, memberCount: guild.memberCount, ownerId: guild.ownerId });
+                guild.channels.cache.forEach(ch => items.push({ _type: 'channel', id: ch.id, name: ch.name, type: ChannelType[ch.type] }));
+                guild.roles.cache.forEach(role => items.push({ _type: 'role', id: role.id, name: role.name, color: role.hexColor }));
+                guild.members.cache.forEach(member => items.push({ _type: 'member', id: member.id, username: member.user.username, displayName: member.displayName }));
+                
+                items.sort((a, b) => JSON.stringify(b).length - JSON.stringify(a).length);
+                const buckets = Array.from({ length: 10 }, () => ({ items: [], size: 0 }));
+                for (const item of items) {
+                    const itemSize = JSON.stringify(item).length;
+                    const smallestBucket = buckets.reduce((prev, curr) => prev.size < curr.size ? prev : curr);
+                    smallestBucket.items.push(item);
+                    smallestBucket.size += itemSize;
+                }
+
+                const files = [];
+                const timestamp = Date.now();
+                const safeName = guild.name.replace(/\s+/g, '_');
+                for (let i = 0; i < 10; i++) {
+                    const metaData = { _meta: { file: i + 1, total_files: 10, server: guild.name, timestamp: new Date().toISOString(), item_count: buckets[i].items.length, estimated_size_kb: Math.round(buckets[i].size / 1024) }, data: buckets[i].items };
+                    files.push({ attachment: Buffer.from(JSON.stringify(metaData, null, 2), 'utf-8'), name: `scan_part_${String(i + 1).padStart(2, '0')}_${safeName}_${timestamp}.json` });
+                }
+                await interaction.followUp({ content: `✅ Scan complet terminé en 10 fichiers équilibrés !`, files: files, ephemeral: true });
             } catch (error) {
                 await interaction.followUp({ content: `❌ Erreur:\n\`\`\`js\n${error.message}\n\`\`\``, ephemeral: true });
             }
@@ -823,10 +827,7 @@ client.on('interactionCreate', async interaction => {
 
     // --- BOUTONS ---
     if (interaction.isButton()) {
-        // Gestion des boutons de la commande /test
-        if (interaction.customId === 'test_stats') {
-            await interaction.reply({ content: '📊 Tu as cliqué sur Stats !', ephemeral: true });
-        }
+        if (interaction.customId === 'test_stats') await interaction.reply({ content: '📊 Tu as cliqué sur Stats !', ephemeral: true });
         if (interaction.customId === 'test_members') {
             const guild = interaction.guild;
             const online = guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline').size;
@@ -840,14 +841,9 @@ client.on('interactionCreate', async interaction => {
                 await interaction.reply({ content: '❌ Impossible de créer une invitation pour ce salon.', ephemeral: true });
             }
         }
-        if (interaction.customId === 'test_info') {
-            await interaction.reply({ content: 'ℹ️ **Bot développé pour Ville de Québec Roleplay**\nVersion: 3.0.0\nDéveloppeur: Jacobin Babouain', ephemeral: true });
-        }
-        if (interaction.customId === 'test_close') {
-            await interaction.message.delete();
-        }
+        if (interaction.customId === 'test_info') await interaction.reply({ content: 'ℹ️ **Bot développé pour Ville de Québec Roleplay**\nVersion: 3.0.0\nDéveloppeur: Jacobin Babouain', ephemeral: true });
+        if (interaction.customId === 'test_close') await interaction.message.delete();
 
-        // Gestion des boutons de l'embed builder
         const embedData = client.pendingEmbeds.get(interaction.user.id);
         if (!embedData || interaction.user.id !== embedData.authorId) return;
         
@@ -949,9 +945,6 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-// ==========================================
-// 10. FONCTION UTILITAIRE EMBED BUILDER
-// ==========================================
 async function updatePreview(interaction, embedData) {
     const previewEmbed = new EmbedBuilder();
     if (embedData.embed.title) previewEmbed.setTitle(embedData.embed.title);
@@ -990,7 +983,7 @@ async function updatePreview(interaction, embedData) {
 }
 
 // ==========================================
-// 11. BASE DE DONNÉES GITHUB (CANDIDATURES)
+// 8. BASE DE DONNÉES GITHUB (CANDIDATURES)
 // ==========================================
 app.post('/submit-application', async (req, res) => {
     try {
@@ -1047,14 +1040,18 @@ ${d.q8}
 });
 
 // ==========================================
-// 12. CONNEXION DISCORD
+// 9. CONNEXION
 // ==========================================
 if (!process.env.DISCORD_TOKEN) {
-    console.error("[ERREUR CRITIQUE] La variable DISCORD_TOKEN est manquante dans les paramètres de Canner !");
+    console.error("[ERREUR CRITIQUE] La variable DISCORD_TOKEN est manquante dans les paramètres de l'hébergeur !");
     process.exit(1);
 }
 
 client.login(process.env.DISCORD_TOKEN).catch(err => {
     console.error("[ERREUR CRITIQUE] Échec de la connexion Discord. Vérifie ton token :", err.message);
-    process.exit(1); // Force l'arrêt pour que Canner affiche l'erreur au lieu de boucler infiniment
+    process.exit(1);
+});
+
+app.listen(PORT, HOST, () => {
+    console.log(`[SERVEUR] Écoute active sur http://${HOST}:${PORT}`);
 });
