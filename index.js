@@ -12,7 +12,11 @@ const {
 // 1. SERVEUR EXPRESS + API
 // ==========================================
 const app = express();
-const port = process.env.PORT || 3000;
+
+// Canner fournit le port via process.env.PORT. On le récupère impérativement.
+const PORT = process.env.PORT || 3000;
+const HOST = '0.0.0.0'; // Obligatoire pour que Canner puisse accéder au serveur
+
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -21,7 +25,14 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/', (req, res) => res.send('Bot VQC en ligne'));
+// Endpoint de santé (Health Check) requis par Canner pour valider le déploiement
+app.get('/', (req, res) => {
+    res.status(200).send('Bot VQC en ligne et opérationnel');
+});
+
+app.listen(PORT, HOST, () => {
+    console.log(`[SERVEUR] Écoute active sur http://${HOST}:${PORT}`);
+});
 
 // ==========================================
 // 2. CLIENT DISCORD
@@ -1036,7 +1047,14 @@ ${d.q8}
 });
 
 // ==========================================
-// 12. CONNEXION
+// 12. CONNEXION DISCORD
 // ==========================================
-client.login(process.env.DISCORD_TOKEN);
-app.listen(port, () => console.log(`Serveur API actif sur le port ${port}`));
+if (!process.env.DISCORD_TOKEN) {
+    console.error("[ERREUR CRITIQUE] La variable DISCORD_TOKEN est manquante dans les paramètres de Canner !");
+    process.exit(1);
+}
+
+client.login(process.env.DISCORD_TOKEN).catch(err => {
+    console.error("[ERREUR CRITIQUE] Échec de la connexion Discord. Vérifie ton token :", err.message);
+    process.exit(1); // Force l'arrêt pour que Canner affiche l'erreur au lieu de boucler infiniment
+});
