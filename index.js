@@ -212,7 +212,6 @@ process.on('unhandledRejection', (reason) => {
 // 6. MODULES CARL-BOT - LOGS AUTOMATIQUES
 // ==========================================
 client.on('guildMemberAdd', async member => {
-    // Welcome module
     if (db.welcome.enabled && db.welcome.channel) {
         const channel = client.channels.cache.get(db.welcome.channel);
         if (channel) {
@@ -220,14 +219,12 @@ client.on('guildMemberAdd', async member => {
             await channel.send(msg);
         }
     }
-    // Autoroles module
     if (db.autoroles.has('join')) {
         const roles = db.autoroles.get('join');
         for (const roleId of roles) {
             try { await member.roles.add(roleId); } catch (e) {}
         }
     }
-    // Action Log
     await sendLog('📥 Nouveau Membre', `**${member.user.tag}** a rejoint le serveur.`, '#059669', [
         { name: 'Identifiant', value: member.id, inline: true },
         { name: 'Compte créé', value: `<t:${Math.floor(member.user.createdTimestamp / 1000)}:R>`, inline: true },
@@ -237,7 +234,6 @@ client.on('guildMemberAdd', async member => {
 });
 
 client.on('guildMemberRemove', async member => {
-    // Leave module
     if (db.leave.enabled && db.leave.channel) {
         const channel = client.channels.cache.get(db.leave.channel);
         if (channel) {
@@ -267,7 +263,7 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
         await sendServerLog('Rôle Ajouté', `**${newMember.user.tag}**\nRôles: ${added.map(r => r.name).join(', ')}`, '#D97706');
     }
     if (removed.size > 0) {
-        await sendLog(' Rôle Retiré', `**${newMember.user.tag}** a perdu des rôles.`, '#D97706', [{ name: 'Rôles', value: removed.map(r => r.name).join(', ') }], newMember.user.displayAvatarURL({ size: 256, dynamic: true }));
+        await sendLog('➖ Rôle Retiré', `**${newMember.user.tag}** a perdu des rôles.`, '#D97706', [{ name: 'Rôles', value: removed.map(r => r.name).join(', ') }], newMember.user.displayAvatarURL({ size: 256, dynamic: true }));
         await sendServerLog('Rôle Retiré', `**${newMember.user.tag}**\nRôles: ${removed.map(r => r.name).join(', ')}`, '#D97706');
     }
 });
@@ -335,7 +331,6 @@ client.on('messageCreate', async message => {
     if (message.author.bot) return;
     if (!message.guild) return;
 
-    // AFK Module
     if (message.mentions.users.size > 0) {
         for (const [userId, afkData] of db.afk) {
             if (message.mentions.users.has(userId)) {
@@ -351,20 +346,17 @@ client.on('messageCreate', async message => {
         }
     }
 
-    // Levels Module
     const xpGain = Math.floor(Math.random() * 20) + 10;
     const newLevel = addXP(message.author.id, xpGain);
     if (newLevel) {
         await message.reply(`🎉 Félicitations **${message.author}** ! Tu es passé au niveau **${newLevel}** !`);
     }
 
-    // Economy Module
     const ecoData = getEconomy(message.author.id);
     if (Math.random() < 0.1) {
         ecoData.coins += Math.floor(Math.random() * 5) + 1;
     }
 
-    // Automod Module
     const content = message.content.toLowerCase();
     if (db.automod.badWords.some(word => content.includes(word))) {
         await message.delete().catch(() => {});
@@ -373,7 +365,6 @@ client.on('messageCreate', async message => {
         return;
     }
 
-    // Autoresponder Module
     for (const [trigger, response] of db.autoresponders) {
         if (content.includes(trigger.toLowerCase())) {
             await message.reply(response);
@@ -381,7 +372,6 @@ client.on('messageCreate', async message => {
         }
     }
 
-    // Custom Commands Module
     if (content.startsWith('!')) {
         const cmdName = content.slice(1).split(' ')[0].toLowerCase();
         if (db.customCommands.has(cmdName)) {
@@ -391,7 +381,6 @@ client.on('messageCreate', async message => {
         }
     }
 
-    // Tags Module
     if (content.startsWith('!tag ')) {
         const tagName = content.slice(5).toLowerCase();
         if (db.tags.has(tagName)) {
@@ -400,13 +389,11 @@ client.on('messageCreate', async message => {
         }
     }
 
-    // Auto Delete Module
     if (db.autoDelete.has(message.channel.id)) {
         const delay = db.autoDelete.get(message.channel.id);
         setTimeout(() => { message.delete().catch(() => {}); }, delay * 1000);
     }
 
-    // Starboard Module
     if (db.starboard.has(message.channel.id)) {
         const config = db.starboard.get(message.channel.id);
         if (message.reactions.cache.get(config.emoji)?.count >= config.threshold) {
@@ -417,7 +404,6 @@ client.on('messageCreate', async message => {
         }
     }
 
-    // Highlights Module
     for (const [userId, keywords] of db.highlights) {
         if (userId === message.author.id) continue;
         for (const keyword of keywords) {
@@ -430,7 +416,6 @@ client.on('messageCreate', async message => {
         }
     }
 
-    // Counting Module
     if (db.counting.enabled && message.channel.id === db.counting.channel) {
         const num = parseInt(message.content);
         if (!isNaN(num)) {
@@ -452,7 +437,6 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
     const member = newState.member;
     if (!member) return;
 
-    // Voice Text Linking Module
     if (!oldState.channel && newState.channel) {
         if (db.voiceTextChannels.has(newState.channel.id)) {
             const textChannelId = db.voiceTextChannels.get(newState.channel.id);
@@ -463,7 +447,6 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
         }
     }
 
-    // Temp Voice Channels
     if (newState.channelId === JOIN_CHANNEL_ID && oldState.channelId !== JOIN_CHANNEL_ID) {
         try {
             const joinChannel = newState.channel;
@@ -501,7 +484,6 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
         }
     }
 
-    // Reaction Roles Module (via voice)
     if (!oldState.channel && newState.channel) {
         const roleId = db.reactionRoles.get(`voice_${newState.channel.id}`);
         if (roleId) {
@@ -518,13 +500,11 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
 
 client.on('messageReactionAdd', async (reaction, user) => {
     if (user.bot) return;
-    // Reaction Roles Module
     const key = `${reaction.message.id}_${reaction.emoji.name}`;
     if (db.reactionRoles.has(key)) {
         const roleId = db.reactionRoles.get(key);
         try { await reaction.message.guild.members.cache.get(user.id).roles.add(roleId); } catch (e) {}
     }
-    // Starboard Module
     if (db.starboard.has(reaction.message.channel.id)) {
         const config = db.starboard.get(reaction.message.channel.id);
         if (reaction.emoji.name === config.emoji && reaction.count >= config.threshold) {
@@ -546,7 +526,7 @@ client.on('messageReactionRemove', async (reaction, user) => {
 });
 
 // ==========================================
-// 9. COMMANDES SLASH - CARL-BOT STYLE
+// 9. COMMANDES SLASH
 // ==========================================
 const commands = [
     new SlashCommandBuilder().setName('ping').setDescription('Vérifie la latence du bot.'),
@@ -591,7 +571,6 @@ const commands = [
     new SlashCommandBuilder().setName('vcinfo').setDescription('Voir les infos du salon vocal.'),
     new SlashCommandBuilder().setName('scan').setDescription('Scanner complet du serveur en 10 fichiers (Jacobin904 uniquement)'),
     new SlashCommandBuilder().setName('test').setDescription('Test embed avec boutons'),
-    // Carl-bot Modules
     new SlashCommandBuilder().setName('rank').setDescription('Voir ton rang et ton XP.'),
     new SlashCommandBuilder().setName('leaderboard').setDescription('Voir le classement XP.'),
     new SlashCommandBuilder().setName('balance').setDescription('Voir ton solde.'),
@@ -662,7 +641,7 @@ client.on('interactionCreate', async interaction => {
         }
 
         if (interaction.commandName === 'invite') {
-            await interaction.reply({ embeds: [createEmbed(' Invitation', `[Clique ici pour inviter le bot](https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands)`, '#003DA5')] });
+            await interaction.reply({ embeds: [createEmbed('🔗 Invitation', `[Clique ici pour inviter le bot](https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands)`, '#003DA5')] });
         }
 
         if (interaction.commandName === 'avatar') {
@@ -697,7 +676,7 @@ client.on('interactionCreate', async interaction => {
             const role = interaction.options.getRole('role');
             await interaction.reply({ embeds: [createEmbed(`🎭 Rôle : ${role.name}`, `Détails du rôle **@${role.name}**.`, role.color || '#003DA5', [
                 { name: '🆔 Identifiant', value: role.id, inline: true },
-                { name: ' Position', value: `${role.position}`, inline: true },
+                { name: '📊 Position', value: `${role.position}`, inline: true },
                 { name: '👥 Membres', value: `${role.members.size}`, inline: true }
             ])] });
         }
@@ -730,8 +709,8 @@ client.on('interactionCreate', async interaction => {
             if (options.length < 2 || options.length > 10) {
                 return interaction.reply({ embeds: [createEmbed('❌ Erreur', 'Veuillez fournir entre 2 et 10 options.', '#DC2626')], ephemeral: true });
             }
-            const emojis = ['1️⃣', '2️⃣', '3️', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️', '9️⃣', ''];
-            const embed = createEmbed(` Sondage : ${question}`, options.map((opt, i) => `${emojis[i]} ${opt}`).join('\n'), '#003DA5').setFooter({ text: `Sondage par ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ size: 256 }) });
+            const emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+            const embed = createEmbed(`📊 Sondage : ${question}`, options.map((opt, i) => `${emojis[i]} ${opt}`).join('\n'), '#003DA5').setFooter({ text: `Sondage par ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ size: 256 }) });
             const message = await interaction.reply({ embeds: [embed], fetchReply: true });
             for (let i = 0; i < options.length; i++) await message.react(emojis[i]);
         }
@@ -766,7 +745,7 @@ client.on('interactionCreate', async interaction => {
         if (interaction.commandName === 'rps') {
             const choix = interaction.options.getString('choix');
             const choixBot = ['pierre', 'papier', 'ciseaux'][Math.floor(Math.random() * 3)];
-            const emojis = { pierre: '🪨', papier: '', ciseaux: '✂️' };
+            const emojis = { pierre: '🪨', papier: '📄', ciseaux: '✂️' };
             let result = choix === choixBot ? 'Match nul !' : ((choix === 'pierre' && choixBot === 'ciseaux') || (choix === 'papier' && choixBot === 'pierre') || (choix === 'ciseaux' && choixBot === 'papier')) ? 'Tu as gagné !' : 'Tu as perdu !';
             await interaction.reply({ embeds: [createEmbed('✂️ Pierre Papier Ciseaux', `${emojis[choix]} vs ${emojis[choixBot]}\n\n**Résultat :** ${result}`, '#003DA5')] });
         }
@@ -806,7 +785,7 @@ client.on('interactionCreate', async interaction => {
         if (interaction.commandName === 'cat') {
             try {
                 const res = await axios.get('https://api.thecatapi.com/v1/images/search');
-                await interaction.reply({ embeds: [createEmbed(' Chat Aléatoire', 'Voici un chat mignon !', '#003DA5', [], res.data[0].url)] });
+                await interaction.reply({ embeds: [createEmbed('🐱 Chat Aléatoire', 'Voici un chat mignon !', '#003DA5', [], res.data[0].url)] });
             } catch (e) { 
                 await interaction.reply({ embeds: [createEmbed('❌ Erreur', 'Impossible de récupérer une image.', '#DC2626')], ephemeral: true }); 
             }
@@ -841,8 +820,8 @@ client.on('interactionCreate', async interaction => {
             const guild = interaction.guild;
             const owner = await guild.fetchOwner();
             const embed = createEmbed(`📊 Statistiques du Serveur`, `Aperçu en temps réel de **${guild.name}**.`, '#003DA5', [
-                { name: ' Membres', value: `**${guild.memberCount}** membres\n🟢 **${guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline').size}** en ligne`, inline: true },
-                { name: ' Catégories', value: `**${guild.channels.cache.filter(ch => ch.type === ChannelType.GuildCategory).size}**`, inline: true },
+                { name: '👥 Membres', value: `**${guild.memberCount}** membres\n🟢 **${guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline').size}** en ligne`, inline: true },
+                { name: '📂 Catégories', value: `**${guild.channels.cache.filter(ch => ch.type === ChannelType.GuildCategory).size}**`, inline: true },
                 { name: '💬 Salons', value: `**${guild.channels.cache.size}** au total`, inline: true },
                 { name: '🎭 Rôles', value: `**${guild.roles.cache.size}** rôles`, inline: true },
                 { name: '😊 Emojis', value: `**${guild.emojis.cache.size}** personnalisés`, inline: true },
@@ -853,13 +832,13 @@ client.on('interactionCreate', async interaction => {
 
             const row1 = new ActionRowBuilder()
                 .addComponents(
-                    new ButtonBuilder().setCustomId('test_stats').setLabel(' Stats').setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder().setCustomId('test_stats').setLabel('📊 Stats').setStyle(ButtonStyle.Primary),
                     new ButtonBuilder().setCustomId('test_members').setLabel('👥 Membres').setStyle(ButtonStyle.Secondary),
                     new ButtonBuilder().setCustomId('test_invite').setLabel('🔗 Invitation').setStyle(ButtonStyle.Success)
                 );
             const row2 = new ActionRowBuilder()
                 .addComponents(
-                    new ButtonBuilder().setCustomId('test_info').setLabel('ℹ️ Infos').setStyle(ButtonStyle.Info),
+                    new ButtonBuilder().setCustomId('test_info').setLabel('ℹ️ Infos').setStyle(ButtonStyle.Secondary), // CORRIGÉ ICI
                     new ButtonBuilder().setCustomId('test_close').setLabel('❌ Fermer').setStyle(ButtonStyle.Danger)
                 );
             await interaction.reply({ embeds: [embed], components: [row1, row2] });
@@ -913,9 +892,9 @@ client.on('interactionCreate', async interaction => {
             const roles = member.roles.cache.filter(r => r.id !== member.guild.id).map(r => r.name).join(', ') || 'Aucun';
             await interaction.reply({ embeds: [createEmbed(`👤 Informations Utilisateur`, `Détails de **${member.user.username}**.`, '#003DA5', [
                 { name: '🏷️ Pseudo', value: member.displayName, inline: true },
-                { name: ' Identifiant', value: member.id, inline: true },
+                { name: '🆔 Identifiant', value: member.id, inline: true },
                 { name: '📅 Compte créé', value: `<t:${Math.floor(member.user.createdTimestamp / 1000)}:D>`, inline: true },
-                { name: ' A rejoint le', value: member.joinedTimestamp ? `<t:${Math.floor(member.joinedTimestamp / 1000)}:D>` : 'Inconnu', inline: true },
+                { name: '🚪 A rejoint le', value: member.joinedTimestamp ? `<t:${Math.floor(member.joinedTimestamp / 1000)}:D>` : 'Inconnu', inline: true },
                 { name: '🎭 Rôles', value: roles.substring(0, 1000), inline: false }
             ], member.user.displayAvatarURL({ size: 4096, dynamic: true }))] });
         }
@@ -923,7 +902,7 @@ client.on('interactionCreate', async interaction => {
         if (interaction.commandName === 'serverinfo') {
             const guild = interaction.guild;
             const owner = await guild.fetchOwner();
-            await interaction.reply({ embeds: [createEmbed(` Informations du Serveur`, `Détails de **${guild.name}**.`, '#003DA5', [
+            await interaction.reply({ embeds: [createEmbed(`📊 Informations du Serveur`, `Détails de **${guild.name}**.`, '#003DA5', [
                 { name: '👑 Propriétaire', value: `${owner.user}`, inline: true },
                 { name: '🆔 Identifiant', value: guild.id, inline: true },
                 { name: '👥 Membres', value: `${guild.memberCount} membres`, inline: true },
@@ -967,7 +946,6 @@ client.on('interactionCreate', async interaction => {
             }
         }
 
-        // Carl-bot Modules
         if (interaction.commandName === 'rank') {
             const member = interaction.options.getMember('membre') || interaction.member;
             const data = getXP(member.id);
@@ -992,12 +970,12 @@ client.on('interactionCreate', async interaction => {
             const now = Date.now();
             if (lastDaily && now - lastDaily < 86400000) {
                 const remaining = Math.ceil((86400000 - (now - lastDaily)) / 3600000);
-                return interaction.reply({ embeds: [createEmbed(' Erreur', `Reviens dans **${remaining} heure(s)**.`, '#DC2626')], ephemeral: true });
+                return interaction.reply({ embeds: [createEmbed('❌ Erreur', `Reviens dans **${remaining} heure(s)**.`, '#DC2626')], ephemeral: true });
             }
             const reward = Math.floor(Math.random() * 100) + 50;
             data.coins += reward;
             db.economy.set(`${interaction.user.id}_lastDaily`, now);
-            await interaction.reply({ embeds: [createEmbed(' Récompense Quotidienne', `Tu as reçu **${reward} coins** !`, '#059669')] });
+            await interaction.reply({ embeds: [createEmbed('🎁 Récompense Quotidienne', `Tu as reçu **${reward} coins** !`, '#059669')] });
         }
 
         if (interaction.commandName === 'give') {
@@ -1055,16 +1033,16 @@ client.on('interactionCreate', async interaction => {
             const prize = interaction.options.getString('prix');
             const duration = interaction.options.getInteger('durée');
             const winners = interaction.options.getInteger('gagnants');
-            const embed = createEmbed('🎉 GIVEAWAY', `**Prix :** ${prize}\n**Durée :** ${duration} minutes\n**Gagnants :** ${winners}\n\nRéagis avec  pour participer !`, '#FFD700');
+            const embed = createEmbed('🎉 GIVEAWAY', `**Prix :** ${prize}\n**Durée :** ${duration} minutes\n**Gagnants :** ${winners}\n\nRéagis avec 🎉 pour participer !`, '#FFD700');
             const message = await interaction.channel.send({ embeds: [embed] });
             await message.react('🎉');
             db.giveaways.set(message.id, { prize, duration, winners, endsAt: Date.now() + duration * 60 * 1000 });
             setTimeout(async () => {
                 const giveaway = db.giveaways.get(message.id);
                 if (!giveaway) return;
-                const reacted = (await message.reactions.cache.get('')?.fetch())?.users.cache.filter(u => !u.bot);
+                const reacted = (await message.reactions.cache.get('🎉')?.fetch())?.users.cache.filter(u => !u.bot);
                 if (!reacted || reacted.size === 0) {
-                    await interaction.channel.send({ embeds: [createEmbed(' Giveaway Terminé', 'Aucun participant.', '#DC2626')] });
+                    await interaction.channel.send({ embeds: [createEmbed('🎉 Giveaway Terminé', 'Aucun participant.', '#DC2626')] });
                 } else {
                     const winnerList = reacted.random(Math.min(winners, reacted.size));
                     await interaction.channel.send({ embeds: [createEmbed('🎉 Giveaway Terminé', `**Prix :** ${giveaway.prize}\n**Gagnant(s) :** ${winnerList.map(u => `<@${u.id}>`).join(', ')}`, '#FFD700')] });
@@ -1261,7 +1239,6 @@ client.on('interactionCreate', async interaction => {
             await interaction.reply({ embeds: [createEmbed('✅ Trivia Configuré', `Le trivia est activé dans ${channel}.`, '#059669')], ephemeral: true });
         }
 
-        // Voice Commands
         const voiceCommands = ['lockvc', 'unlockvc', 'hidevc', 'showvc', 'limitvc', 'renamevc', 'kickvc', 'banvc', 'unbanvc', 'claimvc', 'vcinfo'];
         if (voiceCommands.includes(interaction.commandName)) {
             const member = interaction.member;
@@ -1275,7 +1252,7 @@ client.on('interactionCreate', async interaction => {
             
             if (interaction.commandName === 'lockvc') { 
                 await voiceChannel.permissionOverwrites.edit(interaction.guild.id, { Connect: false }); 
-                await sendLog(' Vocal Verrouillé', `**${member.user.tag}** a verrouillé <#${voiceChannel.id}>.`, '#D97706', [], member.user.displayAvatarURL({ size: 256 }));
+                await sendLog('🔒 Vocal Verrouillé', `**${member.user.tag}** a verrouillé <#${voiceChannel.id}>.`, '#D97706', [], member.user.displayAvatarURL({ size: 256 }));
                 await interaction.reply({ embeds: [createEmbed('🔒 Succès', 'Salon verrouillé.', '#059669')], ephemeral: true }); 
             }
             if (interaction.commandName === 'unlockvc') { 
@@ -1302,8 +1279,8 @@ client.on('interactionCreate', async interaction => {
             if (interaction.commandName === 'renamevc') { 
                 const nom = interaction.options.getString('nom'); 
                 await voiceChannel.setName(nom); 
-                await sendLog('️ Vocal Renommé', `**${member.user.tag}** a renommé en "${nom}".`, '#003DA5', [], member.user.displayAvatarURL({ size: 256 }));
-                await interaction.reply({ embeds: [createEmbed('️ Succès', `Salon renommé en **${nom}**.`, '#059669')], ephemeral: true }); 
+                await sendLog('✏️ Vocal Renommé', `**${member.user.tag}** a renommé en "${nom}".`, '#003DA5', [], member.user.displayAvatarURL({ size: 256 }));
+                await interaction.reply({ embeds: [createEmbed('✏️ Succès', `Salon renommé en **${nom}**.`, '#059669')], ephemeral: true }); 
             }
             if (interaction.commandName === 'kickvc') { 
                 const target = interaction.options.getMember('membre'); 
@@ -1354,7 +1331,6 @@ client.on('interactionCreate', async interaction => {
         }
     }
 
-    // Buttons
     if (interaction.isButton()) {
         if (interaction.customId === 'test_stats') {
             await interaction.reply({ embeds: [createEmbed('📊 Statistiques', 'Tu as consulté les stats.', '#003DA5')], ephemeral: true });
@@ -1428,7 +1404,6 @@ client.on('interactionCreate', async interaction => {
         }
     }
 
-    // Modals
     if (interaction.isModalSubmit()) {
         const embedData = client.pendingEmbeds.get(interaction.user.id);
         if (!embedData) return;
@@ -1536,7 +1511,7 @@ app.post('/submit-application', async (req, res) => {
         const repoName = "Ville-de-Quebec-Roleplay";
         if (!githubToken) return res.status(500).json({ error: "Configuration serveur incomplete" });
         const issueBody = `
-###  Nouvelle Candidature Modérateur
+### 📋 Nouvelle Candidature Modérateur
 **Date :** ${d.date}
 **Roblox :** \`${d.roblox}\`
 **Discord :** \`${d.discord}\`
