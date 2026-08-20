@@ -30,24 +30,22 @@ const GUILD_ID = process.env.GUILD_ID;
 // ==========================================
 
 /**
- * Crée un embed professionnel avec le logo, le footer et l'heure automatiquement.
- * @param {string} title - Le titre de l'embed
- * @param {string} description - La description
- * @param {string} color - La couleur hexadécimale (défaut: #003DA5)
- * @param {Array} fields - Les champs à ajouter (optionnel)
- * @param {string} image - URL de l'image principale (avatar, bannière, etc.) (optionnel)
+ * Crée un embed professionnel SANS grosse image en bas.
+ * Utilise une miniature (en haut à droite) : soit l'avatar de l'utilisateur, soit le logo du serveur par défaut.
+ * Le footer contient toujours le nom du serveur et son logo.
  */
-function createEmbed(title, description, color = '#003DA5', fields = [], image = null) {
+function createEmbed(title, description, color = '#003DA5', fields = [], customThumbnail = null) {
     const embed = new EmbedBuilder()
         .setTitle(title)
         .setDescription(description)
         .setColor(color)
-        .setThumbnail(SERVER_ICON) // Logo en haut à droite
-        .setFooter({ text: SERVER_NAME, iconURL: SERVER_ICON }) // Logo et nom en bas
-        .setTimestamp(); // Heure actuelle
-    
+        .setFooter({ text: SERVER_NAME, iconURL: SERVER_ICON })
+        .setTimestamp();
+
+    // Miniature : PFP de l'utilisateur si fournie, sinon logo du serveur
+    embed.setThumbnail(customThumbnail || SERVER_ICON);
+
     if (fields && fields.length > 0) embed.addFields(fields);
-    if (image) embed.setImage(image);
     
     return embed;
 }
@@ -55,8 +53,8 @@ function createEmbed(title, description, color = '#003DA5', fields = [], image =
 /**
  * Système de logs à triple sécurité (Canal -> Webhook -> Console)
  */
-async function sendLog(title, description, color = '#003DA5', fields = [], image = null) {
-    const embed = createEmbed(title, description, color, fields, image);
+async function sendLog(title, description, color = '#003DA5', fields = [], customThumbnail = null) {
+    const embed = createEmbed(title, description, color, fields, customThumbnail);
     
     // NIVEAU 1 : Canal Discord
     try {
@@ -360,6 +358,7 @@ client.on('interactionCreate', async interaction => {
 
         if (interaction.commandName === 'avatar') {
             const user = interaction.options.getUser('utilisateur') || interaction.user;
+            // Ici, on remplace le logo du serveur par la PFP de l'utilisateur en miniature
             const embed = createEmbed(`Avatar de ${user.username}`, `Voici l'avatar de **${user.username}**.`, '#003DA5', [], user.displayAvatarURL({ size: 4096, dynamic: true }));
             await interaction.reply({ embeds: [embed] });
         }
@@ -368,7 +367,9 @@ client.on('interactionCreate', async interaction => {
             const user = interaction.options.getUser('utilisateur') || interaction.user;
             const fetchedUser = await client.users.fetch(user.id, { force: true });
             if (fetchedUser.banner) {
-                const embed = createEmbed(`Bannière de ${user.username}`, `Voici la bannière de **${user.username}**.`, '#003DA5', [], fetchedUser.bannerURL({ size: 4096, dynamic: true }));
+                // Exception : une bannière a besoin d'être grande pour être vue, donc on utilise setImage() uniquement ici
+                const embed = createEmbed(`Bannière de ${user.username}`, `Voici la bannière de **${user.username}**.`, '#003DA5', [], user.displayAvatarURL({ size: 256, dynamic: true }));
+                embed.setImage(fetchedUser.bannerURL({ size: 4096, dynamic: true }));
                 await interaction.reply({ embeds: [embed] });
             } else {
                 const embed = createEmbed('❌ Non trouvé', 'Cet utilisateur n\'a pas de bannière.', '#DC2626');
@@ -379,7 +380,8 @@ client.on('interactionCreate', async interaction => {
         if (interaction.commandName === 'serverbanner') {
             const banner = interaction.guild.bannerURL({ size: 4096, dynamic: true });
             if (banner) {
-                const embed = createEmbed(`Bannière de ${interaction.guild.name}`, `Voici la bannière officielle du serveur.`, '#003DA5', [], banner);
+                const embed = createEmbed(`Bannière de ${interaction.guild.name}`, `Voici la bannière officielle du serveur.`, '#003DA5');
+                embed.setImage(banner);
                 await interaction.reply({ embeds: [embed] });
             } else {
                 const embed = createEmbed('❌ Non trouvé', 'Ce serveur n\'a pas de bannière.', '#DC2626');
@@ -503,7 +505,8 @@ client.on('interactionCreate', async interaction => {
         if (interaction.commandName === 'meme') {
             try {
                 const res = await axios.get('https://meme-api.com/gimme');
-                const embed = createEmbed(res.data.title, '', '#003DA5', [], res.data.url).setFooter({ text: `r/${res.data.subreddit}`, iconURL: SERVER_ICON }).setURL(res.data.postLink);
+                const embed = createEmbed(res.data.title, '', '#003DA5', [], res.data.url); // L'image du meme devient la miniature
+                embed.setFooter({ text: `r/${res.data.subreddit}`, iconURL: SERVER_ICON }).setURL(res.data.postLink);
                 await interaction.reply({ embeds: [embed] });
             } catch (e) { 
                 const embed = createEmbed('❌ Erreur', 'Impossible de récupérer un meme pour le moment.', '#DC2626');
@@ -644,6 +647,7 @@ client.on('interactionCreate', async interaction => {
         if (interaction.commandName === 'userinfo') {
             const member = interaction.options.getMember('membre') || interaction.member;
             const roles = member.roles.cache.filter(r => r.id !== member.guild.id).map(r => r.name).join(', ') || 'Aucun';
+            // Ici, on met la PFP du membre en miniature
             const embed = createEmbed(`👤 Informations Utilisateur`, `Détails du profil de **${member.user.username}**.`, '#003DA5', [
                 { name: '🏷️ Pseudo', value: member.displayName, inline: true },
                 { name: '🆔 Identifiant', value: member.id, inline: true },
