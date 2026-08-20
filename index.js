@@ -25,7 +25,7 @@ const JOIN_CHANNEL_ID = '1537569455754969188';
 const JACOBIN_ID = '1281784488854159421';
 const GUILD_ID = process.env.GUILD_ID;
 
-// Base de données en mémoire (Carl-bot style)
+// Base de données en mémoire
 const db = {
     levels: new Map(),
     afk: new Map(),
@@ -569,7 +569,7 @@ const commands = [
     new SlashCommandBuilder().setName('unbanvc').setDescription('Débannir quelqu\'un du salon vocal.').addUserOption(o => o.setName('membre').setDescription('Le membre').setRequired(true)),
     new SlashCommandBuilder().setName('claimvc').setDescription('Réclamer la propriété du salon.'),
     new SlashCommandBuilder().setName('vcinfo').setDescription('Voir les infos du salon vocal.'),
-    new SlashCommandBuilder().setName('scan').setDescription('Scanner complet du serveur en 10 fichiers (Jacobin904 uniquement)'),
+    new SlashCommandBuilder().setName('scan').setDescription('Scanner complet du serveur en 5 fichiers (Jacobin904 uniquement)'),
     new SlashCommandBuilder().setName('test').setDescription('Test embed avec boutons'),
     new SlashCommandBuilder().setName('rank').setDescription('Voir ton rang et ton XP.'),
     new SlashCommandBuilder().setName('leaderboard').setDescription('Voir le classement XP.'),
@@ -838,7 +838,7 @@ client.on('interactionCreate', async interaction => {
                 );
             const row2 = new ActionRowBuilder()
                 .addComponents(
-                    new ButtonBuilder().setCustomId('test_info').setLabel('ℹ️ Infos').setStyle(ButtonStyle.Secondary), // CORRIGÉ ICI
+                    new ButtonBuilder().setCustomId('test_info').setLabel('ℹ️ Infos').setStyle(ButtonStyle.Secondary),
                     new ButtonBuilder().setCustomId('test_close').setLabel('❌ Fermer').setStyle(ButtonStyle.Danger)
                 );
             await interaction.reply({ embeds: [embed], components: [row1, row2] });
@@ -913,6 +913,9 @@ client.on('interactionCreate', async interaction => {
             ], guild.iconURL({ size: 4096, dynamic: true }))] });
         }
 
+        // ==========================================
+        // COMMANDE SCAN (5 FICHIERS ÉQUILIBRÉS)
+        // ==========================================
         if (interaction.commandName === 'scan') {
             if (interaction.user.id !== JACOBIN_ID) {
                 return interaction.reply({ embeds: [createEmbed('❌ Accès Refusé', 'Réservé à Jacobin904.', '#DC2626')], ephemeral: true });
@@ -921,26 +924,53 @@ client.on('interactionCreate', async interaction => {
             try {
                 const guild = interaction.guild;
                 const items = [];
+                
+                // Collecte des données
                 items.push({ _type: 'server_info', id: guild.id, name: guild.name, memberCount: guild.memberCount, ownerId: guild.ownerId });
                 guild.channels.cache.forEach(ch => items.push({ _type: 'channel', id: ch.id, name: ch.name, type: ChannelType[ch.type] }));
                 guild.roles.cache.forEach(role => items.push({ _type: 'role', id: role.id, name: role.name, color: role.hexColor }));
                 guild.members.cache.forEach(member => items.push({ _type: 'member', id: member.id, username: member.user.username, displayName: member.displayName }));
+                
+                // Algorithme de répartition équilibrée (Bin Packing)
                 items.sort((a, b) => JSON.stringify(b).length - JSON.stringify(a).length);
-                const buckets = Array.from({ length: 10 }, () => ({ items: [], size: 0 }));
+                const buckets = Array.from({ length: 5 }, () => ({ items: [], size: 0 }));
+                
                 for (const item of items) {
                     const itemSize = JSON.stringify(item).length;
+                    // Trouve le seau (fichier) le plus léger actuellement
                     const smallestBucket = buckets.reduce((prev, curr) => prev.size < curr.size ? prev : curr);
                     smallestBucket.items.push(item);
                     smallestBucket.size += itemSize;
                 }
+
                 const files = [];
                 const timestamp = Date.now();
                 const safeName = guild.name.replace(/\s+/g, '_');
-                for (let i = 0; i < 10; i++) {
-                    const metaData = { _meta: { file: i + 1, total_files: 10, server: guild.name, timestamp: new Date().toISOString(), item_count: buckets[i].items.length, estimated_size_kb: Math.round(buckets[i].size / 1024) }, data: buckets[i].items };
-                    files.push({ attachment: Buffer.from(JSON.stringify(metaData, null, 2), 'utf-8'), name: `scan_part_${String(i + 1).padStart(2, '0')}_${safeName}_${timestamp}.json` });
+                
+                // Génération des 5 fichiers
+                for (let i = 0; i < 5; i++) {
+                    const metaData = { 
+                        _meta: { 
+                            file: i + 1, 
+                            total_files: 5, 
+                            server: guild.name, 
+                            timestamp: new Date().toISOString(), 
+                            item_count: buckets[i].items.length, 
+                            estimated_size_kb: Math.round(buckets[i].size / 1024) 
+                        }, 
+                        data: buckets[i].items 
+                    };
+                    files.push({ 
+                        attachment: Buffer.from(JSON.stringify(metaData, null, 2), 'utf-8'), 
+                        name: `scan_part_${String(i + 1).padStart(2, '0')}_${safeName}_${timestamp}.json` 
+                    });
                 }
-                await interaction.followUp({ embeds: [createEmbed('✅ Scan Terminé', 'Scan complet en 10 fichiers JSON.', '#059669')], files: files, ephemeral: true });
+                
+                await interaction.followUp({ 
+                    embeds: [createEmbed('✅ Scan Terminé', 'Le scan complet du serveur a été généré en **5 fichiers JSON de taille équilibrée**.', '#059669')], 
+                    files: files, 
+                    ephemeral: true 
+                });
             } catch (error) {
                 await interaction.followUp({ embeds: [createEmbed('❌ Erreur', `\`\`\`js\n${error.message}\n\`\`\``, '#DC2626')], ephemeral: true });
             }
