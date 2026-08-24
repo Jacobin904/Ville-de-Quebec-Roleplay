@@ -569,7 +569,7 @@ const commands = [
     new SlashCommandBuilder().setName('unbanvc').setDescription('Débannir quelqu\'un du salon vocal.').addUserOption(o => o.setName('membre').setDescription('Le membre').setRequired(true)),
     new SlashCommandBuilder().setName('claimvc').setDescription('Réclamer la propriété du salon.'),
     new SlashCommandBuilder().setName('vcinfo').setDescription('Voir les infos du salon vocal.'),
-    new SlashCommandBuilder().setName('scan').setDescription('Scanner complet du serveur en 5 fichiers (Jacobin904 uniquement)'),
+    new SlashCommandBuilder().setName('scan').setDescription('Scan complet du serveur en 5 fichiers JSON (Jacobin904 uniquement)'),
     new SlashCommandBuilder().setName('test').setDescription('Test embed avec boutons'),
     new SlashCommandBuilder().setName('rank').setDescription('Voir ton rang et ton XP.'),
     new SlashCommandBuilder().setName('leaderboard').setDescription('Voir le classement XP.'),
@@ -914,7 +914,7 @@ client.on('interactionCreate', async interaction => {
         }
 
         // ==========================================
-        // COMMANDE SCAN (5 FICHIERS ÉQUILIBRÉS)
+        // COMMANDE SCAN COMPLÈTE (5 FICHIERS JSON ÉQUILIBRÉS)
         // ==========================================
         if (interaction.commandName === 'scan') {
             if (interaction.user.id !== JACOBIN_ID) {
@@ -925,19 +925,92 @@ client.on('interactionCreate', async interaction => {
                 const guild = interaction.guild;
                 const items = [];
                 
-                // Collecte des données
-                items.push({ _type: 'server_info', id: guild.id, name: guild.name, memberCount: guild.memberCount, ownerId: guild.ownerId });
-                guild.channels.cache.forEach(ch => items.push({ _type: 'channel', id: ch.id, name: ch.name, type: ChannelType[ch.type] }));
-                guild.roles.cache.forEach(role => items.push({ _type: 'role', id: role.id, name: role.name, color: role.hexColor }));
-                guild.members.cache.forEach(member => items.push({ _type: 'member', id: member.id, username: member.user.username, displayName: member.displayName }));
-                
-                // Algorithme de répartition équilibrée (Bin Packing)
+                // 1. Infos du serveur
+                const owner = await guild.fetchOwner();
+                items.push({ 
+                    _type: 'server_info', 
+                    id: guild.id, 
+                    name: guild.name, 
+                    ownerId: guild.ownerId,
+                    ownerTag: owner.user.tag,
+                    memberCount: guild.memberCount,
+                    features: guild.features,
+                    verificationLevel: guild.verificationLevel,
+                    createdAt: guild.createdAt.toISOString()
+                });
+
+                // 2. Salons (avec détails)
+                guild.channels.cache.forEach(ch => {
+                    items.push({ 
+                        _type: 'channel', 
+                        id: ch.id, 
+                        name: ch.name, 
+                        type: ChannelType[ch.type],
+                        parentId: ch.parentId,
+                        topic: ch.topic || null,
+                        nsfw: ch.nsfw || false
+                    });
+                });
+
+                // 3. Rôles (avec détails)
+                guild.roles.cache.forEach(role => {
+                    items.push({ 
+                        _type: 'role', 
+                        id: role.id, 
+                        name: role.name, 
+                        color: role.hexColor,
+                        position: role.position,
+                        permissions: role.permissions.toArray()
+                    });
+                });
+
+                // 4. Emojis & Stickers
+                guild.emojis.cache.forEach(emoji => {
+                    items.push({ _type: 'emoji', id: emoji.id, name: emoji.name, animated: emoji.animated });
+                });
+                guild.stickers.cache.forEach(sticker => {
+                    items.push({ _type: 'sticker', id: sticker.id, name: sticker.name });
+                });
+
+                // 5. Membres (avec détails)
+                await guild.members.fetch();
+                guild.members.cache.forEach(member => {
+                    items.push({ 
+                        _type: 'member', 
+                        id: member.id, 
+                        username: member.user.username, 
+                        displayName: member.displayName,
+                        roles: member.roles.cache.filter(r => r.id !== guild.id).map(r => r.name),
+                        joinedAt: member.joinedAt?.toISOString()
+                    });
+                });
+
+                // 6. Bans (si permis)
+                try {
+                    const bans = await guild.bans.fetch();
+                    bans.forEach(ban => {
+                        items.push({ _type: 'ban', userId: ban.user.id, username: ban.user.username, reason: ban.reason || 'Aucune' });
+                    });
+                } catch (e) {
+                    items.push({ _type: 'ban_error', error: 'Permission manquante ou échec' });
+                }
+
+                // 7. Invitations (si permis)
+                try {
+                    const invites = await guild.invites.fetch();
+                    invites.forEach(inv => {
+                        items.push({ _type: 'invite', code: inv.code, uses: inv.uses, maxUses: inv.maxUses, inviter: inv.inviter?.username });
+                    });
+                } catch (e) {
+                    items.push({ _type: 'invite_error', error: 'Permission manquante ou échec' });
+                }
+
+                // Algorithme de répartition équilibrée (Bin Packing) en 5 fichiers
                 items.sort((a, b) => JSON.stringify(b).length - JSON.stringify(a).length);
                 const buckets = Array.from({ length: 5 }, () => ({ items: [], size: 0 }));
                 
                 for (const item of items) {
                     const itemSize = JSON.stringify(item).length;
-                    // Trouve le seau (fichier) le plus léger actuellement
                     const smallestBucket = buckets.reduce((prev, curr) => prev.size < curr.size ? prev : curr);
                     smallestBucket.items.push(item);
                     smallestBucket.size += itemSize;
@@ -947,7 +1020,6 @@ client.on('interactionCreate', async interaction => {
                 const timestamp = Date.now();
                 const safeName = guild.name.replace(/\s+/g, '_');
                 
-                // Génération des 5 fichiers
                 for (let i = 0; i < 5; i++) {
                     const metaData = { 
                         _meta: { 
@@ -962,12 +1034,12 @@ client.on('interactionCreate', async interaction => {
                     };
                     files.push({ 
                         attachment: Buffer.from(JSON.stringify(metaData, null, 2), 'utf-8'), 
-                        name: `scan_part_${String(i + 1).padStart(2, '0')}_${safeName}_${timestamp}.json` 
+                        name: `scan_complet_partie_${i + 1}_sur_5_${safeName}_${timestamp}.json` 
                     });
                 }
                 
                 await interaction.followUp({ 
-                    embeds: [createEmbed('✅ Scan Terminé', 'Le scan complet du serveur a été généré en **5 fichiers JSON de taille équilibrée**.', '#059669')], 
+                    embeds: [createEmbed('✅ Scan Complet Terminé', `Le scan a généré **5 fichiers JSON** contenant **TOUTES** les informations du serveur (membres, rôles, salons, bans, invites, émojis, etc.), réparties de manière parfaitement équilibrée.`, '#059669')], 
                     files: files, 
                     ephemeral: true 
                 });
