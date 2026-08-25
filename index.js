@@ -19,11 +19,21 @@ const {
 // ==========================================
 const SERVER_ICON = 'https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024';
 const SERVER_NAME = 'Ville de Québec Roleplay (VQC)';
+const MAIN_GUILD_ID = '1490410149213507804'; // ID du serveur autorisé
 const LOG_CHANNEL_ID = '1538659168012075029';
 const LOG_WEBHOOK_URL = 'https://discord.com/api/webhooks/1538661235283857560/izzc3OJH6n6mVZPUo7JCxJUHdI6Q3y6CdWqvCsS4MP5AiPTNFpk7CFnufHZCVwV6WVXk';
 const JOIN_CHANNEL_ID = '1537569455754969188';
 const JACOBIN_ID = '1281784488854159421';
 const GUILD_ID = process.env.GUILD_ID;
+
+//  Journal des modifications (Changelog) - Modifie ceci à chaque mise à jour !
+const CHANGELOG = `
+**Dernières mises à jour :**
+• 🧹 Suppression du système de candidatures (géré par Melonly)
+• 🚪 Auto-leave des serveurs non autorisés
+• 🔄 Retrait des invitations temporaires au démarrage
+• 📝 Ajout du journal des modifications au démarrage
+`;
 
 // Base de données en mémoire
 const db = {
@@ -177,7 +187,7 @@ app.post('/api/log', verifyApi, async (req, res) => {
     const { source, level, message, details } = req.body;
     const colors = { info: '#003DA5', warn: '#D97706', error: '#DC2626', success: '#059669' };
     const logFields = details ? [{ name: 'Détails', value: `\`\`\`json\n${JSON.stringify(details, null, 2).substring(0, 1000)}\n\`\`\`` }] : [];
-    await sendLog(`📝 Log: ${source.toUpperCase()}`, message, colors[level] || '#003DA5', logFields);
+    await sendLog(` Log: ${source.toUpperCase()}`, message, colors[level] || '#003DA5', logFields);
     res.status(200).json({ success: true });
 });
 
@@ -196,7 +206,7 @@ client.pendingEmbeds = new Map();
 client.tempVoiceChannels = new Map();
 
 // ==========================================
-// 5. GESTION DES ERREURS GLOBALES
+// 5. GESTION DES ERREURS GLOBALES & AUTO-LEAVE
 // ==========================================
 process.on('uncaughtException', (error) => {
     console.error('CRASH:', error);
@@ -206,6 +216,19 @@ process.on('uncaughtException', (error) => {
 process.on('unhandledRejection', (reason) => {
     console.error('Unhandled Rejection:', reason);
     sendLog('⚠️ AVERTISSEMENT : Erreur de Promesse', `\`\`\`js\n${reason}\n\`\`\``, '#DC2626');
+});
+
+// 🚪 AUTO-LEAVE : Quitte automatiquement les serveurs non autorisés
+client.on('guildCreate', async (guild) => {
+    if (guild.id !== MAIN_GUILD_ID) {
+        try {
+            const owner = await guild.fetchOwner();
+            await owner.send(`Bonjour, ce bot est configuré pour fonctionner uniquement sur le serveur **Ville de Québec Roleplay**. Il va donc quitter ce serveur automatiquement. Merci de votre compréhension !`).catch(() => {});
+        } catch (e) {}
+        
+        await guild.leave();
+        await sendLog('🚪 Serveur Quitté', `Le bot a quitté le serveur **${guild.name}** car il n'est pas autorisé.\n**ID :** ${guild.id}`, '#DC2626');
+    }
 });
 
 // ==========================================
@@ -270,7 +293,7 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
 
 client.on('messageDelete', async message => {
     if (!message.author || message.author.bot || !message.content) return;
-    await sendLog('🗑️ Message Supprimé', `Un message a été supprimé.`, '#DC2626', [
+    await sendLog('️ Message Supprimé', `Un message a été supprimé.`, '#DC2626', [
         { name: 'Auteur', value: `${message.author.tag}`, inline: true },
         { name: 'Canal', value: `<#${message.channel.id}>`, inline: true },
         { name: 'Contenu', value: message.content.substring(0, 1000), inline: false }
@@ -470,7 +493,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
             });
             await member.voice.setChannel(newChannel);
             client.tempVoiceChannels.set(newChannel.id, member.id);
-            await sendLog('🎤 Vocal Temporaire Créé', `**${displayName}** a créé <#${newChannel.id}>.`, '#059669', [], member.user.displayAvatarURL({ size: 256 }));
+            await sendLog(' Vocal Temporaire Créé', `**${displayName}** a créé <#${newChannel.id}>.`, '#059669', [], member.user.displayAvatarURL({ size: 256 }));
         } catch (error) { 
             await sendLog('❌ Erreur Vocal', `Échec:\n\`\`\`js\n${error.message}\n\`\`\``, '#DC2626');
         }
@@ -609,59 +632,14 @@ const commands = [
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 
 // ==========================================
-// DÉMARRAGE DU BOT & GÉNÉRATION DES INVITATIONS
+// DÉMARRAGE DU BOT
 // ==========================================
 client.once('clientReady', async () => {
     try {
-        await rest.put(Routes.applicationGuildCommands(client.user.id, GUILD_ID), { body: commands.map(cmd => cmd.toJSON()) });
-        await sendLog('✅ Bot Démarré', `Le système est en ligne.\n**Identité :** ${client.user.tag}\n**Serveurs :** ${client.guilds.cache.size}\n**Membres totaux :** ${client.guilds.cache.reduce((acc, g) => acc + g.memberCount, 0)}`, '#059669', [], client.user.displayAvatarURL({ size: 256 }));
-
-        // --- Boutons d'invitation par serveur (5 minutes) ---
-        const inviteRows = [];
-        let currentRow = new ActionRowBuilder();
-        let buttonCount = 0;
-
-        for (const guild of client.guilds.cache.values()) {
-            const channel = guild.systemChannel || guild.channels.cache.find(c => 
-                c.type === ChannelType.GuildText && 
-                c.permissionsFor(guild.members.me)?.has(PermissionFlagsBits.CreateInstantInvite)
-            );
-            
-            if (channel) {
-                try {
-                    const invite = await channel.createInvite({ 
-                        maxAge: 300, // 5 minutes
-                        maxUses: 0,  
-                        unique: true 
-                    });
-
-                    const button = new ButtonBuilder()
-                        .setLabel(guild.name.length > 75 ? guild.name.substring(0, 72) + '...' : guild.name)
-                        .setURL(invite.url)
-                        .setStyle(ButtonStyle.Link);
-
-                    currentRow.addComponents(button);
-                    buttonCount++;
-
-                    if (buttonCount === 5) {
-                        inviteRows.push(currentRow);
-                        currentRow = new ActionRowBuilder();
-                        buttonCount = 0;
-                    }
-                } catch (err) {
-                    console.warn(`Invite failed for ${guild.name}: ${err.message}`);
-                }
-            }
-        }
-        if (buttonCount > 0) inviteRows.push(currentRow);
-
-        if (inviteRows.length > 0) {
-            const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
-            if (logChannel) {
-                const startupEmbed = createEmbed('🤖 Bot En Ligne - Accès Serveurs', 'Voici les liens d\'invitation temporaires (**5 minutes**) pour les serveurs où je suis connecté. Clique sur le bouton correspondant au serveur.', '#003DA5');
-                await logChannel.send({ embeds: [startupEmbed], components: inviteRows });
-            }
-        }
+        await rest.put(Routes.applicationGuildCommands(client.user.id, MAIN_GUILD_ID), { body: commands.map(cmd => cmd.toJSON()) });
+        
+        // Envoi du message de démarrage avec le changelog
+        await sendLog('✅ Bot Démarré & Mis à jour', `Le système est en ligne.\n**Identité :** ${client.user.tag}\n**Serveurs :** ${client.guilds.cache.size}\n**Membres totaux :** ${client.guilds.cache.reduce((acc, g) => acc + g.memberCount, 0)}\n\n${CHANGELOG}`, '#059669', [], client.user.displayAvatarURL({ size: 256 }));
 
     } catch (error) {
         await sendLog('❌ Erreur Démarrage', `Échec:\n\`\`\`js\n${error.message}\n\`\`\``, '#DC2626');
@@ -684,7 +662,7 @@ client.on('interactionCreate', async interaction => {
             await interaction.reply({ embeds: [createEmbed('📖 Centre d\'aide', 'Liste complète des commandes.', '#003DA5', [
                 { name: '🎤 Gestion Vocale', value: '`/lockvc` `/unlockvc` `/hidevc` `/showvc` `/limitvc` `/renamevc` `/kickvc` `/banvc` `/unbanvc` `/claimvc` `/vcinfo`', inline: false },
                 { name: '🎮 Divertissement', value: '`/8ball` `/coinflip` `/dice` `/rps` `/meme` `/cat` `/dog`', inline: false },
-                { name: '📊 Levels & Économie', value: '`/rank` `/leaderboard` `/balance` `/daily` `/give`', inline: false },
+                { name: ' Levels & Économie', value: '`/rank` `/leaderboard` `/balance` `/daily` `/give`', inline: false },
                 { name: '🛡️ Modération', value: '`/warn` `/kick` `/ban` `/unban` `/mute` `/unmute` `/clear` `/ticket` `/close`', inline: false },
                 { name: '⚙️ Configuration', value: '`/autorole` `/automod` `/slowmode` `/autodelete` `/starboard` `/welcome` `/modlog` `/serverlog`', inline: false },
                 { name: '🔧 Utilitaires', value: '`/help` `/avatar` `/banner` `/roleinfo` `/channelinfo` `/invite` `/suggest` `/poll` `/say` `/announce` `/remind` `/afk` `/tag` `/ccadd` `/aradd`', inline: false }
@@ -725,7 +703,7 @@ client.on('interactionCreate', async interaction => {
 
         if (interaction.commandName === 'roleinfo') {
             const role = interaction.options.getRole('role');
-            await interaction.reply({ embeds: [createEmbed(`🎭 Rôle : ${role.name}`, `Détails du rôle **@${role.name}**.`, role.color || '#003DA5', [
+            await interaction.reply({ embeds: [createEmbed(` Rôle : ${role.name}`, `Détails du rôle **@${role.name}**.`, role.color || '#003DA5', [
                 { name: '🆔 Identifiant', value: role.id, inline: true },
                 { name: '📊 Position', value: `${role.position}`, inline: true },
                 { name: '👥 Membres', value: `${role.members.size}`, inline: true }
@@ -760,8 +738,8 @@ client.on('interactionCreate', async interaction => {
             if (options.length < 2 || options.length > 10) {
                 return interaction.reply({ embeds: [createEmbed('❌ Erreur', 'Veuillez fournir entre 2 et 10 options.', '#DC2626')], ephemeral: true });
             }
-            const emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
-            const embed = createEmbed(`📊 Sondage : ${question}`, options.map((opt, i) => `${emojis[i]} ${opt}`).join('\n'), '#003DA5').setFooter({ text: `Sondage par ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ size: 256 }) });
+            const emojis = ['1️', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️', '9️⃣', ''];
+            const embed = createEmbed(` Sondage : ${question}`, options.map((opt, i) => `${emojis[i]} ${opt}`).join('\n'), '#003DA5').setFooter({ text: `Sondage par ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ size: 256 }) });
             const message = await interaction.reply({ embeds: [embed], fetchReply: true });
             for (let i = 0; i < options.length; i++) await message.react(emojis[i]);
         }
@@ -796,7 +774,7 @@ client.on('interactionCreate', async interaction => {
         if (interaction.commandName === 'rps') {
             const choix = interaction.options.getString('choix');
             const choixBot = ['pierre', 'papier', 'ciseaux'][Math.floor(Math.random() * 3)];
-            const emojis = { pierre: '🪨', papier: '📄', ciseaux: '✂️' };
+            const emojis = { pierre: '🪨', papier: '', ciseaux: '✂️' };
             let result = choix === choixBot ? 'Match nul !' : ((choix === 'pierre' && choixBot === 'ciseaux') || (choix === 'papier' && choixBot === 'pierre') || (choix === 'ciseaux' && choixBot === 'papier')) ? 'Tu as gagné !' : 'Tu as perdu !';
             await interaction.reply({ embeds: [createEmbed('✂️ Pierre Papier Ciseaux', `${emojis[choix]} vs ${emojis[choixBot]}\n\n**Résultat :** ${result}`, '#003DA5')] });
         }
@@ -874,7 +852,7 @@ client.on('interactionCreate', async interaction => {
                 { name: '👥 Membres', value: `**${guild.memberCount}** membres\n🟢 **${guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline').size}** en ligne`, inline: true },
                 { name: '📂 Catégories', value: `**${guild.channels.cache.filter(ch => ch.type === ChannelType.GuildCategory).size}**`, inline: true },
                 { name: '💬 Salons', value: `**${guild.channels.cache.size}** au total`, inline: true },
-                { name: '🎭 Rôles', value: `**${guild.roles.cache.size}** rôles`, inline: true },
+                { name: ' Rôles', value: `**${guild.roles.cache.size}** rôles`, inline: true },
                 { name: '😊 Emojis', value: `**${guild.emojis.cache.size}** personnalisés`, inline: true },
                 { name: '💎 Boosts', value: `**Niveau ${guild.premiumTier}**\n**${guild.premiumSubscriptionCount || 0}** boosts`, inline: true },
                 { name: '👑 Propriétaire', value: `${owner.user}`, inline: true },
@@ -898,7 +876,7 @@ client.on('interactionCreate', async interaction => {
         if (interaction.commandName === 'ticket') {
             const existingTicket = interaction.guild.channels.cache.find(c => c.name === `ticket-${interaction.user.username}`);
             if (existingTicket) {
-                return interaction.reply({ embeds: [createEmbed('❌ Erreur', 'Tu as déjà un ticket ouvert.', '#DC2626')], ephemeral: true });
+                return interaction.reply({ embeds: [createEmbed(' Erreur', 'Tu as déjà un ticket ouvert.', '#DC2626')], ephemeral: true });
             }
             const ticketChannel = await interaction.guild.channels.create({ name: `ticket-${interaction.user.username}`, type: ChannelType.GuildText, topic: `Ticket de ${interaction.user.tag}`, permissionOverwrites: [{ id: interaction.guild.id, deny: [PermissionFlagsBits.ViewChannel] }, { id: interaction.user.id, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory] }, { id: interaction.guild.roles.cache.find(r => r.permissions.has(PermissionFlagsBits.ManageChannels))?.id || interaction.guild.ownerId, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory] }] });
             await sendLog('🎫 Ticket Créé', `**${interaction.user.tag}** a ouvert un ticket : <#${ticketChannel.id}>`, '#4d8dff', [], interaction.user.displayAvatarURL({ size: 256 }));
@@ -921,7 +899,7 @@ client.on('interactionCreate', async interaction => {
             const target = interaction.options.getUser('membre');
             const reason = interaction.options.getString('raison');
             const warnCount = addWarn(target.id);
-            const embed = createEmbed('⚠️ Avertissement Officiel', `Tu as reçu un avertissement.\n**Nombre d'avertissements :** ${warnCount}`, '#D97706', [
+            const embed = createEmbed('️ Avertissement Officiel', `Tu as reçu un avertissement.\n**Nombre d'avertissements :** ${warnCount}`, '#D97706', [
                 { name: 'Modérateur', value: interaction.user.tag, inline: true },
                 { name: 'Raison', value: reason, inline: false }
             ]);
@@ -944,7 +922,7 @@ client.on('interactionCreate', async interaction => {
             await interaction.reply({ embeds: [createEmbed(`👤 Informations Utilisateur`, `Détails de **${member.user.username}**.`, '#003DA5', [
                 { name: '🏷️ Pseudo', value: member.displayName, inline: true },
                 { name: '🆔 Identifiant', value: member.id, inline: true },
-                { name: '📅 Compte créé', value: `<t:${Math.floor(member.user.createdTimestamp / 1000)}:D>`, inline: true },
+                { name: ' Compte créé', value: `<t:${Math.floor(member.user.createdTimestamp / 1000)}:D>`, inline: true },
                 { name: '🚪 A rejoint le', value: member.joinedTimestamp ? `<t:${Math.floor(member.joinedTimestamp / 1000)}:D>` : 'Inconnu', inline: true },
                 { name: '🎭 Rôles', value: roles.substring(0, 1000), inline: false }
             ], member.user.displayAvatarURL({ size: 4096, dynamic: true }))] });
@@ -953,7 +931,7 @@ client.on('interactionCreate', async interaction => {
         if (interaction.commandName === 'serverinfo') {
             const guild = interaction.guild;
             const owner = await guild.fetchOwner();
-            await interaction.reply({ embeds: [createEmbed(`📊 Informations du Serveur`, `Détails de **${guild.name}**.`, '#003DA5', [
+            await interaction.reply({ embeds: [createEmbed(` Informations du Serveur`, `Détails de **${guild.name}**.`, '#003DA5', [
                 { name: '👑 Propriétaire', value: `${owner.user}`, inline: true },
                 { name: '🆔 Identifiant', value: guild.id, inline: true },
                 { name: '👥 Membres', value: `${guild.memberCount} membres`, inline: true },
@@ -1091,7 +1069,7 @@ client.on('interactionCreate', async interaction => {
         if (interaction.commandName === 'rank') {
             const member = interaction.options.getMember('membre') || interaction.member;
             const data = getXP(member.id);
-            await interaction.reply({ embeds: [createEmbed(`📊 Rang de ${member.user.username}`, `**Niveau :** ${data.level}\n**XP :** ${data.xp}/${data.level * 100}`, '#003DA5', [], member.user.displayAvatarURL({ size: 256 }))] });
+            await interaction.reply({ embeds: [createEmbed(` Rang de ${member.user.username}`, `**Niveau :** ${data.level}\n**XP :** ${data.xp}/${data.level * 100}`, '#003DA5', [], member.user.displayAvatarURL({ size: 256 }))] });
         }
 
         if (interaction.commandName === 'leaderboard') {
@@ -1436,12 +1414,12 @@ client.on('interactionCreate', async interaction => {
             if (interaction.commandName === 'banvc') { 
                 const target = interaction.options.getMember('membre'); 
                 if (!target.voice.channel || target.voice.channel.id !== voiceChannel.id) {
-                    return interaction.reply({ embeds: [createEmbed('❌ Erreur', 'Ce membre n\'est pas dans ton salon.', '#DC2626')], ephemeral: true });
+                    return interaction.reply({ embeds: [createEmbed(' Erreur', 'Ce membre n\'est pas dans ton salon.', '#DC2626')], ephemeral: true });
                 }
                 await voiceChannel.permissionOverwrites.edit(target.id, { Connect: false, ViewChannel: false }); 
                 await target.voice.disconnect(); 
                 await sendLog('🚫 Ban Vocal', `**${member.user.tag}** a banni **${target.user.tag}**.`, '#DC2626', [], member.user.displayAvatarURL({ size: 256 }));
-                await interaction.reply({ embeds: [createEmbed('🚫 Succès', `${target.user.tag} a été banni.`, '#059669')], ephemeral: true }); 
+                await interaction.reply({ embeds: [createEmbed(' Succès', `${target.user.tag} a été banni.`, '#059669')], ephemeral: true }); 
             }
             if (interaction.commandName === 'unbanvc') { 
                 const target = interaction.options.getMember('membre'); 
@@ -1457,7 +1435,7 @@ client.on('interactionCreate', async interaction => {
                     return interaction.reply({ embeds: [createEmbed('❌ Erreur', 'Le propriétaire est toujours là.', '#DC2626')], ephemeral: true });
                 }
                 client.tempVoiceChannels.set(voiceChannel.id, member.id);
-                await sendLog('👑 Propriété Réclamée', `**${member.user.tag}** a réclamé <#${voiceChannel.id}>.`, '#003DA5', [], member.user.displayAvatarURL({ size: 256 }));
+                await sendLog(' Propriété Réclamée', `**${member.user.tag}** a réclamé <#${voiceChannel.id}>.`, '#003DA5', [], member.user.displayAvatarURL({ size: 256 }));
                 await interaction.reply({ embeds: [createEmbed('👑 Succès', 'Tu es maintenant propriétaire.', '#059669')], ephemeral: true });
             }
             if (interaction.commandName === 'vcinfo') {
@@ -1465,7 +1443,7 @@ client.on('interactionCreate', async interaction => {
                 const ownerMember = owner ? interaction.guild.members.cache.get(owner) : null;
                 await interaction.reply({ embeds: [createEmbed(`📊 Infos du Salon`, `Détails de **${voiceChannel.name}**.`, '#003DA5', [
                     { name: '🆔 Identifiant', value: voiceChannel.id, inline: true },
-                    { name: '👑 Propriétaire', value: ownerMember ? ownerMember.user.tag : 'Aucun', inline: true },
+                    { name: ' Propriétaire', value: ownerMember ? ownerMember.user.tag : 'Aucun', inline: true },
                     { name: '👥 Membres', value: `${voiceChannel.members.size}`, inline: true },
                     { name: '🚪 Limite', value: voiceChannel.userLimit === 0 ? 'Illimité' : `${voiceChannel.userLimit}`, inline: true }
                 ])], ephemeral: true });
