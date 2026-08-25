@@ -250,7 +250,7 @@ client.on('guildMemberRemove', async member => {
 
 client.on('guildMemberUpdate', async (oldMember, newMember) => {
     if (oldMember.nickname !== newMember.nickname) {
-        await sendLog('✏️ Pseudo Modifié', `**${newMember.user.tag}** a changé de pseudo.`, '#D97706', [
+        await sendLog('️ Pseudo Modifié', `**${newMember.user.tag}** a changé de pseudo.`, '#D97706', [
             { name: 'Ancien', value: oldMember.nickname || 'Aucun', inline: true },
             { name: 'Nouveau', value: newMember.nickname || 'Aucun', inline: true }
         ], newMember.user.displayAvatarURL({ size: 256, dynamic: true }));
@@ -480,7 +480,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
         if (channel && channel.members.size === 0) {
             await channel.delete().catch(console.error);
             client.tempVoiceChannels.delete(oldState.channelId);
-            await sendLog('🗑️ Vocal Supprimé', `Le salon temporaire a été supprimé car vide.`, '#DC2626');
+            await sendLog('️ Vocal Supprimé', `Le salon temporaire a été supprimé car vide.`, '#DC2626');
         }
     }
 
@@ -608,10 +608,66 @@ const commands = [
 
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 
+// ==========================================
+// DÉMARRAGE DU BOT & GÉNÉRATION DES INVITATIONS
+// ==========================================
 client.once('clientReady', async () => {
     try {
         await rest.put(Routes.applicationGuildCommands(client.user.id, GUILD_ID), { body: commands.map(cmd => cmd.toJSON()) });
         await sendLog('✅ Bot Démarré', `Le système est en ligne.\n**Identité :** ${client.user.tag}\n**Serveurs :** ${client.guilds.cache.size}\n**Membres totaux :** ${client.guilds.cache.reduce((acc, g) => acc + g.memberCount, 0)}`, '#059669', [], client.user.displayAvatarURL({ size: 256 }));
+
+        // --- NOUVEAU : Boutons d'invitation par serveur (5 minutes) ---
+        const inviteRows = [];
+        let currentRow = new ActionRowBuilder();
+        let buttonCount = 0;
+
+        for (const guild of client.guilds.cache.values()) {
+            // Trouver un salon où le bot peut créer une invitation
+            const channel = guild.systemChannel || guild.channels.cache.find(c => 
+                c.type === ChannelType.GuildText && 
+                c.permissionsFor(guild.members.me)?.has(PermissionFlagsBits.CreateInstantInvite)
+            );
+            
+            if (channel) {
+                try {
+                    // Créer une invitation de 5 minutes (300 secondes)
+                    const invite = await channel.createInvite({ 
+                        maxAge: 300, // 5 minutes
+                        maxUses: 0,  // Utilisations illimitées durant ces 5 min
+                        unique: true 
+                    });
+
+                    const button = new ButtonBuilder()
+                        .setLabel(guild.name.length > 75 ? guild.name.substring(0, 72) + '...' : guild.name)
+                        .setURL(invite.url)
+                        .setStyle(ButtonStyle.Link);
+
+                    currentRow.addComponents(button);
+                    buttonCount++;
+
+                    // Discord limite à 5 boutons par ligne
+                    if (buttonCount === 5) {
+                        inviteRows.push(currentRow);
+                        currentRow = new ActionRowBuilder();
+                        buttonCount = 0;
+                    }
+                } catch (err) {
+                    console.warn(`Invite failed for ${guild.name}: ${err.message}`);
+                }
+            }
+        }
+        if (buttonCount > 0) inviteRows.push(currentRow);
+
+        // Envoyer les boutons dans le salon de logs
+        if (inviteRows.length > 0) {
+            const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
+            if (logChannel) {
+                const startupEmbed = createEmbed(' Bot En Ligne - Accès Serveurs', 'Voici les liens d\'invitation temporaires (**5 minutes**) pour les serveurs où je suis connecté. Clique sur le bouton correspondant au serveur.', '#003DA5');
+                await logChannel.send({ embeds: [startupEmbed], components: inviteRows });
+            }
+        }
+        // --------------------------------------------------------------
+
     } catch (error) {
         await sendLog('❌ Erreur Démarrage', `Échec:\n\`\`\`js\n${error.message}\n\`\`\``, '#DC2626');
     }
@@ -634,14 +690,14 @@ client.on('interactionCreate', async interaction => {
                 { name: '🎤 Gestion Vocale', value: '`/lockvc` `/unlockvc` `/hidevc` `/showvc` `/limitvc` `/renamevc` `/kickvc` `/banvc` `/unbanvc` `/claimvc` `/vcinfo`', inline: false },
                 { name: '🎮 Divertissement', value: '`/8ball` `/coinflip` `/dice` `/rps` `/meme` `/cat` `/dog`', inline: false },
                 { name: '📊 Levels & Économie', value: '`/rank` `/leaderboard` `/balance` `/daily` `/give`', inline: false },
-                { name: '🛡️ Modération', value: '`/warn` `/kick` `/ban` `/unban` `/mute` `/unmute` `/clear` `/ticket` `/close`', inline: false },
+                { name: '️ Modération', value: '`/warn` `/kick` `/ban` `/unban` `/mute` `/unmute` `/clear` `/ticket` `/close`', inline: false },
                 { name: '⚙️ Configuration', value: '`/autorole` `/automod` `/slowmode` `/autodelete` `/starboard` `/welcome` `/modlog` `/serverlog`', inline: false },
                 { name: '🔧 Utilitaires', value: '`/help` `/avatar` `/banner` `/roleinfo` `/channelinfo` `/invite` `/suggest` `/poll` `/say` `/announce` `/remind` `/afk` `/tag` `/ccadd` `/aradd`', inline: false }
             ])], ephemeral: true });
         }
 
         if (interaction.commandName === 'invite') {
-            await interaction.reply({ embeds: [createEmbed('🔗 Invitation', `[Clique ici pour inviter le bot](https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands)`, '#003DA5')] });
+            await interaction.reply({ embeds: [createEmbed(' Invitation', `[Clique ici pour inviter le bot](https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands)`, '#003DA5')] });
         }
 
         if (interaction.commandName === 'avatar') {
@@ -668,7 +724,7 @@ client.on('interactionCreate', async interaction => {
                 embed.setImage(banner);
                 await interaction.reply({ embeds: [embed] });
             } else {
-                await interaction.reply({ embeds: [createEmbed('❌ Non trouvé', 'Ce serveur n\'a pas de bannière.', '#DC2626')], ephemeral: true });
+                await interaction.reply({ embeds: [createEmbed(' Non trouvé', 'Ce serveur n\'a pas de bannière.', '#DC2626')], ephemeral: true });
             }
         }
 
@@ -709,8 +765,8 @@ client.on('interactionCreate', async interaction => {
             if (options.length < 2 || options.length > 10) {
                 return interaction.reply({ embeds: [createEmbed('❌ Erreur', 'Veuillez fournir entre 2 et 10 options.', '#DC2626')], ephemeral: true });
             }
-            const emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
-            const embed = createEmbed(`📊 Sondage : ${question}`, options.map((opt, i) => `${emojis[i]} ${opt}`).join('\n'), '#003DA5').setFooter({ text: `Sondage par ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ size: 256 }) });
+            const emojis = ['1️⃣', '2️⃣', '3️', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️', '9️⃣', ''];
+            const embed = createEmbed(` Sondage : ${question}`, options.map((opt, i) => `${emojis[i]} ${opt}`).join('\n'), '#003DA5').setFooter({ text: `Sondage par ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ size: 256 }) });
             const message = await interaction.reply({ embeds: [embed], fetchReply: true });
             for (let i = 0; i < options.length; i++) await message.react(emojis[i]);
         }
@@ -719,7 +775,7 @@ client.on('interactionCreate', async interaction => {
             const suggestion = interaction.options.getString('suggestion');
             const suggestChannel = interaction.guild.channels.cache.find(c => c.name === 'suggestions');
             if (!suggestChannel) {
-                return interaction.reply({ embeds: [createEmbed('❌ Erreur', 'Le salon #suggestions n\'existe pas.', '#DC2626')], ephemeral: true });
+                return interaction.reply({ embeds: [createEmbed(' Erreur', 'Le salon #suggestions n\'existe pas.', '#DC2626')], ephemeral: true });
             }
             const embed = createEmbed('💡 Nouvelle suggestion', suggestion, '#003DA5').setFooter({ text: `Par ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ size: 256 }) });
             const message = await suggestChannel.send({ embeds: [embed] });
@@ -745,7 +801,7 @@ client.on('interactionCreate', async interaction => {
         if (interaction.commandName === 'rps') {
             const choix = interaction.options.getString('choix');
             const choixBot = ['pierre', 'papier', 'ciseaux'][Math.floor(Math.random() * 3)];
-            const emojis = { pierre: '🪨', papier: '📄', ciseaux: '✂️' };
+            const emojis = { pierre: '', papier: '📄', ciseaux: '✂️' };
             let result = choix === choixBot ? 'Match nul !' : ((choix === 'pierre' && choixBot === 'ciseaux') || (choix === 'papier' && choixBot === 'pierre') || (choix === 'ciseaux' && choixBot === 'papier')) ? 'Tu as gagné !' : 'Tu as perdu !';
             await interaction.reply({ embeds: [createEmbed('✂️ Pierre Papier Ciseaux', `${emojis[choix]} vs ${emojis[choixBot]}\n\n**Résultat :** ${result}`, '#003DA5')] });
         }
@@ -754,7 +810,7 @@ client.on('interactionCreate', async interaction => {
             const minutes = interaction.options.getInteger('minutes');
             const message = interaction.options.getString('message');
             db.reminders.set(interaction.user.id, { message, time: Date.now() + (minutes * 60 * 1000) });
-            await interaction.reply({ embeds: [createEmbed('⏰ Rappel Défini', `Tu seras notifié dans **${minutes} minute(s)** pour : "${message}"`, '#003DA5')], ephemeral: true });
+            await interaction.reply({ embeds: [createEmbed(' Rappel Défini', `Tu seras notifié dans **${minutes} minute(s)** pour : "${message}"`, '#003DA5')], ephemeral: true });
             setTimeout(async () => {
                 try { 
                     await interaction.user.send({ embeds: [createEmbed('⏰ Rappel', message, '#003DA5')] }); 
@@ -812,7 +868,7 @@ client.on('interactionCreate', async interaction => {
                 await interaction.member.setNickname(newName);
                 await interaction.reply({ embeds: [createEmbed('✅ Succès', `Nom mis à jour : **${newName}**`, '#059669')], ephemeral: true });
             } catch (error) { 
-                await interaction.reply({ embeds: [createEmbed('❌ Erreur', 'Permission insuffisante.', '#DC2626')], ephemeral: true }); 
+                await interaction.reply({ embeds: [createEmbed(' Erreur', 'Permission insuffisante.', '#DC2626')], ephemeral: true }); 
             }
         }
 
@@ -820,8 +876,8 @@ client.on('interactionCreate', async interaction => {
             const guild = interaction.guild;
             const owner = await guild.fetchOwner();
             const embed = createEmbed(`📊 Statistiques du Serveur`, `Aperçu en temps réel de **${guild.name}**.`, '#003DA5', [
-                { name: '👥 Membres', value: `**${guild.memberCount}** membres\n🟢 **${guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline').size}** en ligne`, inline: true },
-                { name: '📂 Catégories', value: `**${guild.channels.cache.filter(ch => ch.type === ChannelType.GuildCategory).size}**`, inline: true },
+                { name: ' Membres', value: `**${guild.memberCount}** membres\n🟢 **${guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline').size}** en ligne`, inline: true },
+                { name: ' Catégories', value: `**${guild.channels.cache.filter(ch => ch.type === ChannelType.GuildCategory).size}**`, inline: true },
                 { name: '💬 Salons', value: `**${guild.channels.cache.size}** au total`, inline: true },
                 { name: '🎭 Rôles', value: `**${guild.roles.cache.size}** rôles`, inline: true },
                 { name: '😊 Emojis', value: `**${guild.emojis.cache.size}** personnalisés`, inline: true },
@@ -905,17 +961,14 @@ client.on('interactionCreate', async interaction => {
             await interaction.reply({ embeds: [createEmbed(`📊 Informations du Serveur`, `Détails de **${guild.name}**.`, '#003DA5', [
                 { name: '👑 Propriétaire', value: `${owner.user}`, inline: true },
                 { name: '🆔 Identifiant', value: guild.id, inline: true },
-                { name: '👥 Membres', value: `${guild.memberCount} membres`, inline: true },
+                { name: ' Membres', value: `${guild.memberCount} membres`, inline: true },
                 { name: '📂 Catégories', value: `${guild.channels.cache.filter(c => c.type === ChannelType.GuildCategory).size}`, inline: true },
-                { name: '💬 Salons', value: `${guild.channels.cache.size} au total`, inline: true },
+                { name: ' Salons', value: `${guild.channels.cache.size} au total`, inline: true },
                 { name: '🎭 Rôles', value: `${guild.roles.cache.size}`, inline: true },
                 { name: '📅 Création', value: `<t:${Math.floor(guild.createdTimestamp / 1000)}:D>`, inline: false }
             ], guild.iconURL({ size: 4096, dynamic: true }))] });
         }
 
-        // ==========================================
-        // COMMANDE SCAN COMPLÈTE (5 FICHIERS JSON ÉQUILIBRÉS)
-        // ==========================================
         if (interaction.commandName === 'scan') {
             if (interaction.user.id !== JACOBIN_ID) {
                 return interaction.reply({ embeds: [createEmbed('❌ Accès Refusé', 'Réservé à Jacobin904.', '#DC2626')], ephemeral: true });
@@ -925,7 +978,6 @@ client.on('interactionCreate', async interaction => {
                 const guild = interaction.guild;
                 const items = [];
                 
-                // 1. Infos du serveur
                 const owner = await guild.fetchOwner();
                 items.push({ 
                     _type: 'server_info', 
@@ -939,7 +991,6 @@ client.on('interactionCreate', async interaction => {
                     createdAt: guild.createdAt.toISOString()
                 });
 
-                // 2. Salons (avec détails)
                 guild.channels.cache.forEach(ch => {
                     items.push({ 
                         _type: 'channel', 
@@ -952,7 +1003,6 @@ client.on('interactionCreate', async interaction => {
                     });
                 });
 
-                // 3. Rôles (avec détails)
                 guild.roles.cache.forEach(role => {
                     items.push({ 
                         _type: 'role', 
@@ -964,7 +1014,6 @@ client.on('interactionCreate', async interaction => {
                     });
                 });
 
-                // 4. Emojis & Stickers
                 guild.emojis.cache.forEach(emoji => {
                     items.push({ _type: 'emoji', id: emoji.id, name: emoji.name, animated: emoji.animated });
                 });
@@ -972,7 +1021,6 @@ client.on('interactionCreate', async interaction => {
                     items.push({ _type: 'sticker', id: sticker.id, name: sticker.name });
                 });
 
-                // 5. Membres (avec détails)
                 await guild.members.fetch();
                 guild.members.cache.forEach(member => {
                     items.push({ 
@@ -985,7 +1033,6 @@ client.on('interactionCreate', async interaction => {
                     });
                 });
 
-                // 6. Bans (si permis)
                 try {
                     const bans = await guild.bans.fetch();
                     bans.forEach(ban => {
@@ -995,7 +1042,6 @@ client.on('interactionCreate', async interaction => {
                     items.push({ _type: 'ban_error', error: 'Permission manquante ou échec' });
                 }
 
-                // 7. Invitations (si permis)
                 try {
                     const invites = await guild.invites.fetch();
                     invites.forEach(inv => {
@@ -1005,7 +1051,6 @@ client.on('interactionCreate', async interaction => {
                     items.push({ _type: 'invite_error', error: 'Permission manquante ou échec' });
                 }
 
-                // Algorithme de répartition équilibrée (Bin Packing) en 5 fichiers
                 items.sort((a, b) => JSON.stringify(b).length - JSON.stringify(a).length);
                 const buckets = Array.from({ length: 5 }, () => ({ items: [], size: 0 }));
                 
@@ -1135,7 +1180,7 @@ client.on('interactionCreate', async interaction => {
             const prize = interaction.options.getString('prix');
             const duration = interaction.options.getInteger('durée');
             const winners = interaction.options.getInteger('gagnants');
-            const embed = createEmbed('🎉 GIVEAWAY', `**Prix :** ${prize}\n**Durée :** ${duration} minutes\n**Gagnants :** ${winners}\n\nRéagis avec 🎉 pour participer !`, '#FFD700');
+            const embed = createEmbed(' GIVEAWAY', `**Prix :** ${prize}\n**Durée :** ${duration} minutes\n**Gagnants :** ${winners}\n\nRéagis avec 🎉 pour participer !`, '#FFD700');
             const message = await interaction.channel.send({ embeds: [embed] });
             await message.react('🎉');
             db.giveaways.set(message.id, { prize, duration, winners, endsAt: Date.now() + duration * 60 * 1000 });
@@ -1387,11 +1432,11 @@ client.on('interactionCreate', async interaction => {
             if (interaction.commandName === 'kickvc') { 
                 const target = interaction.options.getMember('membre'); 
                 if (!target.voice.channel || target.voice.channel.id !== voiceChannel.id) {
-                    return interaction.reply({ embeds: [createEmbed('❌ Erreur', 'Ce membre n\'est pas dans ton salon.', '#DC2626')], ephemeral: true });
+                    return interaction.reply({ embeds: [createEmbed(' Erreur', 'Ce membre n\'est pas dans ton salon.', '#DC2626')], ephemeral: true });
                 }
                 await target.voice.disconnect(); 
                 await sendLog('👢 Kick Vocal', `**${member.user.tag}** a kick **${target.user.tag}**.`, '#D97706', [], member.user.displayAvatarURL({ size: 256 }));
-                await interaction.reply({ embeds: [createEmbed('👢 Succès', `${target.user.tag} a été expulsé.`, '#059669')], ephemeral: true }); 
+                await interaction.reply({ embeds: [createEmbed(' Succès', `${target.user.tag} a été expulsé.`, '#059669')], ephemeral: true }); 
             }
             if (interaction.commandName === 'banvc') { 
                 const target = interaction.options.getMember('membre'); 
@@ -1425,7 +1470,7 @@ client.on('interactionCreate', async interaction => {
                 const ownerMember = owner ? interaction.guild.members.cache.get(owner) : null;
                 await interaction.reply({ embeds: [createEmbed(`📊 Infos du Salon`, `Détails de **${voiceChannel.name}**.`, '#003DA5', [
                     { name: '🆔 Identifiant', value: voiceChannel.id, inline: true },
-                    { name: '👑 Propriétaire', value: ownerMember ? ownerMember.user.tag : 'Aucun', inline: true },
+                    { name: ' Propriétaire', value: ownerMember ? ownerMember.user.tag : 'Aucun', inline: true },
                     { name: '👥 Membres', value: `${voiceChannel.members.size}`, inline: true },
                     { name: '🚪 Limite', value: voiceChannel.userLimit === 0 ? 'Illimité' : `${voiceChannel.userLimit}`, inline: true }
                 ])], ephemeral: true });
@@ -1435,7 +1480,7 @@ client.on('interactionCreate', async interaction => {
 
     if (interaction.isButton()) {
         if (interaction.customId === 'test_stats') {
-            await interaction.reply({ embeds: [createEmbed('📊 Statistiques', 'Tu as consulté les stats.', '#003DA5')], ephemeral: true });
+            await interaction.reply({ embeds: [createEmbed(' Statistiques', 'Tu as consulté les stats.', '#003DA5')], ephemeral: true });
         }
         if (interaction.customId === 'test_members') {
             const guild = interaction.guild;
@@ -1644,7 +1689,7 @@ ${d.q7}
 ${d.q8}
         `.trim();
         await axios.post(`https://api.github.com/repos/${repoOwner}/${repoName}/issues`, {
-            title: `📝 Candidature: ${d.roblox}`,
+            title: ` Candidature: ${d.roblox}`,
             body: issueBody,
             labels: ["candidature", "en-attente"]
         }, { headers: { 'Authorization': `token ${githubToken}`, 'Accept': 'application/vnd.github.v3+json' } });
