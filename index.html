@@ -11,20 +11,17 @@
     
     <title>Ville de Québec Roleplay | L'Expérience ERLC Définitive</title>
     
-    <!-- Favicon -->
     <link rel="icon" type="image/webp" href="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024">
     
-    <!-- Polices Premium -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         /* ============================================
-           SYSTÈME DE DESIGN AVANCÉ
+           SYSTÈME DE DESIGN ULTRA-AVANCÉ
            ============================================ */
         :root {
             /* Palette principale */
@@ -111,11 +108,6 @@
             color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
-            cursor: none;
-        }
-
-        @media (max-width: 768px) {
-            body { cursor: auto; }
         }
 
         ::selection {
@@ -142,52 +134,47 @@
         }
 
         /* ============================================
-           CURSEUR PERSONNALISÉ AVANCÉ
+           CURSEUR PERSONNALISÉ CORRIGÉ
            ============================================ */
-        .cursor {
+        .custom-cursor {
             position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent-secondary);
+            border-radius: 50%;
             pointer-events: none;
             z-index: 9999;
+            transition: transform 0.15s ease, width 0.3s ease, height 0.3s ease, border-color 0.3s ease;
+            transform: translate(-50%, -50%);
             mix-blend-mode: difference;
         }
 
-        .cursor-dot {
-            width: 8px;
-            height: 8px;
-            background: white;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s, background 0.3s;
-        }
-
-        .cursor-ring {
-            width: 40px;
-            height: 40px;
-            border: 1.5px solid rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: all 0.15s var(--ease-out-expo);
-        }
-
-        .cursor.hover .cursor-dot {
-            width: 12px;
-            height: 12px;
-            background: var(--accent-secondary);
-        }
-
-        .cursor.hover .cursor-ring {
-            width: 60px;
-            height: 60px;
-            border-color: var(--accent-secondary);
+        .custom-cursor.hover {
+            width: 50px;
+            height: 50px;
+            border-color: var(--accent-tertiary);
             background: rgba(77, 141, 255, 0.1);
         }
 
-        .cursor.click .cursor-ring {
-            transform: translate(-50%, -50%) scale(0.8);
+        .custom-cursor-dot {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 6px;
+            background: var(--accent-secondary);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
         }
 
         @media (max-width: 768px) {
-            .cursor { display: none; }
+            .custom-cursor, .custom-cursor-dot {
+                display: none;
+            }
         }
 
         /* ============================================
@@ -1443,11 +1430,9 @@
     </style>
 </head>
 <body>
-    <!-- Curseur personnalisé -->
-    <div class="cursor" id="cursor">
-        <div class="cursor-dot"></div>
-        <div class="cursor-ring"></div>
-    </div>
+    <!-- Curseur personnalisé corrigé -->
+    <div class="custom-cursor" id="cursor"></div>
+    <div class="custom-cursor-dot" id="cursor-dot"></div>
 
     <!-- Loader -->
     <div class="loader" id="loader">
@@ -1905,29 +1890,30 @@
 
     <script>
         // ============================================
-        // CURSEUR PERSONNALISÉ
+        // CURSEUR PERSONNALISÉ CORRIGÉ
         // ============================================
         const cursor = document.getElementById('cursor');
-        const cursorDot = cursor.querySelector('.cursor-dot');
-        const cursorRing = cursor.querySelector('.cursor-ring');
+        const cursorDot = document.getElementById('cursor-dot');
         
         let mouseX = 0, mouseY = 0;
-        let ringX = 0, ringY = 0;
+        let cursorX = 0, cursorY = 0;
         
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
             
+            // Mise à jour immédiate du point
             cursorDot.style.left = mouseX + 'px';
             cursorDot.style.top = mouseY + 'px';
         });
         
+        // Animation fluide du cercle
         function animateCursor() {
-            ringX += (mouseX - ringX) * 0.15;
-            ringY += (mouseY - ringY) * 0.15;
+            cursorX += (mouseX - cursorX) * 0.15;
+            cursorY += (mouseY - cursorY) * 0.15;
             
-            cursorRing.style.left = ringX + 'px';
-            cursorRing.style.top = ringY + 'px';
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
             
             requestAnimationFrame(animateCursor);
         }
@@ -1939,10 +1925,6 @@
             el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
             el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
         });
-        
-        // Effet click
-        document.addEventListener('mousedown', () => cursor.classList.add('click'));
-        document.addEventListener('mouseup', () => cursor.classList.remove('click'));
 
         // ============================================
         // LOADER
@@ -1957,18 +1939,13 @@
         // NAVIGATION SCROLL
         // ============================================
         const nav = document.getElementById('nav');
-        let lastScroll = 0;
         
         window.addEventListener('scroll', () => {
-            const currentScroll = window.pageYOffset;
-            
-            if (currentScroll > 50) {
+            if (window.pageYOffset > 50) {
                 nav.classList.add('scrolled');
             } else {
                 nav.classList.remove('scrolled');
             }
-            
-            lastScroll = currentScroll;
         });
 
         // ============================================
@@ -1977,7 +1954,6 @@
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        let animationId;
         
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -2045,7 +2021,7 @@
                 }
             });
             
-            animationId = requestAnimationFrame(animateParticles);
+            requestAnimationFrame(animateParticles);
         }
         
         initParticles();
@@ -2109,7 +2085,7 @@
             function update(currentTime) {
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+                const eased = 1 - Math.pow(1 - progress, 3);
                 const current = Math.floor(start + range * eased);
                 obj.innerHTML = current;
                 
@@ -2121,12 +2097,11 @@
             requestAnimationFrame(update);
         }
         
-        // Charger les stats au démarrage et toutes les 30s
         fetchStats();
         setInterval(fetchStats, 30000);
 
         // ============================================
-        // SMOOTH SCROLL POUR LES LIENS D'ANCRAGE
+        // SMOOTH SCROLL
         // ============================================
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
@@ -2139,18 +2114,6 @@
                     });
                 }
             });
-        });
-
-        // ============================================
-        // EFFET PARALLAXE SUR LE HERO
-        // ============================================
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const hero = document.querySelector('.hero-content');
-            if (hero && scrolled < window.innerHeight) {
-                hero.style.transform = `translateY(${scrolled * 0.3}px)`;
-                hero.style.opacity = 1 - (scrolled / window.innerHeight) * 0.5;
-            }
         });
     </script>
 </body>
