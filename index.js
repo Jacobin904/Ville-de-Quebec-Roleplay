@@ -638,8 +638,32 @@ client.once('clientReady', async () => {
     try {
         await rest.put(Routes.applicationGuildCommands(client.user.id, MAIN_GUILD_ID), { body: commands.map(cmd => cmd.toJSON()) });
         
-        // Envoi du message de démarrage avec le changelog
-        await sendLog('✅ Bot Démarré & Mis à jour', `Le système est en ligne.\n**Identité :** ${client.user.tag}\n**Serveurs :** ${client.guilds.cache.size}\n**Membres totaux :** ${client.guilds.cache.reduce((acc, g) => acc + g.memberCount, 0)}\n\n${CHANGELOG}`, '#059669', [], client.user.displayAvatarURL({ size: 256 }));
+        // 1. Création du premier embed (Statut du bot)
+        const startupEmbed = createEmbed(
+            '✅ Bot Démarré & En ligne', 
+            `Le système est opérationnel.\n\n**Identité :** ${client.user.tag}\n**Serveurs :** ${client.guilds.cache.size}\n**Membres totaux :** ${client.guilds.cache.reduce((acc, g) => acc + g.memberCount, 0)}`, 
+            '#059669', 
+            [], 
+            client.user.displayAvatarURL({ size: 256 })
+        );
+
+        // 2. Création du deuxième embed (Changelog / Mises à jour)
+        const changelogEmbed = createEmbed(
+            '🔄 Journal des modifications', 
+            CHANGELOG, 
+            '#4d8dff'
+        );
+
+        // 3. Envoi des deux embeds dans le même message
+        const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
+        if (logChannel) {
+            await logChannel.send({ embeds: [startupEmbed, changelogEmbed] });
+        } else {
+            // Secours via Webhook si le salon n'est pas trouvé
+            await axios.post(LOG_WEBHOOK_URL, { 
+                embeds: [startupEmbed.toJSON(), changelogEmbed.toJSON()] 
+            });
+        }
 
     } catch (error) {
         await sendLog('❌ Erreur Démarrage', `Échec:\n\`\`\`js\n${error.message}\n\`\`\``, '#DC2626');
