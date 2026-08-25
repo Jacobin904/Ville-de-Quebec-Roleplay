@@ -3,64 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ville de Québec Roleplay | L'Expérience ERLC Ultime</title>
-    <meta name="description" content="Rejoignez le serveur ERLC le plus immersif du Québec. Roleplay structuré, services d'urgence réalistes et communauté professionnelle.">
-    <meta property="og:title" content="Ville de Québec Roleplay">
-    <meta property="og:description" content="L'expérience ERLC québécoise définitive.">
+    <meta name="description" content="Ville de Québec Roleplay — L'expérience ERLC québécoise ultime. Serveur professionnel avec modération active, départements réalistes et communauté d'élite.">
+    <meta property="og:title" content="Ville de Québec Roleplay | VQC">
+    <meta property="og:description" content="Rejoignez le serveur ERLC le plus immersif du Québec.">
     <meta property="og:image" content="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp">
+    <meta name="theme-color" content="#003DA5">
+    
+    <title>Ville de Québec Roleplay | L'Expérience ERLC Définitive</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/webp" href="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024">
     
     <!-- Polices Premium -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
     <!-- Icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* =========================================
-           SYSTÈME DE DESIGN (VARIABLES)
-           ========================================= */
+        /* ============================================
+           SYSTÈME DE DESIGN AVANCÉ
+           ============================================ */
         :root {
-            /* Palette de couleurs */
+            /* Palette principale */
             --bg-primary: #030712;
             --bg-secondary: #0B1120;
             --bg-tertiary: #151E32;
-            --bg-glass: rgba(11, 17, 32, 0.7);
+            --bg-elevated: #1E293B;
+            --bg-glass: rgba(11, 17, 32, 0.6);
             
+            /* Accents */
             --accent-primary: #003DA5;
             --accent-secondary: #4D8DFF;
-            --accent-glow: rgba(77, 141, 255, 0.5);
+            --accent-tertiary: #8FB8FF;
+            --accent-glow: rgba(77, 141, 255, 0.4);
+            --accent-subtle: rgba(77, 141, 255, 0.1);
             
+            /* Texte */
             --text-primary: #F8FAFC;
-            --text-secondary: #94A3B8;
+            --text-secondary: #CBD5E1;
+            --text-tertiary: #94A3B8;
             --text-muted: #64748B;
             
+            /* États */
             --success: #10B981;
             --warning: #F59E0B;
             --danger: #EF4444;
+            --info: #3B82F6;
             
             /* Typographie */
-            --font-heading: 'Space Grotesk', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
             --font-body: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
             
-            /* Espacement et Layout */
-            --container-width: 1280px;
-            --section-padding: 120px;
-            --border-radius: 16px;
+            /* Espacement */
+            --container-max: 1400px;
+            --section-padding: 140px;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --radius-full: 9999px;
             
-            /* Effets */
-            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-            --shadow-glow: 0 0 40px var(--accent-glow);
+            /* Transitions */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+            --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+            --duration-fast: 0.2s;
+            --duration-normal: 0.4s;
+            --duration-slow: 0.8s;
+            
+            /* Ombres */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 60px var(--accent-glow);
+            --shadow-glow-strong: 0 0 100px rgba(77, 141, 255, 0.6);
+            
+            /* Bordures */
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-default: rgba(255, 255, 255, 0.1);
+            --border-strong: rgba(255, 255, 255, 0.2);
+            --border-accent: rgba(77, 141, 255, 0.3);
         }
 
-        /* =========================================
-           RESET ET BASE
-           ========================================= */
+        /* ============================================
+           RESET & BASE
+           ============================================ */
         *, *::before, *::after {
             margin: 0;
             padding: 0;
@@ -70,88 +101,364 @@
         html {
             scroll-behavior: smooth;
             font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         body {
             font-family: var(--font-body);
-            background-color: var(--bg-primary);
+            background: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
+            cursor: none;
         }
 
-        /* Curseur Personnalisé */
-        .cursor-dot, .cursor-outline {
-            position: fixed;
-            top: 0;
-            left: 0;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            z-index: 9999;
-            pointer-events: none;
+        @media (max-width: 768px) {
+            body { cursor: auto; }
         }
+
+        ::selection {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: 5px;
+            border: 2px solid var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-primary);
+        }
+
+        /* ============================================
+           CURSEUR PERSONNALISÉ AVANCÉ
+           ============================================ */
+        .cursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+        }
+
         .cursor-dot {
             width: 8px;
             height: 8px;
-            background-color: var(--accent-secondary);
+            background: white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background 0.3s;
         }
-        .cursor-outline {
+
+        .cursor-ring {
             width: 40px;
             height: 40px;
-            border: 1px solid var(--accent-secondary);
-            transition: width 0.2s, height 0.2s, background-color 0.2s;
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.15s var(--ease-out-expo);
         }
-        .cursor-hover .cursor-outline {
+
+        .cursor.hover .cursor-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--accent-secondary);
+        }
+
+        .cursor.hover .cursor-ring {
             width: 60px;
             height: 60px;
-            background-color: rgba(77, 141, 255, 0.1);
-            border-color: transparent;
+            border-color: var(--accent-secondary);
+            background: rgba(77, 141, 255, 0.1);
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: var(--bg-primary); }
-        ::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 5px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
-
-        /* Sélection */
-        ::selection { background: var(--accent-primary); color: white; }
-
-        /* =========================================
-           UTILITAIRES
-           ========================================= */
-        .container {
-            max-width: var(--container-width);
-            margin: 0 auto;
-            padding: 0 24px;
+        .cursor.click .cursor-ring {
+            transform: translate(-50%, -50%) scale(0.8);
         }
 
-        .section-header {
+        @media (max-width: 768px) {
+            .cursor { display: none; }
+        }
+
+        /* ============================================
+           LOADER CINÉMATIQUE
+           ============================================ */
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-primary);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s var(--ease-out-expo), visibility 0.8s;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-content {
             text-align: center;
-            margin-bottom: 80px;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
         }
 
-        .badge {
+        .loader-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            position: relative;
+        }
+
+        .loader-logo img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid var(--accent-primary);
+            animation: pulse-logo 2s infinite;
+        }
+
+        @keyframes pulse-logo {
+            0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
+            50% { box-shadow: 0 0 0 20px rgba(77, 141, 255, 0); }
+        }
+
+        .loader-text {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 32px;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .loader-progress {
+            width: 200px;
+            height: 2px;
+            background: var(--bg-tertiary);
+            margin: 0 auto;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loader-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            width: 0%;
+            animation: loading 2s var(--ease-out-expo) forwards;
+        }
+
+        @keyframes loading {
+            to { width: 100%; }
+        }
+
+        /* ============================================
+           NAVIGATION
+           ============================================ */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 24px 0;
+            transition: all var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .nav.scrolled {
+            padding: 16px 0;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .nav-container {
+            max-width: var(--container-max);
+            margin: 0 auto;
+            padding: 0 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.25rem;
+            transition: transform var(--duration-fast);
+        }
+
+        .nav-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-primary);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-tertiary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            position: relative;
+            transition: color var(--duration-fast);
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-secondary);
+            transition: width var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 16px;
-            background: rgba(77, 141, 255, 0.1);
-            border: 1px solid rgba(77, 141, 255, 0.2);
-            border-radius: 100px;
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            color: var(--accent-secondary);
-            margin-bottom: 24px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            padding: 12px 24px;
+            background: var(--accent-primary);
+            color: white;
+            text-decoration: none;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all var(--duration-fast);
+            border: 1px solid transparent;
         }
 
-        .badge .pulse {
+        .nav-cta:hover {
+            background: var(--accent-secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .nav-mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* ============================================
+           HERO SECTION
+           ============================================ */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 32px 80px;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .hero-gradient {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 61, 165, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(77, 141, 255, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(0, 61, 165, 0.1) 0%, transparent 70%);
+            animation: gradient-shift 20s ease infinite;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .hero-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(77, 141, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(77, 141, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+        }
+
+        #particles-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 20px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-full);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            animation: fadeInUp 0.8s var(--ease-out-expo) 0.2s both;
+        }
+
+        .hero-badge-dot {
             width: 8px;
             height: 8px;
             background: var(--success);
@@ -161,35 +468,62 @@
         }
 
         @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
+            0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.5; transform: scale(1.2); }
-            100% { opacity: 1; transform: scale(1); }
         }
 
-        h1, h2, h3, h4 {
-            font-family: var(--font-heading);
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 7vw, 6rem);
             font-weight: 700;
-            line-height: 1.1;
-            letter-spacing: -0.02em;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.8s var(--ease-out-expo) 0.4s both;
         }
 
-        .gradient-text {
-            background: linear-gradient(135deg, #fff 0%, var(--accent-secondary) 100%);
+        .hero-title-gradient {
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            background-size: 200% 200%;
+            animation: gradient-text 5s ease infinite;
+        }
+
+        @keyframes gradient-text {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.35rem);
+            color: var(--text-tertiary);
+            max-width: 650px;
+            margin: 0 auto 48px;
+            line-height: 1.6;
+            animation: fadeInUp 0.8s var(--ease-out-expo) 0.6s both;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 80px;
+            animation: fadeInUp 0.8s var(--ease-out-expo) 0.8s both;
         }
 
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             padding: 16px 32px;
-            border-radius: 100px;
+            border-radius: var(--radius-full);
             font-weight: 600;
             font-size: 1rem;
             text-decoration: none;
-            transition: all var(--transition-smooth);
+            transition: all var(--duration-fast);
             cursor: pointer;
             border: none;
             position: relative;
@@ -197,358 +531,688 @@
         }
 
         .btn-primary {
-            background: var(--accent-primary);
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             color: white;
             box-shadow: 0 10px 30px -10px var(--accent-primary);
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 40px -10px var(--accent-primary);
-            background: var(--accent-secondary);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--text-primary);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .btn-outline:hover {
-            border-color: var(--accent-secondary);
-            background: rgba(77, 141, 255, 0.05);
-        }
-
-        /* =========================================
-           NAVIGATION
-           ========================================= */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            padding: 24px 0;
-            transition: all var(--transition-smooth);
-        }
-
-        .navbar.scrolled {
-            padding: 16px 0;
-            background: var(--bg-glass);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-family: var(--font-heading);
-            font-weight: 700;
-            font-size: 1.25rem;
-            color: var(--text-primary);
-            text-decoration: none;
-        }
-
-        .logo img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--accent-primary);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 40px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: color var(--transition-fast);
-            position: relative;
-        }
-
-        .nav-links a:hover { color: var(--text-primary); }
-
-        .nav-links a::after {
+        .btn-primary::before {
             content: '';
             position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--accent-secondary);
-            transition: width var(--transition-smooth);
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-tertiary));
+            opacity: 0;
+            transition: opacity var(--duration-fast);
         }
 
-        .nav-links a:hover::after { width: 100%; }
-
-        /* =========================================
-           HERO SECTION
-           ========================================= */
-        .hero {
-            position: relative;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding-top: 80px;
-            overflow: hidden;
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px -10px var(--accent-glow);
         }
 
-        #hero-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            opacity: 0.4;
+        .btn-primary:hover::before {
+            opacity: 1;
         }
 
-        .hero-content {
+        .btn-primary span, .btn-primary i {
             position: relative;
             z-index: 1;
-            text-align: center;
-            max-width: 900px;
         }
 
-        .hero h1 {
-            font-size: clamp(3rem, 6vw, 5.5rem);
-            margin-bottom: 24px;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            margin-bottom: 48px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            margin-bottom: 80px;
-        }
-
-        .hero-stats-bar {
-            display: flex;
-            justify-content: center;
-            gap: 60px;
-            padding: 24px;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: var(--border-radius);
+        .btn-secondary {
+            background: var(--bg-glass);
             backdrop-filter: blur(10px);
+            color: var(--text-primary);
+            border: 1px solid var(--border-default);
         }
 
-        .stat-item {
+        .btn-secondary:hover {
+            background: var(--bg-elevated);
+            border-color: var(--border-strong);
+            transform: translateY(-3px);
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 32px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-xl);
+            animation: fadeInUp 0.8s var(--ease-out-expo) 1s both;
+        }
+
+        .hero-stat {
             text-align: center;
+            position: relative;
         }
 
-        .stat-value {
-            font-family: var(--font-mono);
-            font-size: 1.5rem;
+        .hero-stat:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: -16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 40px;
+            background: var(--border-default);
+        }
+
+        .hero-stat-value {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
             font-weight: 700;
-            color: var(--accent-secondary);
-            display: block;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .stat-label {
+        .hero-stat-label {
             font-size: 0.85rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
+            font-weight: 500;
         }
 
-        /* =========================================
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+
+        /* ============================================
            SECTIONS GÉNÉRALES
-           ========================================= */
-        section {
+           ============================================ */
+        .section {
             padding: var(--section-padding) 0;
             position: relative;
         }
 
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 32px;
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 32px;
-        }
-
-        /* Cartes Glassmorphism */
-        .card {
+        .section-alt {
             background: var(--bg-secondary);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: var(--border-radius);
+        }
+
+        .container {
+            max-width: var(--container-max);
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 80px;
+        }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: var(--accent-subtle);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-full);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--accent-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+        }
+
+        .section-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-tertiary);
+            line-height: 1.7;
+        }
+
+        /* ============================================
+           BENTO GRID (FONCTIONNALITÉS)
+           ============================================ */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-auto-rows: minmax(280px, auto);
+            gap: 24px;
+        }
+
+        .bento-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
             padding: 40px;
-            transition: all var(--transition-smooth);
             position: relative;
             overflow: hidden;
+            transition: all var(--duration-normal) var(--ease-out-expo);
+            cursor: pointer;
         }
 
-        .card::before {
+        .bento-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(77, 141, 255, 0.1) 0%, transparent 50%);
+            inset: 0;
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(77, 141, 255, 0.15) 0%, transparent 60%);
             opacity: 0;
-            transition: opacity var(--transition-smooth);
+            transition: opacity var(--duration-normal);
             pointer-events: none;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(77, 141, 255, 0.3);
+        .bento-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--border-accent);
             box-shadow: var(--shadow-lg);
         }
 
-        .card:hover::before { opacity: 1; }
+        .bento-card:hover::before {
+            opacity: 1;
+        }
 
-        .card-icon {
-            width: 60px;
-            height: 60px;
+        .bento-card.featured {
+            grid-column: span 2;
+            background: linear-gradient(135deg, var(--accent-primary), var(--bg-tertiary));
+        }
+
+        .bento-card.tall {
+            grid-row: span 2;
+        }
+
+        .bento-icon {
+            width: 56px;
+            height: 56px;
             background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
             color: white;
             margin-bottom: 24px;
+            transition: transform var(--duration-normal) var(--ease-out-expo);
         }
 
-        .card h3 {
+        .bento-card:hover .bento-icon {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .bento-title {
+            font-family: var(--font-display);
             font-size: 1.5rem;
-            margin-bottom: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
         }
 
-        .card p {
-            color: var(--text-secondary);
+        .bento-description {
+            color: var(--text-tertiary);
+            line-height: 1.7;
+            margin-bottom: 24px;
         }
 
-        /* =========================================
+        .bento-metric {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        .bento-metric-value {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-secondary);
+        }
+
+        .bento-metric-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* ============================================
            DÉPARTEMENTS
-           ========================================= */
-        .dept-card {
-            background: var(--bg-secondary);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: all var(--transition-smooth);
+           ============================================ */
+        .departments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 32px;
         }
 
-        .dept-card:hover {
-            transform: translateY(-10px);
+        .department-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            transition: all var(--duration-normal) var(--ease-out-expo);
+            position: relative;
+        }
+
+        .department-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(77, 141, 255, 0.1));
+            opacity: 0;
+            transition: opacity var(--duration-normal);
+            pointer-events: none;
+        }
+
+        .department-card:hover {
+            transform: translateY(-12px) rotateX(2deg);
+            border-color: var(--border-accent);
             box-shadow: var(--shadow-glow);
         }
 
-        .dept-header {
-            padding: 40px;
-            background: linear-gradient(135deg, rgba(0, 61, 165, 0.2), rgba(77, 141, 255, 0.05));
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+        .department-card:hover::after {
+            opacity: 1;
         }
 
-        .dept-icon {
-            font-size: 2.5rem;
+        .department-header {
+            padding: 48px 40px 32px;
+            background: linear-gradient(135deg, rgba(0, 61, 165, 0.3), rgba(77, 141, 255, 0.1));
+            border-bottom: 1px solid var(--border-subtle);
+            position: relative;
+        }
+
+        .department-icon {
+            font-size: 3rem;
             color: var(--accent-secondary);
-            margin-bottom: 16px;
+            margin-bottom: 20px;
+            display: block;
         }
 
-        .dept-body { padding: 40px; }
+        .department-name {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
 
-        .dept-list {
+        .department-code {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+        }
+
+        .department-body {
+            padding: 40px;
+        }
+
+        .department-description {
+            color: var(--text-tertiary);
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        .department-features {
             list-style: none;
-            margin-top: 24px;
         }
 
-        .dept-list li {
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+        .department-feature {
             display: flex;
             align-items: center;
             gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-subtle);
             color: var(--text-secondary);
+            font-size: 0.95rem;
         }
 
-        .dept-list li i { color: var(--success); }
+        .department-feature:last-child {
+            border-bottom: none;
+        }
 
-        /* =========================================
-           TIMELINE / ROADMAP
-           ========================================= */
+        .department-feature i {
+            color: var(--success);
+            font-size: 0.9rem;
+        }
+
+        /* ============================================
+           TIMELINE (ROADMAP)
+           ============================================ */
         .timeline {
             position: relative;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
+            padding: 40px 0;
         }
 
         .timeline::before {
             content: '';
             position: absolute;
             left: 50%;
-            transform: translateX(-50%);
+            top: 0;
+            bottom: 0;
             width: 2px;
-            height: 100%;
-            background: linear-gradient(to bottom, var(--accent-primary), transparent);
+            background: linear-gradient(to bottom, var(--accent-primary), var(--accent-secondary), transparent);
+            transform: translateX(-50%);
         }
 
         .timeline-item {
-            margin-bottom: 48px;
             position: relative;
+            margin-bottom: 64px;
             width: 50%;
-            padding: 0 40px;
+            padding: 0 48px;
         }
 
-        .timeline-item:nth-child(odd) { left: 0; text-align: right; }
-        .timeline-item:nth-child(even) { left: 50%; }
+        .timeline-item:nth-child(odd) {
+            left: 0;
+            text-align: right;
+        }
+
+        .timeline-item:nth-child(even) {
+            left: 50%;
+        }
 
         .timeline-dot {
             position: absolute;
-            top: 0;
-            width: 16px;
-            height: 16px;
+            top: 8px;
+            width: 20px;
+            height: 20px;
             background: var(--accent-secondary);
+            border: 4px solid var(--bg-primary);
             border-radius: 50%;
-            box-shadow: 0 0 20px var(--accent-glow);
+            box-shadow: 0 0 0 4px var(--accent-subtle), 0 0 20px var(--accent-glow);
+            z-index: 2;
         }
 
-        .timeline-item:nth-child(odd) .timeline-dot { right: -8px; }
-        .timeline-item:nth-child(even) .timeline-dot { left: -8px; }
+        .timeline-item:nth-child(odd) .timeline-dot {
+            right: -10px;
+        }
 
-        .timeline-content h4 {
-            color: var(--accent-secondary);
+        .timeline-item:nth-child(even) .timeline-dot {
+            left: -10px;
+        }
+
+        .timeline-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            transition: all var(--duration-normal);
+        }
+
+        .timeline-content:hover {
+            border-color: var(--border-accent);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .timeline-phase {
             font-family: var(--font-mono);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
+            color: var(--accent-secondary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .timeline-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .timeline-description {
+            color: var(--text-tertiary);
+            line-height: 1.7;
+        }
+
+        .timeline-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            background: var(--accent-subtle);
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 16px;
+        }
+
+        .timeline-status.completed {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .timeline-status.active {
+            background: rgba(77, 141, 255, 0.1);
+            color: var(--accent-secondary);
+            animation: pulse 2s infinite;
+        }
+
+        .timeline-status.upcoming {
+            background: rgba(148, 163, 184, 0.1);
+            color: var(--text-muted);
+        }
+
+        /* ============================================
+           ÉQUIPE
+           ============================================ */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .team-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding: 48px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .team-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--border-accent);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .team-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .team-avatar-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
+        }
+
+        .team-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent-primary);
+            transition: transform var(--duration-normal);
+        }
+
+        .team-card:hover .team-avatar {
+            transform: scale(1.05);
+        }
+
+        .team-status {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            background: var(--success);
+            border: 3px solid var(--bg-secondary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .team-name {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
             margin-bottom: 8px;
         }
 
-        /* =========================================
+        .team-role {
+            display: inline-block;
+            padding: 6px 16px;
+            background: var(--accent-subtle);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-full);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--accent-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .team-bio {
+            color: var(--text-tertiary);
+            line-height: 1.7;
+        }
+
+        /* ============================================
+           CTA SECTION
+           ============================================ */
+        .cta-section {
+            padding: var(--section-padding) 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 80px 60px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--bg-tertiary));
+            border-radius: var(--radius-xl);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-accent);
+        }
+
+        .cta-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(77, 141, 255, 0.3), transparent 60%);
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .cta-description {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .cta-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-white {
+            background: white;
+            color: var(--accent-primary);
+        }
+
+        .btn-white:hover {
+            background: var(--text-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+        }
+
+        /* ============================================
            FOOTER
-           ========================================= */
-        footer {
+           ============================================ */
+        .footer {
             background: var(--bg-secondary);
-            border-top: 1px solid rgba(255,255,255,0.05);
+            border-top: 1px solid var(--border-subtle);
             padding: 80px 0 40px;
         }
 
@@ -559,210 +1223,492 @@
             margin-bottom: 60px;
         }
 
-        .footer-col h4 {
+        .footer-brand {
+            max-width: 320px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .footer-logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-primary);
+        }
+
+        .footer-description {
+            color: var(--text-tertiary);
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 12px;
+        }
+
+        .footer-social-link {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            text-decoration: none;
+            transition: all var(--duration-fast);
+        }
+
+        .footer-social-link:hover {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .footer-column h4 {
+            font-family: var(--font-display);
             font-size: 1rem;
+            font-weight: 700;
             margin-bottom: 24px;
             color: var(--text-primary);
         }
 
-        .footer-col ul { list-style: none; }
-        .footer-col ul li { margin-bottom: 12px; }
-        .footer-col a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color var(--transition-fast);
+        .footer-links {
+            list-style: none;
         }
-        .footer-col a:hover { color: var(--accent-secondary); }
+
+        .footer-link {
+            margin-bottom: 12px;
+        }
+
+        .footer-link a {
+            color: var(--text-tertiary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color var(--duration-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-link a:hover {
+            color: var(--accent-secondary);
+        }
+
+        .footer-link a::before {
+            content: '→';
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all var(--duration-fast);
+        }
+
+        .footer-link a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
 
         .footer-bottom {
             padding-top: 40px;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            border-top: 1px solid var(--border-subtle);
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
             color: var(--text-muted);
             font-size: 0.9rem;
         }
 
-        /* =========================================
-           ANIMATIONS
-           ========================================= */
+        /* ============================================
+           ANIMATIONS AU SCROLL
+           ============================================ */
         .reveal {
             opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(40px);
+            transition: all 0.8s var(--ease-out-expo);
         }
 
-        .reveal.active {
+        .reveal.visible {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* Responsive */
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1024px) {
+            .bento-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .bento-card.featured {
+                grid-column: span 2;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
         @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .hero-stats-bar { flex-direction: column; gap: 24px; }
-            .timeline::before { left: 20px; }
-            .timeline-item { width: 100%; left: 0 !important; padding-left: 60px; text-align: left !important; }
-            .timeline-dot { left: 12px !important; right: auto !important; }
-            .footer-grid { grid-template-columns: 1fr; gap: 40px; }
+            :root {
+                --section-padding: 80px;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .nav-mobile-toggle {
+                display: block;
+            }
+            
+            .hero-stats {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            
+            .hero-stat:not(:last-child)::after {
+                display: none;
+            }
+            
+            .bento-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .bento-card.featured,
+            .bento-card.tall {
+                grid-column: span 1;
+                grid-row: span 1;
+            }
+            
+            .timeline::before {
+                left: 20px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                left: 0 !important;
+                padding-left: 60px;
+                text-align: left !important;
+            }
+            
+            .timeline-dot {
+                left: 10px !important;
+                right: auto !important;
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .cta-container {
+                padding: 48px 32px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Curseur personnalisé -->
+    <div class="cursor" id="cursor">
+        <div class="cursor-dot"></div>
+        <div class="cursor-ring"></div>
+    </div>
 
-    <!-- Curseur -->
-    <div class="cursor-dot"></div>
-    <div class="cursor-outline"></div>
+    <!-- Loader -->
+    <div class="loader" id="loader">
+        <div class="loader-content">
+            <div class="loader-logo">
+                <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="VQC">
+            </div>
+            <div class="loader-text">Ville de Québec Roleplay</div>
+            <div class="loader-progress">
+                <div class="loader-progress-bar"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Navigation -->
-    <nav class="navbar" id="navbar">
-        <div class="container nav-container">
-            <a href="#" class="logo">
-                <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp" alt="VQC">
+    <nav class="nav" id="nav">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="VQC">
                 <span>VQC</span>
             </a>
-            <ul class="nav-links">
-                <li><a href="#accueil">Accueil</a></li>
-                <li><a href="#fonctionnalites">Fonctionnalités</a></li>
-                <li><a href="#departements">Départements</a></li>
-                <li><a href="#roadmap">Feuille de route</a></li>
-                <li><a href="#equipe">Équipe</a></li>
+            <ul class="nav-menu">
+                <li><a href="#accueil" class="nav-link">Accueil</a></li>
+                <li><a href="#fonctionnalites" class="nav-link">Fonctionnalités</a></li>
+                <li><a href="#departements" class="nav-link">Départements</a></li>
+                <li><a href="#roadmap" class="nav-link">Feuille de route</a></li>
+                <li><a href="#equipe" class="nav-link">Équipe</a></li>
             </ul>
-            <a href="https://discord.gg/UEf3epPwXS" class="btn btn-primary" target="_blank">
+            <a href="https://discord.gg/UEf3epPwXS" class="nav-cta" target="_blank">
                 <i class="fab fa-discord"></i> Rejoindre
             </a>
+            <button class="nav-mobile-toggle" id="mobile-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <section class="hero" id="accueil">
-        <canvas id="hero-canvas"></canvas>
-        <div class="container hero-content">
-            <div class="badge reveal">
-                <span class="pulse"></span> Serveur en ligne
+        <div class="hero-bg">
+            <div class="hero-gradient"></div>
+            <div class="hero-grid"></div>
+            <canvas id="particles-canvas"></canvas>
+        </div>
+        
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                <span>Serveur opérationnel</span>
             </div>
-            <h1 class="reveal">L'Expérience <span class="gradient-text">ERLC</span><br>Définitive au Québec</h1>
-            <p class="reveal">Plongez dans un roleplay immersif, structuré et réaliste. Rejoignez une communauté professionnelle et des services d'urgence de haut niveau.</p>
-            <div class="hero-buttons reveal">
+            
+            <h1 class="hero-title">
+                L'Expérience <span class="hero-title-gradient">ERLC</span><br>
+                Définitive au Québec
+            </h1>
+            
+            <p class="hero-subtitle">
+                Plongez dans un roleplay immersif, structuré et réaliste. Rejoignez une communauté professionnelle et des services d'urgence de haut niveau.
+            </p>
+            
+            <div class="hero-actions">
                 <a href="https://discord.gg/UEf3epPwXS" class="btn btn-primary" target="_blank">
-                    <i class="fab fa-discord"></i> Rejoindre le Discord
+                    <i class="fab fa-discord"></i>
+                    <span>Rejoindre le Discord</span>
                 </a>
-                <a href="#fonctionnalites" class="btn btn-outline">
-                    En savoir plus <i class="fas fa-arrow-down"></i>
+                <a href="#fonctionnalites" class="btn btn-secondary">
+                    <span>En savoir plus</span>
+                    <i class="fas fa-arrow-down"></i>
                 </a>
             </div>
             
-            <div class="hero-stats-bar reveal">
-                <div class="stat-item">
-                    <span class="stat-value" id="stat-members">0</span>
-                    <span class="stat-label">Membres</span>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value" id="stat-members">0</div>
+                    <div class="hero-stat-label">Membres</div>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="stat-online">0</span>
-                    <span class="stat-label">En ligne</span>
+                <div class="hero-stat">
+                    <div class="hero-stat-value" id="stat-online">0</div>
+                    <div class="hero-stat-label">En ligne</div>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="stat-ping">0</span>
-                    <span class="stat-label">Latence (ms)</span>
+                <div class="hero-stat">
+                    <div class="hero-stat-value" id="stat-ping">0</div>
+                    <div class="hero-stat-label">Latence (ms)</div>
                 </div>
             </div>
         </div>
+        
+        <div class="scroll-indicator">
+            <span>Défiler</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
     </section>
 
-    <!-- Fonctionnalités -->
-    <section id="fonctionnalites">
+    <!-- Fonctionnalités (Bento Grid) -->
+    <section class="section" id="fonctionnalites">
         <div class="container">
             <div class="section-header reveal">
-                <div class="badge">Pourquoi nous choisir</div>
-                <h2>Une infrastructure <span class="gradient-text">professionnelle</span></h2>
-                <p style="color: var(--text-secondary); margin-top: 16px;">Nous avons développé un écosystème complet pour garantir la meilleure expérience de roleplay possible.</p>
+                <div class="section-label">
+                    <i class="fas fa-sparkles"></i>
+                    <span>Pourquoi nous choisir</span>
+                </div>
+                <h2 class="section-title">Une infrastructure <span class="hero-title-gradient">professionnelle</span></h2>
+                <p class="section-subtitle">Nous avons développé un écosystème complet pour garantir la meilleure expérience de roleplay possible.</p>
             </div>
-            <div class="grid-3">
-                <div class="card reveal">
-                    <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
-                    <h3>Modération Active</h3>
-                    <p>Une équipe de modérateurs formés et disponibles 24/7 pour assurer le respect des règles et la qualité du roleplay.</p>
+            
+            <div class="bento-grid">
+                <div class="bento-card featured reveal">
+                    <div class="bento-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="bento-title">Modération Active 24/7</h3>
+                    <p class="bento-description">Une équipe de modérateurs formés et disponibles en permanence pour assurer le respect des règles et la qualité du roleplay. Système de tickets avancé et réponse rapide garantie.</p>
+                    <div class="bento-metric">
+                        <span class="bento-metric-value">&lt;5min</span>
+                        <span class="bento-metric-label">Temps de réponse moyen</span>
+                    </div>
                 </div>
-                <div class="card reveal">
-                    <div class="card-icon"><i class="fas fa-code"></i></div>
-                    <h3>Bot Personnalisé</h3>
-                    <p>Un système de bot développé sur mesure pour la gestion des tickets, des niveaux, de l'économie et des logs avancés.</p>
+                
+                <div class="bento-card reveal reveal-delay-1">
+                    <div class="bento-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="bento-title">Bot Personnalisé</h3>
+                    <p class="bento-description">Système développé sur mesure avec gestion des niveaux, économie, logs avancés et commandes exclusives.</p>
                 </div>
-                <div class="card reveal">
-                    <div class="card-icon"><i class="fas fa-users-cog"></i></div>
-                    <h3>Communauté Élite</h3>
-                    <p>Un processus de recrutement strict pour les départements afin de maintenir un niveau de jeu exceptionnel.</p>
+                
+                <div class="bento-card reveal reveal-delay-2">
+                    <div class="bento-icon">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <h3 class="bento-title">Communauté Élite</h3>
+                    <p class="bento-description">Processus de recrutement strict pour maintenir un niveau de jeu exceptionnel dans tous les départements.</p>
                 </div>
-                <div class="card reveal">
-                    <div class="card-icon"><i class="fas fa-server"></i></div>
-                    <h3>Hébergement Premium</h3>
-                    <p>Infrastructure hébergée sur des serveurs haute performance pour une latence minimale et une stabilité maximale.</p>
+                
+                <div class="bento-card tall reveal">
+                    <div class="bento-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h3 class="bento-title">Infrastructure Premium</h3>
+                    <p class="bento-description">Hébergement sur des serveurs haute performance avec une latence minimale et une disponibilité de 99,9%. Monitoring en temps réel et sauvegardes automatiques.</p>
+                    <div class="bento-metric">
+                        <span class="bento-metric-value">99.9%</span>
+                        <span class="bento-metric-label">Disponibilité</span>
+                    </div>
                 </div>
-                <div class="card reveal">
-                    <div class="card-icon"><i class="fas fa-chart-line"></i></div>
-                    <h3>Statistiques Temps Réel</h3>
-                    <p>Suivez l'activité du serveur, les membres en ligne et les performances du bot via notre tableau de bord live.</p>
+                
+                <div class="bento-card reveal reveal-delay-1">
+                    <div class="bento-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="bento-title">Statistiques Temps Réel</h3>
+                    <p class="bento-description">Tableau de bord live avec métriques détaillées sur l'activité du serveur et les performances.</p>
                 </div>
-                <div class="card reveal">
-                    <div class="card-icon"><i class="fas fa-gavel"></i></div>
-                    <h3>Système Juridique</h3>
-                    <p>Un code pénal et des procédures judiciaires détaillées pour un roleplay réaliste et structuré.</p>
+                
+                <div class="bento-card reveal reveal-delay-2">
+                    <div class="bento-icon">
+                        <i class="fas fa-gavel"></i>
+                    </div>
+                    <h3 class="bento-title">Système Juridique</h3>
+                    <p class="bento-description">Code pénal détaillé et procédures judiciaires réalistes pour un roleplay authentique et structuré.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Départements -->
-    <section id="departements" style="background: var(--bg-secondary);">
+    <section class="section section-alt" id="departements">
         <div class="container">
             <div class="section-header reveal">
-                <div class="badge">Carrières</div>
-                <h2>Nos <span class="gradient-text">Départements</span></h2>
-                <p style="color: var(--text-secondary); margin-top: 16px;">Servez la communauté en rejoignant l'une de nos organisations d'élite.</p>
+                <div class="section-label">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Carrières</span>
+                </div>
+                <h2 class="section-title">Nos <span class="hero-title-gradient">Départements</span></h2>
+                <p class="section-subtitle">Servez la communauté en rejoignant l'une de nos organisations d'élite.</p>
             </div>
-            <div class="grid-3">
-                <div class="dept-card reveal">
-                    <div class="dept-header">
-                        <i class="fas fa-car-side dept-icon"></i>
-                        <h3>SPVQ</h3>
-                        <p style="color: var(--text-muted); font-family: var(--font-mono); font-size: 0.9rem;">Service de Police</p>
+            
+            <div class="departments-grid">
+                <div class="department-card reveal">
+                    <div class="department-header">
+                        <i class="fas fa-car-side department-icon"></i>
+                        <h3 class="department-name">Service de Police</h3>
+                        <div class="department-code">SPVQ</div>
                     </div>
-                    <div class="dept-body">
-                        <p>Le Service de Police de la Ville de Québec assure la sécurité et l'ordre public. Patrouilles, interventions et enquêtes.</p>
-                        <ul class="dept-list">
-                            <li><i class="fas fa-check"></i> Véhicules intercepteurs</li>
-                            <li><i class="fas fa-check"></i> Équipement tactique</li>
-                            <li><i class="fas fa-check"></i> Académie de police</li>
+                    <div class="department-body">
+                        <p class="department-description">Le Service de Police de la Ville de Québec assure la sécurité et l'ordre public. Patrouilles, interventions et enquêtes criminelles.</p>
+                        <ul class="department-features">
+                            <li class="department-feature">
+                                <i class="fas fa-check"></i>
+                                <span>Véhicules intercepteurs exclusifs</span>
+                            </li>
+                            <li class="department-feature">
+                                <i class="fas fa-check"></i>
+                                <span>Équipement tactique complet</span>
+                            </li>
+                            <li class="department-feature">
+                                <i class="fas fa-check"></i>
+                                <span>Académie de police formelle</span>
+                            </li>
+                            <li class="department-feature">
+                                <i class="fas fa-check"></i>
+                                <span>Hiérarchie structurée</span>
+                            </li>
                         </ul>
                     </div>
                 </div>
-                <div class="dept-card reveal">
-                    <div class="dept-header">
-                        <i class="fas fa-shield-halved dept-icon"></i>
-                        <h3>SQ</h3>
-                        <p style="color: var(--text-muted); font-family: var(--font-mono); font-size: 0.9rem;">Sûreté du Québec</p>
+                
+                <div class="department-card reveal reveal-delay-1">
+                    <div class="department-header">
+                        <i class="fas fa-shield-halved department-icon"></i>
+                        <h3 class="department-name">Sûreté du Québec</h3>
+                        <div class="department-code">SQ</div>
                     </div>
-                    <div class="dept-body">
-                        <p>Force provinciale intervenant sur les crimes majeurs, les opérations spéciales et la sécurité des événements.</p>
-                        <ul class="dept-list">
-                            <li><i class="fas fa-check"></i> Unité K9 et Équestre</li>
-                            <li><i class="fas fa-check"></i> Équipe d'intervention</li>
-                            <li><i class="fas fa-check"></i> Enquêtes criminelles</li>
+                    <div class="department-body">
+                        <p class="department-description">Force provinciale intervenant sur les crimes majeurs, les opérations spéciales et la sécurité des événements d'envergure.</p>
+                        <ul class="department-features">
+                            <li class="department-feature">
+                                <i class="fas fa-check"></i>
+                                <span>Unité K9 et Équestre</span>
+                            </li>
+                            <li class="department-feature">
+                                <i class="fas fa-check"></i>
+                                <span>Équipe d'intervention tactique</span>
+                            </li>
+                            <li class="department-feature">
+                                <i class="fas fa-check"></i>
+                                <span>Enquêtes criminelles complexes</span>
+                            </li>
+                            <li class="department-feature">
+                                <i class="fas fa-check"></i>
+                                <span>Avantages hiérarchiques premium</span>
+                            </li>
                         </ul>
                     </div>
                 </div>
-                <div class="dept-card reveal">
-                    <div class="dept-header">
-                        <i class="fas fa-fire-extinguisher dept-icon"></i>
-                        <h3>SPCIQ</h3>
-                        <p style="color: var(--text-muted); font-family: var(--font-mono); font-size: 0.9rem;">Service Incendie</p>
+                
+                <div class="department-card reveal reveal-delay-2">
+                    <div class="department-header">
+                        <i class="fas fa-fire-extinguisher department-icon"></i>
+                        <h3 class="department-name">Service Incendie</h3>
+                        <div class="department-code">SPCIQ</div>
                     </div>
-                    <div class="dept-body">
-                        <p>Les pompiers de la ville interviennent sur les incendies, les accidents de la route et les secours à personne.</p>
-                        <ul class="dept-list">
-                            <li><i class="fas fa-check"></i> Camions d'intervention</li>
-                            <li><i class="fas fa-check"></i> Matériel de désincarcération</li>
-                            <li><i class="fas fa-check"></i> Formation paramédicale</li>
+                    <div class="department-body">
+                        <p class="department-description">Les pompiers de la ville interviennent sur les incendies, les accidents de la route et les secours à personne d'urgence.</p>
+                        <ul class="department-features">
+                            <li class="department-feature">
+                                <i class="fas fa-check"></i>
+                                <span>Camions d'intervention réalistes</span>
+                            </li>
+                            <li class="department-feature">
+                                <i class="fas fa-check"></i>
+                                <span>Matériel de désincarcération</span>
+                            </li>
+                            <li class="department-feature">
+                                <i class="fas fa-check"></i>
+                                <span>Formation paramédicale avancée</span>
+                            </li>
+                            <li class="department-feature">
+                                <i class="fas fa-check"></i>
+                                <span>Opérations de sauvetage</span>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -771,36 +1717,67 @@
     </section>
 
     <!-- Roadmap -->
-    <section id="roadmap">
+    <section class="section" id="roadmap">
         <div class="container">
             <div class="section-header reveal">
-                <div class="badge">Développement</div>
-                <h2>Feuille de <span class="gradient-text">Route</span></h2>
-                <p style="color: var(--text-secondary); margin-top: 16px;">Notre vision pour l'avenir du serveur et les prochaines mises à jour.</p>
+                <div class="section-label">
+                    <i class="fas fa-rocket"></i>
+                    <span>Développement</span>
+                </div>
+                <h2 class="section-title">Feuille de <span class="hero-title-gradient">Route</span></h2>
+                <p class="section-subtitle">Notre vision pour l'avenir du serveur et les prochaines mises à jour majeures.</p>
             </div>
+            
             <div class="timeline">
                 <div class="timeline-item reveal">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
-                        <h4>PHASE 1 - TERMINÉ</h4>
-                        <h3>Lancement Initial</h3>
-                        <p style="color: var(--text-secondary);">Mise en place de l'infrastructure de base, recrutement du staff fondateur et ouverture au public.</p>
+                        <div class="timeline-phase">Phase 1</div>
+                        <h3 class="timeline-title">Lancement Initial</h3>
+                        <p class="timeline-description">Mise en place de l'infrastructure de base, recrutement du staff fondateur et ouverture officielle au public.</p>
+                        <div class="timeline-status completed">
+                            <i class="fas fa-check"></i>
+                            <span>Terminé</span>
+                        </div>
                     </div>
                 </div>
+                
                 <div class="timeline-item reveal">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
-                        <h4>PHASE 2 - EN COURS</h4>
-                        <h3>Optimisation des Systèmes</h3>
-                        <p style="color: var(--text-secondary);">Déploiement du bot personnalisé, système de niveaux, économie et amélioration des procédures de départements.</p>
+                        <div class="timeline-phase">Phase 2</div>
+                        <h3 class="timeline-title">Optimisation des Systèmes</h3>
+                        <p class="timeline-description">Déploiement du bot personnalisé, système de niveaux, économie avancée et amélioration des procédures de départements.</p>
+                        <div class="timeline-status active">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>En cours</span>
+                        </div>
                     </div>
                 </div>
+                
                 <div class="timeline-item reveal">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
-                        <h4>PHASE 3 - À VENIR</h4>
-                        <h3>Extension Territoriale</h3>
-                        <p style="color: var(--text-secondary);">Ajout de nouvelles zones de jeu, véhicules personnalisés et événements communautaires majeurs.</p>
+                        <div class="timeline-phase">Phase 3</div>
+                        <h3 class="timeline-title">Extension Territoriale</h3>
+                        <p class="timeline-description">Ajout de nouvelles zones de jeu, véhicules personnalisés et événements communautaires majeurs.</p>
+                        <div class="timeline-status upcoming">
+                            <i class="fas fa-clock"></i>
+                            <span>À venir</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-phase">Phase 4</div>
+                        <h3 class="timeline-title">Partenariats & Expansion</h3>
+                        <p class="timeline-description">Collaborations avec d'autres serveurs, création de contenu média et expansion de la communauté.</p>
+                        <div class="timeline-status upcoming">
+                            <i class="fas fa-clock"></i>
+                            <span>Planifié</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -808,66 +1785,117 @@
     </section>
 
     <!-- Équipe -->
-    <section id="equipe" style="background: var(--bg-secondary);">
+    <section class="section section-alt" id="equipe">
         <div class="container">
             <div class="section-header reveal">
-                <div class="badge">Leadership</div>
-                <h2>L'Équipe de <span class="gradient-text">Direction</span></h2>
-            </div>
-            <div class="grid-2" style="max-width: 900px; margin: 0 auto;">
-                <div class="card reveal" style="text-align: center;">
-                    <img src="https://cdn.discordapp.com/avatars/1271541606759006332/cea78458445000372d4a4fef56b9ab52.webp" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent-primary); margin-bottom: 20px;">
-                    <h3>Lieutenant_Jacky</h3>
-                    <p style="color: var(--accent-secondary); font-family: var(--font-mono); font-size: 0.9rem; margin-bottom: 16px;">FONDATEUR & PROPRIÉTAIRE</p>
-                    <p>Visionnaire du projet, il assure la direction stratégique et le développement global de la communauté VQC.</p>
+                <div class="section-label">
+                    <i class="fas fa-crown"></i>
+                    <span>Leadership</span>
                 </div>
-                <div class="card reveal" style="text-align: center;">
-                    <img src="https://cdn.discordapp.com/avatars/1281784488854159421/85109e1b8945496f3e802e5a8d8208aa.webp" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent-primary); margin-bottom: 20px;">
-                    <h3>Jacobin Babouain</h3>
-                    <p style="color: var(--accent-secondary); font-family: var(--font-mono); font-size: 0.9rem; margin-bottom: 16px;">CO-FONDATEUR & DÉVELOPPEUR</p>
-                    <p>Responsable de l'architecture technique, du développement du bot et de l'infrastructure web du serveur.</p>
+                <h2 class="section-title">L'Équipe de <span class="hero-title-gradient">Direction</span></h2>
+                <p class="section-subtitle">Les visionnaires derrière le projet Ville de Québec Roleplay.</p>
+            </div>
+            
+            <div class="team-grid">
+                <div class="team-card reveal">
+                    <div class="team-avatar-wrapper">
+                        <img src="https://cdn.discordapp.com/avatars/1271541606759006332/cea78458445000372d4a4fef56b9ab52.webp?size=1024" alt="Lieutenant_Jacky" class="team-avatar">
+                        <div class="team-status"></div>
+                    </div>
+                    <h3 class="team-name">Lieutenant_Jacky</h3>
+                    <div class="team-role">Fondateur & Propriétaire</div>
+                    <p class="team-bio">Visionnaire du projet, il assure la direction stratégique et le développement global de la communauté VQC. Son leadership a permis de bâtir une communauté soudée et professionnelle.</p>
+                </div>
+                
+                <div class="team-card reveal reveal-delay-1">
+                    <div class="team-avatar-wrapper">
+                        <img src="https://cdn.discordapp.com/avatars/1281784488854159421/85109e1b8945496f3e802e5a8d8208aa.webp?size=1024" alt="Jacobin Babouain" class="team-avatar">
+                        <div class="team-status"></div>
+                    </div>
+                    <h3 class="team-name">Jacobin Babouain</h3>
+                    <div class="team-role">Co-fondateur & Développeur</div>
+                    <p class="team-bio">Responsable de l'architecture technique, du développement du bot personnalisé et de l'infrastructure web. Son expertise technique garantit la stabilité et l'innovation du serveur.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-container reveal">
+                <div class="cta-content">
+                    <h2 class="cta-title">Prêt à rejoindre l'aventure ?</h2>
+                    <p class="cta-description">Rejoignez des centaines de joueurs passionnés et vivez l'expérience ERLC la plus immersive du Québec.</p>
+                    <div class="cta-actions">
+                        <a href="https://discord.gg/UEf3epPwXS" class="btn btn-white" target="_blank">
+                            <i class="fab fa-discord"></i>
+                            <span>Rejoindre maintenant</span>
+                        </a>
+                        <a href="#fonctionnalites" class="btn btn-ghost">
+                            <span>En savoir plus</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer>
+    <footer class="footer">
         <div class="container">
             <div class="footer-grid">
-                <div class="footer-col">
-                    <div class="logo" style="margin-bottom: 20px;">
-                        <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp" alt="VQC">
+                <div class="footer-brand">
+                    <a href="#" class="footer-logo">
+                        <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="VQC">
                         <span>Ville de Québec RP</span>
+                    </a>
+                    <p class="footer-description">Le serveur de roleplay ERLC de référence au Québec. Une expérience immersive, professionnelle et communautaire.</p>
+                    <div class="footer-social">
+                        <a href="https://discord.gg/UEf3epPwXS" class="footer-social-link" target="_blank">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="#" class="footer-social-link">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a href="#" class="footer-social-link">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
                     </div>
-                    <p style="color: var(--text-secondary); max-width: 300px;">Le serveur de roleplay ERLC de référence au Québec. Rejoignez l'aventure dès aujourd'hui.</p>
                 </div>
-                <div class="footer-col">
+                
+                <div class="footer-column">
                     <h4>Navigation</h4>
-                    <ul>
-                        <li><a href="#accueil">Accueil</a></li>
-                        <li><a href="#fonctionnalites">Fonctionnalités</a></li>
-                        <li><a href="#departements">Départements</a></li>
-                        <li><a href="#roadmap">Feuille de route</a></li>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#accueil">Accueil</a></li>
+                        <li class="footer-link"><a href="#fonctionnalites">Fonctionnalités</a></li>
+                        <li class="footer-link"><a href="#departements">Départements</a></li>
+                        <li class="footer-link"><a href="#roadmap">Feuille de route</a></li>
+                        <li class="footer-link"><a href="#equipe">Équipe</a></li>
                     </ul>
                 </div>
-                <div class="footer-col">
+                
+                <div class="footer-column">
                     <h4>Ressources</h4>
-                    <ul>
-                        <li><a href="https://canner.ca/dashboard/projects/ville-de-quebec-roleplay" target="_blank">Candidatures</a></li>
-                        <li><a href="#">Règlement</a></li>
-                        <li><a href="#">Guide du joueur</a></li>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="https://canner.ca/dashboard/projects/ville-de-quebec-roleplay" target="_blank">Candidatures</a></li>
+                        <li class="footer-link"><a href="#">Règlement</a></li>
+                        <li class="footer-link"><a href="#">Guide du joueur</a></li>
+                        <li class="footer-link"><a href="#">FAQ</a></li>
                     </ul>
                 </div>
-                <div class="footer-col">
+                
+                <div class="footer-column">
                     <h4>Communauté</h4>
-                    <ul>
-                        <li><a href="https://discord.gg/UEf3epPwXS" target="_blank"><i class="fab fa-discord"></i> Discord</a></li>
-                        <li><a href="#"><i class="fab fa-youtube"></i> YouTube</a></li>
-                        <li><a href="#"><i class="fab fa-tiktok"></i> TikTok</a></li>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="https://discord.gg/UEf3epPwXS" target="_blank">Discord</a></li>
+                        <li class="footer-link"><a href="#">YouTube</a></li>
+                        <li class="footer-link"><a href="#">TikTok</a></li>
+                        <li class="footer-link"><a href="#">Twitter</a></li>
                     </ul>
                 </div>
             </div>
+            
             <div class="footer-bottom">
                 <p>&copy; 2024 Ville de Québec Roleplay. Tous droits réservés.</p>
                 <p>Développé par Jacobin Babouain</p>
@@ -876,65 +1904,157 @@
     </footer>
 
     <script>
-        // =========================================
+        // ============================================
         // CURSEUR PERSONNALISÉ
-        // =========================================
-        const cursorDot = document.querySelector('.cursor-dot');
-        const cursorOutline = document.querySelector('.cursor-outline');
-
-        window.addEventListener('mousemove', (e) => {
-            const posX = e.clientX;
-            const posY = e.clientY;
-
-            cursorDot.style.left = `${posX}px`;
-            cursorDot.style.top = `${posY}px`;
-
-            cursorOutline.animate({
-                left: `${posX}px`,
-                top: `${posY}px`
-            }, { duration: 500, fill: "forwards" });
+        // ============================================
+        const cursor = document.getElementById('cursor');
+        const cursorDot = cursor.querySelector('.cursor-dot');
+        const cursorRing = cursor.querySelector('.cursor-ring');
+        
+        let mouseX = 0, mouseY = 0;
+        let ringX = 0, ringY = 0;
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            cursorDot.style.left = mouseX + 'px';
+            cursorDot.style.top = mouseY + 'px';
         });
-
+        
+        function animateCursor() {
+            ringX += (mouseX - ringX) * 0.15;
+            ringY += (mouseY - ringY) * 0.15;
+            
+            cursorRing.style.left = ringX + 'px';
+            cursorRing.style.top = ringY + 'px';
+            
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+        
         // Effet hover sur les éléments interactifs
-        document.querySelectorAll('a, button, .card, .dept-card').forEach(el => {
-            el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-            el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+        const interactiveElements = document.querySelectorAll('a, button, .bento-card, .department-card, .team-card, .timeline-content');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+        
+        // Effet click
+        document.addEventListener('mousedown', () => cursor.classList.add('click'));
+        document.addEventListener('mouseup', () => cursor.classList.remove('click'));
+
+        // ============================================
+        // LOADER
+        // ============================================
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 2200);
         });
 
-        // =========================================
+        // ============================================
         // NAVIGATION SCROLL
-        // =========================================
-        const navbar = document.getElementById('navbar');
+        // ============================================
+        const nav = document.getElementById('nav');
+        let lastScroll = 0;
+        
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 50) {
+                nav.classList.add('scrolled');
             } else {
-                navbar.classList.remove('scrolled');
+                nav.classList.remove('scrolled');
             }
+            
+            lastScroll = currentScroll;
         });
 
-        // =========================================
-        // ANIMATIONS AU SCROLL (INTERSECTION OBSERVER)
-        // =========================================
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: "0px 0px -50px 0px"
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
+        // ============================================
+        // SYSTÈME DE PARTICULES (CANVAS)
+        // ============================================
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animationId;
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.speedY = (Math.random() - 0.5) * 0.3;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(77, 141, 255, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+        
+        function initParticles() {
+            particles = [];
+            const numParticles = Math.min(Math.floor((canvas.width * canvas.height) / 20000), 80);
+            for (let i = 0; i < numParticles; i++) {
+                particles.push(new Particle());
+            }
+        }
+        
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach((particle, i) => {
+                particle.update();
+                particle.draw();
+                
+                // Connexions
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particle.x - particles[j].x;
+                    const dy = particle.y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(77, 141, 255, ${0.15 * (1 - distance / 150)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particle.x, particle.y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
                 }
             });
-        }, observerOptions);
+            
+            animationId = requestAnimationFrame(animateParticles);
+        }
+        
+        initParticles();
+        animateParticles();
 
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-        // =========================================
-        // EFFET DE LUMIÈRE SUR LES CARTES
-        // =========================================
-        document.querySelectorAll('.card').forEach(card => {
+        // ============================================
+        // EFFET DE LUMIÈRE SUR LES CARTES BENTO
+        // ============================================
+        document.querySelectorAll('.bento-card').forEach(card => {
             card.addEventListener('mousemove', (e) => {
                 const rect = card.getBoundingClientRect();
                 const x = e.clientX - rect.left;
@@ -944,120 +2064,94 @@
             });
         });
 
-        // =========================================
-        // CANVAS BACKGROUND (RÉSEAU NEURONAL)
-        // =========================================
-        const canvas = document.getElementById('hero-canvas');
-        const ctx = canvas.getContext('2d');
-        let width, height;
-        let particles = [];
-
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        }
-
-        window.addEventListener('resize', resize);
-        resize();
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * width;
-                this.y = Math.random() * height;
-                this.vx = (Math.random() - 0.5) * 0.5;
-                this.vy = (Math.random() - 0.5) * 0.5;
-                this.size = Math.random() * 2 + 1;
-            }
-
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-
-                if (this.x < 0 || this.x > width) this.vx *= -1;
-                if (this.y < 0 || this.y > height) this.vy *= -1;
-            }
-
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(77, 141, 255, 0.5)';
-                ctx.fill();
-            }
-        }
-
-        function initParticles() {
-            particles = [];
-            const numParticles = Math.min((width * height) / 15000, 100);
-            for (let i = 0; i < numParticles; i++) {
-                particles.push(new Particle());
-            }
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, width, height);
-            
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
-
-                for (let j = i; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < 150) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = `rgba(77, 141, 255, ${0.2 - distance/750})`;
-                        ctx.lineWidth = 1;
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
-                    }
+        // ============================================
+        // ANIMATIONS AU SCROLL (INTERSECTION OBSERVER)
+        // ============================================
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
                 }
-            }
-            requestAnimationFrame(animate);
-        }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        initParticles();
-        animate();
-
-        // =========================================
+        // ============================================
         // STATISTIQUES EN DIRECT (API)
-        // =========================================
+        // ============================================
         const API_URL = 'https://ville-de-quebec-roleplay.canner.app';
-
+        
         async function fetchStats() {
             try {
                 const response = await fetch(`${API_URL}/api/stats`);
                 if (response.ok) {
                     const data = await response.json();
-                    animateValue("stat-members", parseInt(document.getElementById("stat-members").innerText), data.totalMembers, 1000);
-                    animateValue("stat-online", parseInt(document.getElementById("stat-online").innerText), data.onlineMembers, 1000);
-                    animateValue("stat-ping", parseInt(document.getElementById("stat-ping").innerText), data.botPing, 1000);
+                    animateValue('stat-members', parseInt(document.getElementById('stat-members').innerText) || 0, data.totalMembers, 1500);
+                    animateValue('stat-online', parseInt(document.getElementById('stat-online').innerText) || 0, data.onlineMembers, 1500);
+                    animateValue('stat-ping', parseInt(document.getElementById('stat-ping').innerText) || 0, data.botPing, 1500);
                 }
             } catch (error) {
-                console.error("Erreur API:", error);
+                console.error('Erreur API:', error);
             }
         }
-
+        
         function animateValue(id, start, end, duration) {
             const obj = document.getElementById(id);
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                obj.innerHTML = Math.floor(progress * (end - start) + start);
+            const range = end - start;
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+                const current = Math.floor(start + range * eased);
+                obj.innerHTML = current;
+                
                 if (progress < 1) {
-                    window.requestAnimationFrame(step);
+                    requestAnimationFrame(update);
                 }
-            };
-            window.requestAnimationFrame(step);
+            }
+            
+            requestAnimationFrame(update);
         }
-
+        
         // Charger les stats au démarrage et toutes les 30s
         fetchStats();
         setInterval(fetchStats, 30000);
 
+        // ============================================
+        // SMOOTH SCROLL POUR LES LIENS D'ANCRAGE
+        // ============================================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // ============================================
+        // EFFET PARALLAXE SUR LE HERO
+        // ============================================
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero-content');
+            if (hero && scrolled < window.innerHeight) {
+                hero.style.transform = `translateY(${scrolled * 0.3}px)`;
+                hero.style.opacity = 1 - (scrolled / window.innerHeight) * 0.5;
+            }
+        });
     </script>
 </body>
 </html>
