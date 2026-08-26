@@ -77,9 +77,6 @@
             --border-accent: rgba(77, 141, 255, 0.3);
         }
 
-        /* ============================================
-           RESET & BASE
-           ============================================ */
         *, *::before, *::after {
             margin: 0;
             padding: 0;
@@ -130,7 +127,7 @@
         }
 
         /* ============================================
-           CURSEUR PERSONNALISÉ ULTIME (V3)
+           CURSEUR PERSONNALISÉ V3 (ULTIME)
            ============================================ */
         .cursor-main {
             position: fixed;
@@ -206,9 +203,6 @@
             .cursor-main, .cursor-ring { display: none; }
         }
 
-        /* ============================================
-           GLOW QUI SUIT LE CURSEUR
-           ============================================ */
         .cursor-glow {
             position: fixed;
             width: 500px;
@@ -223,9 +217,6 @@
             transition: opacity 0.5s;
         }
 
-        /* ============================================
-           PROGRESS BAR DE SCROLL
-           ============================================ */
         .scroll-progress {
             position: fixed;
             top: 0;
@@ -238,9 +229,6 @@
             will-change: transform;
         }
 
-        /* ============================================
-           EFFET DE GRAIN/NOISE
-           ============================================ */
         .noise-overlay {
             position: fixed;
             top: 0;
@@ -253,9 +241,6 @@
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
-        /* ============================================
-           LOADER CINÉMATIQUE
-           ============================================ */
         .loader {
             position: fixed;
             inset: 0;
@@ -334,9 +319,6 @@
             color: var(--text-tertiary);
         }
 
-        /* ============================================
-           NAVIGATION
-           ============================================ */
         .nav {
             position: fixed;
             top: 0;
@@ -475,9 +457,6 @@
             cursor: pointer;
         }
 
-        /* ============================================
-           HERO SECTION
-           ============================================ */
         .hero {
             position: relative;
             min-height: 100vh;
@@ -747,9 +726,6 @@
             50% { transform: translateX(-50%) translateY(-10px); }
         }
 
-        /* ============================================
-           SECTIONS GÉNÉRALES
-           ============================================ */
         .section {
             padding: var(--section-padding) 0;
             position: relative;
@@ -802,9 +778,6 @@
             line-height: 1.7;
         }
 
-        /* ============================================
-           BENTO GRID (FONCTIONNALITÉS)
-           ============================================ */
         .bento-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -921,9 +894,6 @@
             color: var(--text-muted);
         }
 
-        /* ============================================
-           DÉPARTEMENTS
-           ============================================ */
         .departments-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -1038,9 +1008,6 @@
             transform: scale(1.2);
         }
 
-        /* ============================================
-           TIMELINE (ROADMAP)
-           ============================================ */
         .timeline {
             position: relative;
             max-width: 900px;
@@ -1164,9 +1131,6 @@
             color: var(--text-muted);
         }
 
-        /* ============================================
-           ÉQUIPE
-           ============================================ */
         .team-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -1268,9 +1232,6 @@
             line-height: 1.7;
         }
 
-        /* ============================================
-           CTA SECTION
-           ============================================ */
         .cta-section {
             padding: var(--section-padding) 0;
             position: relative;
@@ -1350,9 +1311,6 @@
             border-color: white;
         }
 
-        /* ============================================
-           FOOTER
-           ============================================ */
         .footer {
             background: var(--bg-secondary);
             border-top: 1px solid var(--border-subtle);
@@ -1361,7 +1319,7 @@
 
         .footer-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
+            grid-template-columns: 2fr 1fr 1fr;
             gap: 60px;
             margin-bottom: 60px;
         }
@@ -1476,9 +1434,6 @@
             font-size: 0.9rem;
         }
 
-        /* ============================================
-           ANIMATIONS AU SCROLL
-           ============================================ */
         .reveal {
             opacity: 0;
             transform: translateY(40px);
@@ -1495,18 +1450,12 @@
         .reveal-delay-3 { transition-delay: 0.3s; }
         .reveal-delay-4 { transition-delay: 0.4s; }
 
-        /* ============================================
-           RESPONSIVE
-           ============================================ */
         @media (max-width: 1024px) {
             .bento-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
             .bento-card.featured {
                 grid-column: span 2;
-            }
-            .footer-grid {
-                grid-template-columns: 1fr 1fr;
             }
         }
 
@@ -1587,20 +1536,12 @@
     </style>
 </head>
 <body>
-    <!-- Curseur personnalisé V3 (ultime) -->
     <div class="cursor-main" id="cursor-main"></div>
     <div class="cursor-ring" id="cursor-ring"></div>
-
-    <!-- Glow qui suit le curseur -->
     <div class="cursor-glow" id="cursor-glow"></div>
-
-    <!-- Progress bar de scroll -->
     <div class="scroll-progress" id="scroll-progress"></div>
-
-    <!-- Effet de grain -->
     <div class="noise-overlay"></div>
 
-    <!-- Loader -->
     <div class="loader" id="loader">
         <div class="loader-content">
             <div class="loader-logo">
@@ -1616,7 +1557,6 @@
         </div>
     </div>
 
-    <!-- Navigation -->
     <nav class="nav" id="nav">
         <div class="nav-container">
             <a href="#" class="nav-logo">
@@ -1640,7 +1580,6 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <section class="hero" id="accueil">
         <div class="hero-bg">
             <div class="hero-gradient"></div>
@@ -1696,7 +1635,6 @@
         </div>
     </section>
 
-    <!-- Fonctionnalités (Bento Grid) -->
     <section class="section" id="fonctionnalites">
         <div class="container">
             <div class="section-header reveal">
@@ -1704,7 +1642,7 @@
                     <i class="fas fa-sparkles"></i>
                     <span>Pourquoi nous choisir</span>
                 </div>
-                <h2 class="section-title">Une infrastructure <span class="hero-title-gradient">professionnelle</span></h2>
+                <h2 class="section-title">Une infrastructure professionnelle</h2>
                 <p class="section-subtitle">Nous avons développé un écosystème complet pour garantir la meilleure expérience de roleplay possible.</p>
             </div>
             
@@ -1726,7 +1664,7 @@
                         <i class="fas fa-code"></i>
                     </div>
                     <h3 class="bento-title">Bot Personnalisé</h3>
-                    <p class="bento-description">Système développé sur mesure avec gestion des niveaux, économie, logs avancés et commandes exclusives.</p>
+                    <p class="bento-description">Système développé sur mesure avec gestion des niveaux, économie, journaux avancés et commandes exclusives.</p>
                 </div>
                 
                 <div class="bento-card reveal reveal-delay-2">
@@ -1742,7 +1680,7 @@
                         <i class="fas fa-server"></i>
                     </div>
                     <h3 class="bento-title">Infrastructure Premium</h3>
-                    <p class="bento-description">Hébergement sur des serveurs haute performance avec une latence minimale et une disponibilité de 99,9%. Monitoring en temps réel et sauvegardes automatiques.</p>
+                    <p class="bento-description">Hébergement sur des serveurs haute performance avec une latence minimale et une disponibilité de 99,9%. Surveillance en temps réel et sauvegardes automatiques.</p>
                     <div class="bento-metric">
                         <span class="bento-metric-value">99.9%</span>
                         <span class="bento-metric-label">Disponibilité</span>
@@ -1754,7 +1692,7 @@
                         <i class="fas fa-chart-line"></i>
                     </div>
                     <h3 class="bento-title">Statistiques Temps Réel</h3>
-                    <p class="bento-description">Tableau de bord live avec métriques détaillées sur l'activité du serveur et les performances.</p>
+                    <p class="bento-description">Tableau de bord en direct avec des métriques détaillées sur l'activité du serveur et les performances.</p>
                 </div>
                 
                 <div class="bento-card reveal reveal-delay-2">
@@ -1768,7 +1706,6 @@
         </div>
     </section>
 
-    <!-- Départements -->
     <section class="section section-alt" id="departements">
         <div class="container">
             <div class="section-header reveal">
@@ -1776,7 +1713,7 @@
                     <i class="fas fa-briefcase"></i>
                     <span>Carrières</span>
                 </div>
-                <h2 class="section-title">Nos <span class="hero-title-gradient">Départements</span></h2>
+                <h2 class="section-title">Nos Départements</h2>
                 <p class="section-subtitle">Servez la communauté en rejoignant l'une de nos organisations d'élite.</p>
             </div>
             
@@ -1871,7 +1808,6 @@
         </div>
     </section>
 
-    <!-- Roadmap -->
     <section class="section" id="roadmap">
         <div class="container">
             <div class="section-header reveal">
@@ -1879,7 +1815,7 @@
                     <i class="fas fa-rocket"></i>
                     <span>Développement</span>
                 </div>
-                <h2 class="section-title">Feuille de <span class="hero-title-gradient">Route</span></h2>
+                <h2 class="section-title">Feuille de Route</h2>
                 <p class="section-subtitle">Notre vision pour l'avenir du serveur et les prochaines mises à jour majeures.</p>
             </div>
             
@@ -1889,7 +1825,7 @@
                     <div class="timeline-content">
                         <div class="timeline-phase">Phase 1</div>
                         <h3 class="timeline-title">Lancement Initial</h3>
-                        <p class="timeline-description">Mise en place de l'infrastructure de base, recrutement du staff fondateur et ouverture officielle au public.</p>
+                        <p class="timeline-description">Mise en place de l'infrastructure de base, recrutement du personnel fondateur et ouverture officielle au public.</p>
                         <div class="timeline-status completed">
                             <i class="fas fa-check"></i>
                             <span>Terminé</span>
@@ -1927,7 +1863,7 @@
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
                         <div class="timeline-phase">Phase 4</div>
-                        <h3 class="timeline-title">Partenariats & Expansion</h3>
+                        <h3 class="timeline-title">Partenariats et Expansion</h3>
                         <p class="timeline-description">Collaborations avec d'autres serveurs, création de contenu média et expansion de la communauté.</p>
                         <div class="timeline-status upcoming">
                             <i class="fas fa-clock"></i>
@@ -1939,15 +1875,14 @@
         </div>
     </section>
 
-    <!-- Équipe -->
     <section class="section section-alt" id="equipe">
         <div class="container">
             <div class="section-header reveal">
                 <div class="section-label">
                     <i class="fas fa-crown"></i>
-                    <span>Leadership</span>
+                    <span>Direction</span>
                 </div>
-                <h2 class="section-title">L'Équipe de <span class="hero-title-gradient">Direction</span></h2>
+                <h2 class="section-title">L'Équipe de Direction</h2>
                 <p class="section-subtitle">Les visionnaires derrière le projet Ville de Québec Roleplay.</p>
             </div>
             
@@ -1958,24 +1893,23 @@
                         <div class="team-status"></div>
                     </div>
                     <h3 class="team-name">Lieutenant_Jacky</h3>
-                    <div class="team-role">Fondateur & Propriétaire</div>
+                    <div class="team-role">Fondateur et Propriétaire</div>
                     <p class="team-bio">Visionnaire du projet, il assure la direction stratégique et le développement global de la communauté VQC. Son leadership a permis de bâtir une communauté soudée et professionnelle.</p>
                 </div>
                 
                 <div class="team-card reveal reveal-delay-1">
                     <div class="team-avatar-wrapper">
-                        <img src="https://cdn.discordapp.com/avatars/1281784488854159421/85109e1b8945496f3e802e5a8d8208aa.webp?size=1024" alt="Jacobin Babouain" class="team-avatar">
+                        <img src="https://cdn.discordapp.com/avatars/1281784488854159421/b30ef2bb80b0832bf222e4a22287a72e.webp?size=1024" alt="Jacobin Babouain" class="team-avatar">
                         <div class="team-status"></div>
                     </div>
                     <h3 class="team-name">Jacobin Babouain</h3>
-                    <div class="team-role">Co-fondateur & Développeur</div>
+                    <div class="team-role">Cofondateur et Développeur</div>
                     <p class="team-bio">Responsable de l'architecture technique, du développement du bot personnalisé et de l'infrastructure web. Son expertise technique garantit la stabilité et l'innovation du serveur.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
     <section class="cta-section">
         <div class="container">
             <div class="cta-container reveal">
@@ -1996,7 +1930,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-grid">
@@ -2010,13 +1943,17 @@
                         <a href="https://discord.gg/UEf3epPwXS" class="footer-social-link" target="_blank">
                             <i class="fab fa-discord"></i>
                         </a>
-                        <a href="#" class="footer-social-link">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                        <a href="#" class="footer-social-link">
-                            <i class="fab fa-tiktok"></i>
-                        </a>
                     </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Ressources</h4>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="https://melon.ly/form/7498354753420660736" target="_blank">Candidatures Staff</a></li>
+                        <li class="footer-link"><a href="https://melon.ly/sd/ville-de-quebec-roleplay" target="_blank">Présentation du serveur</a></li>
+                        <li class="footer-link"><a href="https://discord.com/channels/1490410149213507804/1490444001587757085" target="_blank">Règles en jeu</a></li>
+                        <li class="footer-link"><a href="https://discord.com/channels/1490410149213507804/1490443957547827331" target="_blank">Informations Discord</a></li>
+                    </ul>
                 </div>
                 
                 <div class="footer-column">
@@ -2029,39 +1966,16 @@
                         <li class="footer-link"><a href="#equipe">Équipe</a></li>
                     </ul>
                 </div>
-                
-                <div class="footer-column">
-                    <h4>Ressources</h4>
-                    <ul class="footer-links">
-                        <li class="footer-link"><a href="https://canner.ca/dashboard/projects/ville-de-quebec-roleplay" target="_blank">Candidatures</a></li>
-                        <li class="footer-link"><a href="#">Règlement</a></li>
-                        <li class="footer-link"><a href="#">Guide du joueur</a></li>
-                        <li class="footer-link"><a href="#">FAQ</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-column">
-                    <h4>Communauté</h4>
-                    <ul class="footer-links">
-                        <li class="footer-link"><a href="https://discord.gg/UEf3epPwXS" target="_blank">Discord</a></li>
-                        <li class="footer-link"><a href="#">YouTube</a></li>
-                        <li class="footer-link"><a href="#">TikTok</a></li>
-                        <li class="footer-link"><a href="#">Twitter</a></li>
-                    </ul>
-                </div>
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; 2024 Ville de Québec Roleplay. Tous droits réservés.</p>
+                <p>© 2026 Ville de Québec Roleplay. Tous droits réservés.</p>
                 <p>Développé par Jacobin Babouain</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // ============================================
-        // CURSEUR PERSONNALISÉ V3 (ULTIME - CORRIGÉ)
-        // ============================================
         const cursorMain = document.getElementById('cursor-main');
         const cursorRing = document.getElementById('cursor-ring');
         const cursorGlow = document.getElementById('cursor-glow');
@@ -2071,27 +1985,21 @@
         let ringX = 0, ringY = 0;
         let glowX = 0, glowY = 0;
         
-        // Suivi de la souris
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
         });
         
-        // Animation fluide avec interpolation
         function animateCursor() {
-            // Point central (rapide)
             mainX += (mouseX - mainX) * 0.3;
             mainY += (mouseY - mainY) * 0.3;
             
-            // Anneau (moyen)
             ringX += (mouseX - ringX) * 0.15;
             ringY += (mouseY - ringY) * 0.15;
             
-            // Glow (lent)
             glowX += (mouseX - glowX) * 0.08;
             glowY += (mouseY - glowY) * 0.08;
             
-            // Application des transforms
             cursorMain.style.transform = `translate(${mainX}px, ${mainY}px) translate(-50%, -50%)`;
             cursorRing.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
             cursorGlow.style.transform = `translate(${glowX}px, ${glowY}px) translate(-50%, -50%)`;
@@ -2100,7 +2008,6 @@
         }
         animateCursor();
         
-        // Détection des éléments interactifs
         const interactiveElements = document.querySelectorAll('a, button, .bento-card, .department-card, .team-card, .timeline-content, .footer-social-link');
         
         interactiveElements.forEach(el => {
@@ -2114,7 +2021,6 @@
             });
         });
         
-        // Détection du texte
         const textElements = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, li');
         textElements.forEach(el => {
             el.addEventListener('mouseenter', () => {
@@ -2127,7 +2033,6 @@
             });
         });
         
-        // Effet de clic
         document.addEventListener('mousedown', () => {
             cursorMain.classList.add('click');
             cursorRing.classList.add('click');
@@ -2137,9 +2042,6 @@
             cursorRing.classList.remove('click');
         });
 
-        // ============================================
-        // PROGRESS BAR DE SCROLL
-        // ============================================
         const scrollProgress = document.getElementById('scroll-progress');
         
         window.addEventListener('scroll', () => {
@@ -2149,9 +2051,6 @@
             scrollProgress.style.transform = `scaleX(${scrollPercent})`;
         });
 
-        // ============================================
-        // LOADER AVEC POURCENTAGE
-        // ============================================
         const loader = document.getElementById('loader');
         const loaderProgressBar = document.getElementById('loader-progress-bar');
         const loaderPercentage = document.getElementById('loader-percentage');
@@ -2172,9 +2071,6 @@
             loaderPercentage.textContent = Math.floor(progress) + '%';
         }, 100);
 
-        // ============================================
-        // NAVIGATION SCROLL
-        // ============================================
         const nav = document.getElementById('nav');
         const navLinks = document.querySelectorAll('.nav-link');
         
@@ -2185,7 +2081,6 @@
                 nav.classList.remove('scrolled');
             }
             
-            // Détection de la section active
             let current = '';
             document.querySelectorAll('section[id]').forEach(section => {
                 const sectionTop = section.offsetTop;
@@ -2202,9 +2097,6 @@
             });
         });
 
-        // ============================================
-        // SYSTÈME DE PARTICULES (CANVAS)
-        // ============================================
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -2258,7 +2150,6 @@
                 particle.update();
                 particle.draw();
                 
-                // Connexions
                 for (let j = i + 1; j < particles.length; j++) {
                     const dx = particle.x - particles[j].x;
                     const dy = particle.y - particles[j].y;
@@ -2281,9 +2172,6 @@
         initParticles();
         animateParticles();
 
-        // ============================================
-        // EFFET DE LUMIÈRE SUR LES CARTES BENTO
-        // ============================================
         document.querySelectorAll('.bento-card').forEach(card => {
             card.addEventListener('mousemove', (e) => {
                 const rect = card.getBoundingClientRect();
@@ -2294,9 +2182,6 @@
             });
         });
 
-        // ============================================
-        // ANIMATIONS AU SCROLL (INTERSECTION OBSERVER)
-        // ============================================
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
@@ -2312,9 +2197,6 @@
         
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // ============================================
-        // STATISTIQUES EN DIRECT (API)
-        // ============================================
         const API_URL = 'https://ville-de-quebec-roleplay.canner.app';
         
         async function fetchStats() {
@@ -2354,9 +2236,6 @@
         fetchStats();
         setInterval(fetchStats, 30000);
 
-        // ============================================
-        // SMOOTH SCROLL
-        // ============================================
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -2370,9 +2249,6 @@
             });
         });
 
-        // ============================================
-        // EFFET PARALLAXE SUR LE HERO
-        // ============================================
         window.addEventListener('scroll', () => {
             const scrolled = window.pageYOffset;
             const heroContent = document.querySelector('.hero-content');
