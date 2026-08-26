@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Ville de Québec Roleplay — L'expérience ERLC québécoise ultime. Serveur professionnel avec modération active, départements réalistes et communauté d'élite.">
+    <meta name="description" content="Ville de Québec Roleplay — L'expérience ERLC québécoise ultime.">
     <meta property="og:title" content="Ville de Québec Roleplay | VQC">
     <meta property="og:description" content="Rejoignez le serveur ERLC le plus immersif du Québec.">
     <meta property="og:image" content="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp">
@@ -24,38 +24,32 @@
            SYSTÈME DE DESIGN ULTRA-AVANCÉ
            ============================================ */
         :root {
-            /* Palette principale */
             --bg-primary: #030712;
             --bg-secondary: #0B1120;
             --bg-tertiary: #151E32;
             --bg-elevated: #1E293B;
             --bg-glass: rgba(11, 17, 32, 0.6);
             
-            /* Accents */
             --accent-primary: #003DA5;
             --accent-secondary: #4D8DFF;
             --accent-tertiary: #8FB8FF;
             --accent-glow: rgba(77, 141, 255, 0.4);
             --accent-subtle: rgba(77, 141, 255, 0.1);
             
-            /* Texte */
             --text-primary: #F8FAFC;
             --text-secondary: #CBD5E1;
             --text-tertiary: #94A3B8;
             --text-muted: #64748B;
             
-            /* États */
             --success: #10B981;
             --warning: #F59E0B;
             --danger: #EF4444;
             --info: #3B82F6;
             
-            /* Typographie */
             --font-display: 'Space Grotesk', sans-serif;
             --font-body: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
             
-            /* Espacement */
             --container-max: 1400px;
             --section-padding: 140px;
             --radius-sm: 8px;
@@ -64,7 +58,6 @@
             --radius-xl: 28px;
             --radius-full: 9999px;
             
-            /* Transitions */
             --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
             --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
             --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -72,14 +65,12 @@
             --duration-normal: 0.4s;
             --duration-slow: 0.8s;
             
-            /* Ombres */
             --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
             --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
             --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.5);
             --shadow-glow: 0 0 60px var(--accent-glow);
             --shadow-glow-strong: 0 0 100px rgba(77, 141, 255, 0.6);
             
-            /* Bordures */
             --border-subtle: rgba(255, 255, 255, 0.06);
             --border-default: rgba(255, 255, 255, 0.1);
             --border-strong: rgba(255, 255, 255, 0.2);
@@ -108,6 +99,11 @@
             color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
+            cursor: none;
+        }
+
+        @media (max-width: 768px) {
+            body { cursor: auto; }
         }
 
         ::selection {
@@ -134,47 +130,120 @@
         }
 
         /* ============================================
-           CURSEUR PERSONNALISÉ CORRIGÉ
+           CURSEUR PERSONNALISÉ CORRIGÉ (V2)
            ============================================ */
-        .custom-cursor {
+        .cursor-wrapper {
             position: fixed;
             top: 0;
             left: 0;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--accent-secondary);
-            border-radius: 50%;
+            width: 0;
+            height: 0;
             pointer-events: none;
-            z-index: 9999;
-            transition: transform 0.15s ease, width 0.3s ease, height 0.3s ease, border-color 0.3s ease;
-            transform: translate(-50%, -50%);
-            mix-blend-mode: difference;
+            z-index: 99999;
+            will-change: transform;
         }
 
-        .custom-cursor.hover {
-            width: 50px;
-            height: 50px;
+        .cursor-outer {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--accent-secondary);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s var(--ease-out-expo), 
+                        height 0.3s var(--ease-out-expo), 
+                        border-color 0.3s var(--ease-out-expo),
+                        background 0.3s var(--ease-out-expo);
+            will-change: transform, width, height;
+        }
+
+        .cursor-inner {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-secondary);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s var(--ease-out-expo);
+            will-change: transform;
+        }
+
+        .cursor-wrapper.hover .cursor-outer {
+            width: 60px;
+            height: 60px;
             border-color: var(--accent-tertiary);
             background: rgba(77, 141, 255, 0.1);
         }
 
-        .custom-cursor-dot {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 6px;
-            height: 6px;
+        .cursor-wrapper.hover .cursor-inner {
+            transform: translate(-50%, -50%) scale(0);
+        }
+
+        .cursor-wrapper.click .cursor-outer {
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+
+        .cursor-wrapper.text .cursor-outer {
+            width: 3px;
+            height: 20px;
+            border-radius: 2px;
             background: var(--accent-secondary);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
+            border-color: transparent;
+        }
+
+        .cursor-wrapper.text .cursor-inner {
+            opacity: 0;
         }
 
         @media (max-width: 768px) {
-            .custom-cursor, .custom-cursor-dot {
-                display: none;
-            }
+            .cursor-wrapper { display: none; }
+        }
+
+        /* ============================================
+           PROGRESS BAR DE SCROLL
+           ============================================ */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
+            z-index: 10001;
+            transform-origin: left;
+            transform: scaleX(0);
+            will-change: transform;
+        }
+
+        /* ============================================
+           EFFET DE GRAIN/NOISE
+           ============================================ */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* ============================================
+           GLOW QUI SUIT LE CURSEUR
+           ============================================ */
+        .cursor-glow {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.15;
+            transform: translate(-50%, -50%);
+            will-change: transform;
+            transition: opacity 0.3s;
         }
 
         /* ============================================
@@ -184,7 +253,7 @@
             position: fixed;
             inset: 0;
             background: var(--bg-primary);
-            z-index: 10000;
+            z-index: 100000;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -201,9 +270,9 @@
         }
 
         .loader-logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 24px;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 32px;
             position: relative;
         }
 
@@ -211,44 +280,51 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            border: 2px solid var(--accent-primary);
+            border: 3px solid var(--accent-primary);
             animation: pulse-logo 2s infinite;
         }
 
         @keyframes pulse-logo {
             0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
-            50% { box-shadow: 0 0 0 20px rgba(77, 141, 255, 0); }
+            50% { box-shadow: 0 0 0 30px rgba(77, 141, 255, 0); }
         }
 
         .loader-text {
             font-family: var(--font-display);
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: 700;
-            margin-bottom: 32px;
+            margin-bottom: 40px;
             background: linear-gradient(135deg, var(--text-primary), var(--accent-secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
+        .loader-progress-container {
+            width: 300px;
+            margin: 0 auto;
+        }
+
         .loader-progress {
-            width: 200px;
+            width: 100%;
             height: 2px;
             background: var(--bg-tertiary);
-            margin: 0 auto;
             border-radius: 2px;
             overflow: hidden;
+            margin-bottom: 16px;
         }
 
         .loader-progress-bar {
             height: 100%;
             background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
             width: 0%;
-            animation: loading 2s var(--ease-out-expo) forwards;
+            transition: width 0.3s var(--ease-out-expo);
         }
 
-        @keyframes loading {
-            to { width: 100%; }
+        .loader-percentage {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text-tertiary);
         }
 
         /* ============================================
@@ -318,16 +394,18 @@
             font-weight: 500;
             position: relative;
             transition: color var(--duration-fast);
+            padding: 8px 0;
         }
 
-        .nav-link:hover {
+        .nav-link:hover,
+        .nav-link.active {
             color: var(--text-primary);
         }
 
         .nav-link::after {
             content: '';
             position: absolute;
-            bottom: -6px;
+            bottom: 0;
             left: 0;
             width: 0;
             height: 2px;
@@ -335,7 +413,8 @@
             transition: width var(--duration-normal) var(--ease-out-expo);
         }
 
-        .nav-link:hover::after {
+        .nav-link:hover::after,
+        .nav-link.active::after {
             width: 100%;
         }
 
@@ -352,12 +431,32 @@
             font-size: 0.9rem;
             transition: all var(--duration-fast);
             border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-cta::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-tertiary));
+            opacity: 0;
+            transition: opacity var(--duration-fast);
         }
 
         .nav-cta:hover {
-            background: var(--accent-secondary);
             transform: translateY(-2px);
             box-shadow: var(--shadow-glow);
+        }
+
+        .nav-cta:hover::before {
+            opacity: 1;
+        }
+
+        .nav-cta span,
+        .nav-cta i {
+            position: relative;
+            z-index: 1;
         }
 
         .nav-mobile-toggle {
@@ -715,6 +814,8 @@
             overflow: hidden;
             transition: all var(--duration-normal) var(--ease-out-expo);
             cursor: pointer;
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
 
         .bento-card::before {
@@ -727,14 +828,31 @@
             pointer-events: none;
         }
 
+        .bento-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%) rotate(45deg);
+            transition: transform 0.6s;
+            pointer-events: none;
+        }
+
         .bento-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-8px) rotateX(2deg) rotateY(2deg);
             border-color: var(--border-accent);
             box-shadow: var(--shadow-lg);
         }
 
         .bento-card:hover::before {
             opacity: 1;
+        }
+
+        .bento-card:hover::after {
+            transform: translateX(100%) rotate(45deg);
         }
 
         .bento-card.featured {
@@ -812,6 +930,8 @@
             overflow: hidden;
             transition: all var(--duration-normal) var(--ease-out-expo);
             position: relative;
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
 
         .department-card::after {
@@ -846,6 +966,11 @@
             color: var(--accent-secondary);
             margin-bottom: 20px;
             display: block;
+            transition: transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .department-card:hover .department-icon {
+            transform: scale(1.1) rotate(-5deg);
         }
 
         .department-name {
@@ -884,15 +1009,26 @@
             border-bottom: 1px solid var(--border-subtle);
             color: var(--text-secondary);
             font-size: 0.95rem;
+            transition: all var(--duration-fast);
         }
 
         .department-feature:last-child {
             border-bottom: none;
         }
 
+        .department-feature:hover {
+            padding-left: 8px;
+            color: var(--text-primary);
+        }
+
         .department-feature i {
             color: var(--success);
             font-size: 0.9rem;
+            transition: transform var(--duration-fast);
+        }
+
+        .department-feature:hover i {
+            transform: scale(1.2);
         }
 
         /* ============================================
@@ -942,6 +1078,12 @@
             border-radius: 50%;
             box-shadow: 0 0 0 4px var(--accent-subtle), 0 0 20px var(--accent-glow);
             z-index: 2;
+            transition: all var(--duration-normal);
+        }
+
+        .timeline-item:hover .timeline-dot {
+            transform: scale(1.3);
+            box-shadow: 0 0 0 8px var(--accent-subtle), 0 0 40px var(--accent-glow);
         }
 
         .timeline-item:nth-child(odd) .timeline-dot {
@@ -1090,6 +1232,7 @@
             border: 3px solid var(--bg-secondary);
             border-radius: 50%;
             box-shadow: 0 0 10px var(--success);
+            animation: pulse 2s infinite;
         }
 
         .team-name {
@@ -1144,6 +1287,12 @@
             position: absolute;
             inset: 0;
             background: radial-gradient(circle at 30% 50%, rgba(77, 141, 255, 0.3), transparent 60%);
+            animation: cta-glow 5s ease infinite;
+        }
+
+        @keyframes cta-glow {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
         }
 
         .cta-content {
@@ -1285,7 +1434,7 @@
             color: var(--text-tertiary);
             text-decoration: none;
             font-size: 0.95rem;
-            transition: color var(--duration-fast);
+            transition: all var(--duration-fast);
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -1293,6 +1442,7 @@
 
         .footer-link a:hover {
             color: var(--accent-secondary);
+            padding-left: 8px;
         }
 
         .footer-link a::before {
@@ -1430,9 +1580,20 @@
     </style>
 </head>
 <body>
-    <!-- Curseur personnalisé corrigé -->
-    <div class="custom-cursor" id="cursor"></div>
-    <div class="custom-cursor-dot" id="cursor-dot"></div>
+    <!-- Curseur personnalisé V2 (corrigé) -->
+    <div class="cursor-wrapper" id="cursor">
+        <div class="cursor-outer"></div>
+        <div class="cursor-inner"></div>
+    </div>
+
+    <!-- Glow qui suit le curseur -->
+    <div class="cursor-glow" id="cursor-glow"></div>
+
+    <!-- Progress bar de scroll -->
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <!-- Effet de grain -->
+    <div class="noise-overlay"></div>
 
     <!-- Loader -->
     <div class="loader" id="loader">
@@ -1441,8 +1602,11 @@
                 <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="VQC">
             </div>
             <div class="loader-text">Ville de Québec Roleplay</div>
-            <div class="loader-progress">
-                <div class="loader-progress-bar"></div>
+            <div class="loader-progress-container">
+                <div class="loader-progress">
+                    <div class="loader-progress-bar" id="loader-progress-bar"></div>
+                </div>
+                <div class="loader-percentage" id="loader-percentage">0%</div>
             </div>
         </div>
     </div>
@@ -1462,7 +1626,8 @@
                 <li><a href="#equipe" class="nav-link">Équipe</a></li>
             </ul>
             <a href="https://discord.gg/UEf3epPwXS" class="nav-cta" target="_blank">
-                <i class="fab fa-discord"></i> Rejoindre
+                <i class="fab fa-discord"></i>
+                <span>Rejoindre</span>
             </a>
             <button class="nav-mobile-toggle" id="mobile-toggle">
                 <i class="fas fa-bars"></i>
@@ -1890,55 +2055,97 @@
 
     <script>
         // ============================================
-        // CURSEUR PERSONNALISÉ CORRIGÉ
+        // CURSEUR PERSONNALISÉ V2 (CORRIGÉ ET OPTIMISÉ)
         // ============================================
         const cursor = document.getElementById('cursor');
-        const cursorDot = document.getElementById('cursor-dot');
+        const cursorGlow = document.getElementById('cursor-glow');
         
         let mouseX = 0, mouseY = 0;
         let cursorX = 0, cursorY = 0;
+        let glowX = 0, glowY = 0;
         
+        // Utilisation de transform pour de meilleures performances
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
-            
-            // Mise à jour immédiate du point
-            cursorDot.style.left = mouseX + 'px';
-            cursorDot.style.top = mouseY + 'px';
         });
         
-        // Animation fluide du cercle
+        // Animation fluide avec requestAnimationFrame
         function animateCursor() {
+            // Interpolation linéaire pour un suivi fluide
             cursorX += (mouseX - cursorX) * 0.15;
             cursorY += (mouseY - cursorY) * 0.15;
             
-            cursor.style.left = cursorX + 'px';
-            cursor.style.top = cursorY + 'px';
+            glowX += (mouseX - glowX) * 0.08;
+            glowY += (mouseY - glowY) * 0.08;
+            
+            // Utilisation de transform pour l'accélération GPU
+            cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+            cursorGlow.style.transform = `translate(${glowX}px, ${glowY}px) translate(-50%, -50%)`;
             
             requestAnimationFrame(animateCursor);
         }
         animateCursor();
         
-        // Effet hover sur les éléments interactifs
-        const interactiveElements = document.querySelectorAll('a, button, .bento-card, .department-card, .team-card, .timeline-content');
+        // Détection des éléments interactifs
+        const interactiveElements = document.querySelectorAll('a, button, .bento-card, .department-card, .team-card, .timeline-content, .footer-social-link');
+        
         interactiveElements.forEach(el => {
             el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
             el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
         });
+        
+        // Détection du texte
+        const textElements = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, li');
+        textElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('text'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('text'));
+        });
+        
+        // Effet de clic
+        document.addEventListener('mousedown', () => cursor.classList.add('click'));
+        document.addEventListener('mouseup', () => cursor.classList.remove('click'));
 
         // ============================================
-        // LOADER
+        // PROGRESS BAR DE SCROLL
         // ============================================
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('loader').classList.add('hidden');
-            }, 2200);
+        const scrollProgress = document.getElementById('scroll-progress');
+        
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = scrollTop / docHeight;
+            scrollProgress.style.transform = `scaleX(${scrollPercent})`;
         });
+
+        // ============================================
+        // LOADER AVEC POURCENTAGE
+        // ============================================
+        const loader = document.getElementById('loader');
+        const loaderProgressBar = document.getElementById('loader-progress-bar');
+        const loaderPercentage = document.getElementById('loader-percentage');
+        
+        let progress = 0;
+        const loaderInterval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(loaderInterval);
+                
+                setTimeout(() => {
+                    loader.classList.add('hidden');
+                }, 500);
+            }
+            
+            loaderProgressBar.style.width = progress + '%';
+            loaderPercentage.textContent = Math.floor(progress) + '%';
+        }, 100);
 
         // ============================================
         // NAVIGATION SCROLL
         // ============================================
         const nav = document.getElementById('nav');
+        const navLinks = document.querySelectorAll('.nav-link');
         
         window.addEventListener('scroll', () => {
             if (window.pageYOffset > 50) {
@@ -1946,6 +2153,22 @@
             } else {
                 nav.classList.remove('scrolled');
             }
+            
+            // Détection de la section active
+            let current = '';
+            document.querySelectorAll('section[id]').forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
         });
 
         // ============================================
@@ -2114,6 +2337,18 @@
                     });
                 }
             });
+        });
+
+        // ============================================
+        // EFFET PARALLAXE SUR LE HERO
+        // ============================================
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroContent = document.querySelector('.hero-content');
+            if (heroContent && scrolled < window.innerHeight) {
+                heroContent.style.transform = `translateY(${scrolled * 0.3}px)`;
+                heroContent.style.opacity = 1 - (scrolled / window.innerHeight) * 0.5;
+            }
         });
     </script>
 </body>
