@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Ville de Québec Roleplay — L'expérience ERLC québécoise ultime.">
+    <meta name="description" content="Ville de Québec Roleplay — L'expérience ERLC québécoise ultime. Serveur professionnel avec modération active, départements réalistes et communauté d'élite.">
     <meta property="og:title" content="Ville de Québec Roleplay | VQC">
     <meta property="og:description" content="Rejoignez le serveur ERLC le plus immersif du Québec.">
     <meta property="og:image" content="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp">
@@ -130,73 +130,97 @@
         }
 
         /* ============================================
-           CURSEUR PERSONNALISÉ CORRIGÉ (V2)
+           CURSEUR PERSONNALISÉ ULTIME (V3)
            ============================================ */
-        .cursor-wrapper {
+        .cursor-main {
             position: fixed;
             top: 0;
             left: 0;
-            width: 0;
-            height: 0;
-            pointer-events: none;
-            z-index: 99999;
-            will-change: transform;
-        }
-
-        .cursor-outer {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border: 2px solid var(--accent-secondary);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.3s var(--ease-out-expo), 
-                        height 0.3s var(--ease-out-expo), 
-                        border-color 0.3s var(--ease-out-expo),
-                        background 0.3s var(--ease-out-expo);
-            will-change: transform, width, height;
-        }
-
-        .cursor-inner {
-            position: absolute;
             width: 8px;
             height: 8px;
             background: var(--accent-secondary);
             border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
             transform: translate(-50%, -50%);
-            transition: transform 0.1s var(--ease-out-expo);
+            transition: width 0.3s var(--ease-out-expo), 
+                        height 0.3s var(--ease-out-expo),
+                        background 0.3s var(--ease-out-expo);
             will-change: transform;
         }
 
-        .cursor-wrapper.hover .cursor-outer {
+        .cursor-ring {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--accent-secondary);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99998;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s var(--ease-out-expo), 
+                        height 0.4s var(--ease-out-expo),
+                        border-color 0.3s var(--ease-out-expo),
+                        background 0.3s var(--ease-out-expo),
+                        opacity 0.3s var(--ease-out-expo);
+            will-change: transform;
+            opacity: 0.6;
+        }
+
+        .cursor-main.hover {
+            width: 12px;
+            height: 12px;
+            background: var(--accent-tertiary);
+        }
+
+        .cursor-ring.hover {
             width: 60px;
             height: 60px;
             border-color: var(--accent-tertiary);
             background: rgba(77, 141, 255, 0.1);
+            opacity: 1;
         }
 
-        .cursor-wrapper.hover .cursor-inner {
-            transform: translate(-50%, -50%) scale(0);
+        .cursor-main.click {
+            transform: translate(-50%, -50%) scale(0.5);
         }
 
-        .cursor-wrapper.click .cursor-outer {
+        .cursor-ring.click {
             transform: translate(-50%, -50%) scale(0.8);
         }
 
-        .cursor-wrapper.text .cursor-outer {
-            width: 3px;
+        .cursor-main.text {
+            width: 2px;
             height: 20px;
-            border-radius: 2px;
             background: var(--accent-secondary);
-            border-color: transparent;
+            border-radius: 2px;
         }
 
-        .cursor-wrapper.text .cursor-inner {
+        .cursor-ring.text {
             opacity: 0;
         }
 
         @media (max-width: 768px) {
-            .cursor-wrapper { display: none; }
+            .cursor-main, .cursor-ring { display: none; }
+        }
+
+        /* ============================================
+           GLOW QUI SUIT LE CURSEUR
+           ============================================ */
+        .cursor-glow {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.1;
+            transform: translate(-50%, -50%);
+            will-change: transform;
+            transition: opacity 0.5s;
         }
 
         /* ============================================
@@ -230,23 +254,6 @@
         }
 
         /* ============================================
-           GLOW QUI SUIT LE CURSEUR
-           ============================================ */
-        .cursor-glow {
-            position: fixed;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 1;
-            opacity: 0.15;
-            transform: translate(-50%, -50%);
-            will-change: transform;
-            transition: opacity 0.3s;
-        }
-
-        /* ============================================
            LOADER CINÉMATIQUE
            ============================================ */
         .loader {
@@ -257,7 +264,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.8s var(--ease-out-expo), visibility 0.8s;
+            transition: opacity 1s var(--ease-out-expo), visibility 1s;
         }
 
         .loader.hidden {
@@ -270,9 +277,9 @@
         }
 
         .loader-logo {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 32px;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 40px;
             position: relative;
         }
 
@@ -286,14 +293,14 @@
 
         @keyframes pulse-logo {
             0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
-            50% { box-shadow: 0 0 0 30px rgba(77, 141, 255, 0); }
+            50% { box-shadow: 0 0 0 40px rgba(77, 141, 255, 0); }
         }
 
         .loader-text {
             font-family: var(--font-display);
-            font-size: 1.75rem;
+            font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 40px;
+            margin-bottom: 48px;
             background: linear-gradient(135deg, var(--text-primary), var(--accent-secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -301,17 +308,17 @@
         }
 
         .loader-progress-container {
-            width: 300px;
+            width: 400px;
             margin: 0 auto;
         }
 
         .loader-progress {
             width: 100%;
-            height: 2px;
+            height: 3px;
             background: var(--bg-tertiary);
-            border-radius: 2px;
+            border-radius: 3px;
             overflow: hidden;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         .loader-progress-bar {
@@ -323,7 +330,7 @@
 
         .loader-percentage {
             font-family: var(--font-mono);
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: var(--text-tertiary);
         }
 
@@ -1580,11 +1587,9 @@
     </style>
 </head>
 <body>
-    <!-- Curseur personnalisé V2 (corrigé) -->
-    <div class="cursor-wrapper" id="cursor">
-        <div class="cursor-outer"></div>
-        <div class="cursor-inner"></div>
-    </div>
+    <!-- Curseur personnalisé V3 (ultime) -->
+    <div class="cursor-main" id="cursor-main"></div>
+    <div class="cursor-ring" id="cursor-ring"></div>
 
     <!-- Glow qui suit le curseur -->
     <div class="cursor-glow" id="cursor-glow"></div>
@@ -2055,32 +2060,40 @@
 
     <script>
         // ============================================
-        // CURSEUR PERSONNALISÉ V2 (CORRIGÉ ET OPTIMISÉ)
+        // CURSEUR PERSONNALISÉ V3 (ULTIME - CORRIGÉ)
         // ============================================
-        const cursor = document.getElementById('cursor');
+        const cursorMain = document.getElementById('cursor-main');
+        const cursorRing = document.getElementById('cursor-ring');
         const cursorGlow = document.getElementById('cursor-glow');
         
         let mouseX = 0, mouseY = 0;
-        let cursorX = 0, cursorY = 0;
+        let mainX = 0, mainY = 0;
+        let ringX = 0, ringY = 0;
         let glowX = 0, glowY = 0;
         
-        // Utilisation de transform pour de meilleures performances
+        // Suivi de la souris
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
         });
         
-        // Animation fluide avec requestAnimationFrame
+        // Animation fluide avec interpolation
         function animateCursor() {
-            // Interpolation linéaire pour un suivi fluide
-            cursorX += (mouseX - cursorX) * 0.15;
-            cursorY += (mouseY - cursorY) * 0.15;
+            // Point central (rapide)
+            mainX += (mouseX - mainX) * 0.3;
+            mainY += (mouseY - mainY) * 0.3;
             
+            // Anneau (moyen)
+            ringX += (mouseX - ringX) * 0.15;
+            ringY += (mouseY - ringY) * 0.15;
+            
+            // Glow (lent)
             glowX += (mouseX - glowX) * 0.08;
             glowY += (mouseY - glowY) * 0.08;
             
-            // Utilisation de transform pour l'accélération GPU
-            cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+            // Application des transforms
+            cursorMain.style.transform = `translate(${mainX}px, ${mainY}px) translate(-50%, -50%)`;
+            cursorRing.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
             cursorGlow.style.transform = `translate(${glowX}px, ${glowY}px) translate(-50%, -50%)`;
             
             requestAnimationFrame(animateCursor);
@@ -2091,20 +2104,38 @@
         const interactiveElements = document.querySelectorAll('a, button, .bento-card, .department-card, .team-card, .timeline-content, .footer-social-link');
         
         interactiveElements.forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+            el.addEventListener('mouseenter', () => {
+                cursorMain.classList.add('hover');
+                cursorRing.classList.add('hover');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorMain.classList.remove('hover');
+                cursorRing.classList.remove('hover');
+            });
         });
         
         // Détection du texte
         const textElements = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, li');
         textElements.forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('text'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('text'));
+            el.addEventListener('mouseenter', () => {
+                cursorMain.classList.add('text');
+                cursorRing.classList.add('text');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorMain.classList.remove('text');
+                cursorRing.classList.remove('text');
+            });
         });
         
         // Effet de clic
-        document.addEventListener('mousedown', () => cursor.classList.add('click'));
-        document.addEventListener('mouseup', () => cursor.classList.remove('click'));
+        document.addEventListener('mousedown', () => {
+            cursorMain.classList.add('click');
+            cursorRing.classList.add('click');
+        });
+        document.addEventListener('mouseup', () => {
+            cursorMain.classList.remove('click');
+            cursorRing.classList.remove('click');
+        });
 
         // ============================================
         // PROGRESS BAR DE SCROLL
