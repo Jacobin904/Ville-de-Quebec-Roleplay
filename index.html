@@ -3,63 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Ville de Quebec Roleplay. L'experience ERLC quebecoise ultime. Serveur professionnel avec moderation active, departements realistes et communaute d'elite.">
-    <meta property="og:title" content="Ville de Quebec Roleplay | VQC">
-    <meta property="og:description" content="Rejoignez le serveur ERLC le plus immersif du Quebec.">
+    <meta name="description" content="Ville de Québec Roleplay. L'expérience ERLC québécoise ultime. Serveur professionnel avec modération active, départements réalistes et communauté d'élite.">
+    <meta property="og:title" content="Ville de Québec Roleplay | VQC">
+    <meta property="og:description" content="Rejoignez le serveur ERLC le plus immersif du Québec.">
     <meta property="og:image" content="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp">
     <meta name="theme-color" content="#003DA5">
     
-    <title>Ville de Quebec Roleplay | L'Experience ERLC Definitive</title>
+    <title>Ville de Québec Roleplay | L'Expérience ERLC Définitive</title>
     
     <link rel="icon" type="image/webp" href="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024">
     
+    <!-- Polices professionnelles -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icônes vectorielles professionnelles (remplace les émojis) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         /* ============================================
-           1. SYSTEME DE DESIGN AVANCE (VARIABLES)
+           1. VARIABLES ET SYSTÈME DE DESIGN
            ============================================ */
         :root {
-            --bg-primary: #030712;
-            --bg-secondary: #0B1120;
-            --bg-tertiary: #151E32;
-            --bg-glass: rgba(11, 17, 32, 0.65);
+            --bg-primary: #020617;
+            --bg-secondary: #0f172a;
+            --bg-tertiary: #1e293b;
+            --bg-glass: rgba(15, 23, 42, 0.7);
             
             --accent-primary: #003DA5;
-            --accent-secondary: #4D8DFF;
-            --accent-tertiary: #8FB8FF;
-            --accent-glow: rgba(77, 141, 255, 0.35);
+            --accent-secondary: #3b82f6;
+            --accent-tertiary: #60a5fa;
+            --accent-glow: rgba(59, 130, 246, 0.4);
             
-            --text-primary: #F8FAFC;
-            --text-secondary: #CBD5E1;
-            --text-tertiary: #94A3B8;
-            --text-muted: #64748B;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #94a3b8;
+            --text-muted: #64748b;
             
-            --success: #10B981;
-            --warning: #F59E0B;
-            --danger: #EF4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
             
             --font-display: 'Space Grotesk', sans-serif;
             --font-body: 'Inter', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
             
-            --container-max: 1400px;
-            --section-padding: 160px;
+            --container-max: 1280px;
+            --section-padding: 120px;
             --radius-sm: 8px;
             --radius-md: 16px;
             --radius-lg: 24px;
             --radius-full: 9999px;
             
             --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-            --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
             --duration-fast: 0.2s;
             --duration-normal: 0.5s;
-            --duration-slow: 0.8s;
             
-            --shadow-glow: 0 0 80px rgba(77, 141, 255, 0.15);
+            --shadow-glow: 0 0 60px rgba(59, 130, 246, 0.15);
             --border-subtle: rgba(255, 255, 255, 0.06);
             --border-default: rgba(255, 255, 255, 0.1);
         }
@@ -86,11 +86,12 @@
             color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
-            cursor: none; /* Cache le curseur par defaut pour le curseur personnalise */
+            cursor: none; /* Curseur personnalisé */
         }
 
         @media (max-width: 768px) {
             body { cursor: auto; }
+            .custom-cursor { display: none !important; }
         }
 
         ::selection {
@@ -105,12 +106,12 @@
             border-radius: 4px;
             border: 2px solid var(--bg-primary);
         }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-secondary); }
 
         /* ============================================
-           3. CURSEUR PERSONNALISE MAGNETIQUE
+           3. CURSEUR PERSONNALISÉ AVANCÉ
            ============================================ */
-        .cursor-dot, .cursor-ring {
+        .custom-cursor-dot, .custom-cursor-ring {
             position: fixed;
             top: 0;
             left: 0;
@@ -121,13 +122,13 @@
             will-change: transform;
         }
 
-        .cursor-dot {
+        .custom-cursor-dot {
             width: 6px;
             height: 6px;
             background: var(--accent-secondary);
         }
 
-        .cursor-ring {
+        .custom-cursor-ring {
             width: 36px;
             height: 36px;
             border: 1.5px solid var(--accent-secondary);
@@ -137,10 +138,10 @@
                         border-color 0.3s var(--ease-out-expo);
         }
 
-        .cursor-ring.hover {
+        .custom-cursor-ring.hover {
             width: 56px;
             height: 56px;
-            background: rgba(77, 141, 255, 0.08);
+            background: rgba(59, 130, 246, 0.08);
             border-color: transparent;
         }
 
@@ -152,7 +153,7 @@
             inset: 0;
             pointer-events: none;
             z-index: 9998;
-            opacity: 0.035;
+            opacity: 0.03;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
         }
 
@@ -169,7 +170,7 @@
         }
 
         /* ============================================
-           5. PRELOADER CINEMATIQUE
+           5. PRELOADER
            ============================================ */
         .preloader {
             position: fixed;
@@ -199,7 +200,7 @@
 
         @keyframes pulse-glow {
             0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
-            50% { box-shadow: 0 0 0 20px rgba(77, 141, 255, 0); }
+            50% { box-shadow: 0 0 0 20px rgba(59, 130, 246, 0); }
         }
 
         .preloader-text {
@@ -272,20 +273,9 @@
         }
 
         .nav-logo:hover { transform: scale(1.03); }
+        .nav-logo img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent-primary); }
 
-        .nav-logo img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--accent-primary);
-        }
-
-        .nav-menu {
-            display: flex;
-            gap: 40px;
-            list-style: none;
-            align-items: center;
-        }
+        .nav-menu { display: flex; gap: 40px; list-style: none; align-items: center; }
 
         .nav-link {
             color: var(--text-tertiary);
@@ -338,11 +328,7 @@
             transition: opacity var(--duration-fast);
         }
 
-        .nav-cta:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-glow);
-        }
-
+        .nav-cta:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
         .nav-cta:hover::before { opacity: 1; }
         .nav-cta span, .nav-cta i { position: relative; z-index: 1; }
 
@@ -356,37 +342,26 @@
         }
 
         /* ============================================
-           7. SECTIONS GENERIQUES
+           7. SECTIONS GÉNÉRIQUES
            ============================================ */
-        .section {
-            padding: var(--section-padding) 0;
-            position: relative;
-        }
-
+        .section { padding: var(--section-padding) 0; position: relative; }
         .section-alt { background: var(--bg-secondary); }
 
-        .container {
-            max-width: var(--container-max);
-            margin: 0 auto;
-            padding: 0 32px;
-        }
+        .container { max-width: var(--container-max); margin: 0 auto; padding: 0 32px; }
 
-        .section-header {
-            text-align: center;
-            max-width: 700px;
-            margin: 0 auto 100px;
-        }
+        .section-header { text-align: center; max-width: 700px; margin: 0 auto 100px; }
 
         .section-label {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             padding: 8px 16px;
-            background: rgba(77, 141, 255, 0.08);
-            border: 1px solid rgba(77, 141, 255, 0.2);
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.2);
             border-radius: var(--radius-full);
-            font-family: var(--font-mono);
+            font-family: var(--font-body);
             font-size: 0.8rem;
+            font-weight: 600;
             color: var(--accent-secondary);
             text-transform: uppercase;
             letter-spacing: 1.5px;
@@ -416,11 +391,7 @@
             50% { background-position: 100% 50%; }
         }
 
-        .section-subtitle {
-            font-size: 1.15rem;
-            color: var(--text-tertiary);
-            line-height: 1.7;
-        }
+        .section-subtitle { font-size: 1.15rem; color: var(--text-tertiary); line-height: 1.7; }
 
         /* ============================================
            8. HERO SECTION
@@ -435,46 +406,28 @@
             overflow: hidden;
         }
 
-        .hero-bg {
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-        }
-
+        .hero-bg { position: absolute; inset: 0; z-index: 0; }
         .hero-gradient {
             position: absolute;
             inset: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(0, 61, 165, 0.25) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(77, 141, 255, 0.15) 0%, transparent 50%);
+            background: radial-gradient(circle at 20% 50%, rgba(0, 61, 165, 0.25) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
             animation: gradient-shift 15s ease infinite;
         }
 
         .hero-grid {
             position: absolute;
             inset: 0;
-            background-image: 
-                linear-gradient(rgba(77, 141, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(77, 141, 255, 0.03) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
             background-size: 80px 80px;
             mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
             -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
         }
 
-        #particles-canvas {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
+        #particles-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
 
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            max-width: 900px;
-            text-align: center;
-        }
+        .hero-content { position: relative; z-index: 2; max-width: 900px; text-align: center; }
 
         .hero-badge {
             display: inline-flex;
@@ -485,8 +438,8 @@
             backdrop-filter: blur(10px);
             border: 1px solid var(--border-default);
             border-radius: var(--radius-full);
-            font-family: var(--font-mono);
             font-size: 0.85rem;
+            font-weight: 500;
             color: var(--text-secondary);
             margin-bottom: 32px;
             animation: fadeInUp 0.8s var(--ease-out-expo) 0.2s both;
@@ -565,11 +518,7 @@
             transition: opacity var(--duration-fast);
         }
 
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 40px -10px var(--accent-glow);
-        }
-
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: var(--shadow-glow); }
         .btn-primary:hover::before { opacity: 1; }
         .btn-primary span, .btn-primary i { position: relative; z-index: 1; }
 
@@ -580,11 +529,7 @@
             border: 1px solid var(--border-default);
         }
 
-        .btn-secondary:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--border-strong);
-            transform: translateY(-3px);
-        }
+        .btn-secondary:hover { background: var(--bg-tertiary); border-color: var(--border-subtle); transform: translateY(-3px); }
 
         .hero-stats {
             display: grid;
@@ -624,13 +569,7 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .hero-stat-label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 500;
-        }
+        .hero-stat-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
 
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
@@ -659,7 +598,7 @@
         }
 
         /* ============================================
-           9. BENTO GRID (FONCTIONNALITES)
+           9. BENTO GRID (FONCTIONNALITÉS)
            ============================================ */
         .bento-grid {
             display: grid;
@@ -685,34 +624,19 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(77, 141, 255, 0.12) 0%, transparent 60%);
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(59, 130, 246, 0.12) 0%, transparent 60%);
             opacity: 0;
             transition: opacity var(--duration-normal);
             pointer-events: none;
         }
 
-        .bento-card::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.03), transparent);
-            transform: translateX(-100%) rotate(45deg);
-            transition: transform 0.8s;
-            pointer-events: none;
-        }
-
         .bento-card:hover {
-            transform: translateY(-8px) rotateX(2deg) rotateY(2deg);
-            border-color: var(--border-accent);
+            transform: translateY(-8px);
+            border-color: var(--accent-secondary);
             box-shadow: var(--shadow-glow);
         }
 
         .bento-card:hover::before { opacity: 1; }
-        .bento-card:hover::after { transform: translateX(100%) rotate(45deg); }
-
         .bento-card.featured { grid-column: span 2; }
         .bento-card.tall { grid-row: span 2; }
 
@@ -731,47 +655,17 @@
         }
 
         .bento-card:hover .bento-icon { transform: scale(1.1) rotate(-5deg); }
+        .bento-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; margin-bottom: 12px; }
+        .bento-description { color: var(--text-tertiary); line-height: 1.7; margin-bottom: 24px; }
 
-        .bento-title {
-            font-family: var(--font-display);
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        .bento-description {
-            color: var(--text-tertiary);
-            line-height: 1.7;
-            margin-bottom: 24px;
-        }
-
-        .bento-metric {
-            display: flex;
-            align-items: baseline;
-            gap: 8px;
-            margin-top: auto;
-        }
-
-        .bento-metric-value {
-            font-family: var(--font-display);
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--accent-secondary);
-        }
-
-        .bento-metric-label {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
+        .bento-metric { display: flex; align-items: baseline; gap: 8px; margin-top: auto; }
+        .bento-metric-value { font-family: var(--font-display); font-size: 2.5rem; font-weight: 700; color: var(--accent-secondary); }
+        .bento-metric-label { font-size: 0.9rem; color: var(--text-muted); }
 
         /* ============================================
-           10. DEPARTEMENTS (CARTES 3D)
+           10. DÉPARTEMENTS (CARTES 3D)
            ============================================ */
-        .departments-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-            gap: 32px;
-        }
+        .departments-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 32px; }
 
         .department-card {
             background: var(--bg-secondary);
@@ -780,66 +674,33 @@
             overflow: hidden;
             transition: all var(--duration-normal) var(--ease-out-expo);
             position: relative;
-            transform-style: preserve-3d;
-            perspective: 1000px;
         }
 
         .department-card::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, transparent, rgba(77, 141, 255, 0.08));
+            background: linear-gradient(135deg, transparent, rgba(59, 130, 246, 0.08));
             opacity: 0;
             transition: opacity var(--duration-normal);
             pointer-events: none;
         }
 
-        .department-card:hover {
-            transform: translateY(-12px) rotateX(2deg);
-            border-color: var(--border-accent);
-            box-shadow: var(--shadow-glow);
-        }
-
+        .department-card:hover { transform: translateY(-12px); border-color: var(--accent-secondary); box-shadow: var(--shadow-glow); }
         .department-card:hover::after { opacity: 1; }
 
         .department-header {
             padding: 48px 40px 32px;
-            background: linear-gradient(135deg, rgba(0, 61, 165, 0.2), rgba(77, 141, 255, 0.05));
+            background: linear-gradient(135deg, rgba(0, 61, 165, 0.2), rgba(59, 130, 246, 0.05));
             border-bottom: 1px solid var(--border-subtle);
         }
 
-        .department-icon {
-            font-size: 3rem;
-            color: var(--accent-secondary);
-            margin-bottom: 20px;
-            display: block;
-            transition: transform var(--duration-normal) var(--ease-out-expo);
-        }
-
+        .department-icon { font-size: 3rem; color: var(--accent-secondary); margin-bottom: 20px; display: block; transition: transform var(--duration-normal) var(--ease-out-expo); }
         .department-card:hover .department-icon { transform: scale(1.1) rotate(-5deg); }
-
-        .department-name {
-            font-family: var(--font-display);
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .department-code {
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            letter-spacing: 2px;
-        }
-
+        .department-name { font-family: var(--font-display); font-size: 1.75rem; font-weight: 700; margin-bottom: 8px; }
+        .department-code { font-family: var(--font-body); font-size: 0.85rem; color: var(--text-muted); letter-spacing: 2px; font-weight: 600; }
         .department-body { padding: 40px; }
-
-        .department-description {
-            color: var(--text-tertiary);
-            line-height: 1.7;
-            margin-bottom: 32px;
-        }
-
+        .department-description { color: var(--text-tertiary); line-height: 1.7; margin-bottom: 32px; }
         .department-features { list-style: none; }
 
         .department-feature {
@@ -861,12 +722,7 @@
         /* ============================================
            11. TIMELINE (FEUILLE DE ROUTE)
            ============================================ */
-        .timeline {
-            position: relative;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 40px 0;
-        }
+        .timeline { position: relative; max-width: 900px; margin: 0 auto; padding: 40px 0; }
 
         .timeline::before {
             content: '';
@@ -879,13 +735,7 @@
             transform: translateX(-50%);
         }
 
-        .timeline-item {
-            position: relative;
-            margin-bottom: 64px;
-            width: 50%;
-            padding: 0 48px;
-        }
-
+        .timeline-item { position: relative; margin-bottom: 64px; width: 50%; padding: 0 48px; }
         .timeline-item:nth-child(odd) { left: 0; text-align: right; }
         .timeline-item:nth-child(even) { left: 50%; }
 
@@ -897,16 +747,12 @@
             background: var(--accent-secondary);
             border: 4px solid var(--bg-primary);
             border-radius: 50%;
-            box-shadow: 0 0 0 4px rgba(77, 141, 255, 0.2), 0 0 20px var(--accent-glow);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2), 0 0 20px var(--accent-glow);
             z-index: 2;
             transition: all var(--duration-normal);
         }
 
-        .timeline-item:hover .timeline-dot {
-            transform: scale(1.3);
-            box-shadow: 0 0 0 8px rgba(77, 141, 255, 0.2), 0 0 40px var(--accent-glow);
-        }
-
+        .timeline-item:hover .timeline-dot { transform: scale(1.3); box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.2), 0 0 40px var(--accent-glow); }
         .timeline-item:nth-child(odd) .timeline-dot { right: -10px; }
         .timeline-item:nth-child(even) .timeline-dot { left: -10px; }
 
@@ -918,59 +764,20 @@
             transition: all var(--duration-normal);
         }
 
-        .timeline-content:hover {
-            border-color: var(--border-accent);
-            transform: translateY(-4px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
+        .timeline-content:hover { border-color: var(--accent-secondary); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .timeline-phase { font-family: var(--font-body); font-size: 0.8rem; font-weight: 700; color: var(--accent-secondary); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+        .timeline-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; margin-bottom: 12px; }
+        .timeline-description { color: var(--text-tertiary); line-height: 1.7; }
 
-        .timeline-phase {
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: var(--accent-secondary);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
-
-        .timeline-title {
-            font-family: var(--font-display);
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        .timeline-description {
-            color: var(--text-tertiary);
-            line-height: 1.7;
-        }
-
-        .timeline-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            background: rgba(77, 141, 255, 0.1);
-            border-radius: var(--radius-full);
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-top: 16px;
-        }
-
+        .timeline-status { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 600; margin-top: 16px; }
         .timeline-status.completed { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-        .timeline-status.active { background: rgba(77, 141, 255, 0.1); color: var(--accent-secondary); animation: pulse 2s infinite; }
+        .timeline-status.active { background: rgba(59, 130, 246, 0.1); color: var(--accent-secondary); animation: pulse 2s infinite; }
         .timeline-status.upcoming { background: rgba(148, 163, 184, 0.1); color: var(--text-muted); }
 
         /* ============================================
-           12. EQUIPE
+           12. ÉQUIPE
            ============================================ */
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 32px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; max-width: 900px; margin: 0 auto; }
 
         .team-card {
             background: var(--bg-secondary);
@@ -986,80 +793,29 @@
         .team-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
+            top: 0; left: 0; right: 0; height: 4px;
             background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
             transform: scaleX(0);
             transform-origin: left;
             transition: transform var(--duration-normal) var(--ease-out-expo);
         }
 
-        .team-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--border-accent);
-            box-shadow: var(--shadow-glow);
-        }
-
+        .team-card:hover { transform: translateY(-8px); border-color: var(--accent-secondary); box-shadow: var(--shadow-glow); }
         .team-card:hover::before { transform: scaleX(1); }
 
-        .team-avatar-wrapper {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 24px;
-        }
-
-        .team-avatar {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid var(--accent-primary);
-            transition: transform var(--duration-normal);
-        }
-
+        .team-avatar-wrapper { position: relative; width: 120px; height: 120px; margin: 0 auto 24px; }
+        .team-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent-primary); transition: transform var(--duration-normal); }
         .team-card:hover .team-avatar { transform: scale(1.05); }
 
         .team-status {
-            position: absolute;
-            bottom: 8px;
-            right: 8px;
-            width: 20px;
-            height: 20px;
-            background: var(--success);
-            border: 3px solid var(--bg-secondary);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--success);
-            animation: pulse 2s infinite;
+            position: absolute; bottom: 8px; right: 8px; width: 20px; height: 20px;
+            background: var(--success); border: 3px solid var(--bg-secondary);
+            border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulse 2s infinite;
         }
 
-        .team-name {
-            font-family: var(--font-display);
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .team-role {
-            display: inline-block;
-            padding: 6px 16px;
-            background: rgba(77, 141, 255, 0.1);
-            border: 1px solid rgba(77, 141, 255, 0.2);
-            border-radius: var(--radius-full);
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: var(--accent-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
-        }
-
-        .team-bio {
-            color: var(--text-tertiary);
-            line-height: 1.7;
-        }
+        .team-name { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
+        .team-role { display: inline-block; padding: 6px 16px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; color: var(--accent-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+        .team-bio { color: var(--text-tertiary); line-height: 1.7; }
 
         /* ============================================
            13. CTA SECTION
@@ -1067,211 +823,68 @@
         .cta-section { padding: var(--section-padding) 0; position: relative; overflow: hidden; }
 
         .cta-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 80px 60px;
+            max-width: 1000px; margin: 0 auto; padding: 80px 60px;
             background: linear-gradient(135deg, var(--accent-primary), var(--bg-tertiary));
-            border-radius: var(--radius-lg);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(77, 141, 255, 0.3);
+            border-radius: var(--radius-lg); text-align: center;
+            position: relative; overflow: hidden; border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
         .cta-container::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 30% 50%, rgba(77, 141, 255, 0.3), transparent 60%);
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(59, 130, 246, 0.3), transparent 60%);
             animation: cta-glow 5s ease infinite;
         }
 
-        @keyframes cta-glow {
-            0%, 100% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.1); }
-        }
-
+        @keyframes cta-glow { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } }
         .cta-content { position: relative; z-index: 1; }
+        .cta-title { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; margin-bottom: 20px; }
+        .cta-description { font-size: 1.15rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto 40px; }
+        .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
 
-        .cta-title {
-            font-family: var(--font-display);
-            font-size: clamp(2rem, 4vw, 3rem);
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        .cta-description {
-            font-size: 1.15rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto 40px;
-        }
-
-        .cta-actions {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn-white {
-            background: white;
-            color: var(--accent-primary);
-        }
-
-        .btn-white:hover {
-            background: var(--text-primary);
-            transform: translateY(-3px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-ghost {
-            background: transparent;
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-ghost:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: white;
-        }
+        .btn-white { background: white; color: var(--accent-primary); }
+        .btn-white:hover { background: var(--text-primary); transform: translateY(-3px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); }
+        .btn-ghost { background: transparent; color: white; border: 1px solid rgba(255, 255, 255, 0.3); }
+        .btn-ghost:hover { background: rgba(255, 255, 255, 0.1); border-color: white; }
 
         /* ============================================
            14. FOOTER
            ============================================ */
-        .footer {
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border-subtle);
-            padding: 80px 0 40px;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 60px;
-            margin-bottom: 60px;
-        }
-
+        .footer { background: var(--bg-secondary); border-top: 1px solid var(--border-subtle); padding: 80px 0 40px; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 60px; margin-bottom: 60px; }
         .footer-brand { max-width: 320px; }
 
-        .footer-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            font-family: var(--font-display);
-            font-weight: 700;
-            font-size: 1.25rem;
-            color: var(--text-primary);
-            text-decoration: none;
-        }
-
-        .footer-logo img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--accent-primary);
-        }
-
-        .footer-description {
-            color: var(--text-tertiary);
-            line-height: 1.7;
-            margin-bottom: 24px;
-        }
-
+        .footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; color: var(--text-primary); text-decoration: none; }
+        .footer-logo img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent-primary); }
+        .footer-description { color: var(--text-tertiary); line-height: 1.7; margin-bottom: 24px; }
         .footer-social { display: flex; gap: 12px; }
 
         .footer-social-link {
-            width: 40px;
-            height: 40px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-subtle);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-tertiary);
-            text-decoration: none;
-            transition: all var(--duration-fast);
+            width: 40px; height: 40px; background: var(--bg-tertiary); border: 1px solid var(--border-subtle);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: var(--text-tertiary); text-decoration: none; transition: all var(--duration-fast);
         }
 
-        .footer-social-link:hover {
-            background: var(--accent-primary);
-            border-color: var(--accent-primary);
-            color: white;
-            transform: translateY(-3px);
-        }
+        .footer-social-link:hover { background: var(--accent-primary); border-color: var(--accent-primary); color: white; transform: translateY(-3px); }
 
-        .footer-column h4 {
-            font-family: var(--font-display);
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 24px;
-            color: var(--text-primary);
-        }
-
+        .footer-column h4 { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 24px; color: var(--text-primary); }
         .footer-links { list-style: none; }
         .footer-link { margin-bottom: 12px; }
 
-        .footer-link a {
-            color: var(--text-tertiary);
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: all var(--duration-fast);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .footer-link a { color: var(--text-tertiary); text-decoration: none; font-size: 0.95rem; transition: all var(--duration-fast); display: inline-flex; align-items: center; gap: 8px; }
+        .footer-link a:hover { color: var(--accent-secondary); padding-left: 8px; }
+        .footer-link a::before { content: '->'; font-size: 0.8rem; opacity: 0; transform: translateX(-10px); transition: all var(--duration-fast); }
+        .footer-link a:hover::before { opacity: 1; transform: translateX(0); }
 
-        .footer-link a:hover {
-            color: var(--accent-secondary);
-            padding-left: 8px;
-        }
-
-        .footer-link a::before {
-            content: '->';
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            opacity: 0;
-            transform: translateX(-10px);
-            transition: all var(--duration-fast);
-        }
-
-        .footer-link a:hover::before {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .footer-bottom {
-            padding-top: 40px;
-            border-top: 1px solid var(--border-subtle);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
+        .footer-bottom { padding-top: 40px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; color: var(--text-muted); font-size: 0.9rem; }
 
         /* ============================================
            15. ANIMATIONS AU SCROLL
            ============================================ */
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 0.8s var(--ease-out-expo);
-        }
-
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s var(--ease-out-expo); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
         .reveal-delay-1 { transition-delay: 0.1s; }
         .reveal-delay-2 { transition-delay: 0.2s; }
         .reveal-delay-3 { transition-delay: 0.3s; }
-        .reveal-delay-4 { transition-delay: 0.4s; }
 
         /* ============================================
            16. RESPONSIVE
@@ -1304,22 +917,22 @@
     </style>
 </head>
 <body>
-    <!-- Curseur personnalise -->
-    <div class="cursor-dot" id="cursor-dot"></div>
-    <div class="cursor-ring" id="cursor-ring"></div>
+    <!-- Curseur personnalisé -->
+    <div class="custom-cursor-dot" id="cursor-dot"></div>
+    <div class="custom-cursor-ring" id="cursor-ring"></div>
 
-    <!-- Barre de progression du scroll -->
+    <!-- Barre de progression du défilement -->
     <div class="scroll-progress" id="scroll-progress"></div>
 
     <!-- Effet de grain -->
     <div class="noise-overlay"></div>
 
-    <!-- Preloader -->
+    <!-- Préchargeur -->
     <div class="preloader" id="preloader">
         <div class="preloader-logo">
             <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="VQC">
         </div>
-        <div class="preloader-text">Ville de Quebec Roleplay</div>
+        <div class="preloader-text">Ville de Québec Roleplay</div>
         <div class="preloader-bar">
             <div class="preloader-bar-fill"></div>
         </div>
@@ -1334,22 +947,22 @@
             </a>
             <ul class="nav-menu">
                 <li><a href="#accueil" class="nav-link">Accueil</a></li>
-                <li><a href="#fonctionnalites" class="nav-link">Fonctionnalites</a></li>
-                <li><a href="#departements" class="nav-link">Departements</a></li>
+                <li><a href="#fonctionnalites" class="nav-link">Fonctionnalités</a></li>
+                <li><a href="#departements" class="nav-link">Départements</a></li>
                 <li><a href="#roadmap" class="nav-link">Feuille de route</a></li>
-                <li><a href="#equipe" class="nav-link">Equipe</a></li>
+                <li><a href="#equipe" class="nav-link">Équipe</a></li>
             </ul>
             <a href="https://discord.gg/UEf3epPwXS" class="nav-cta" target="_blank">
-                <i class="fab fa-discord"></i>
+                <i class="fa-brands fa-discord"></i>
                 <span>Rejoindre</span>
             </a>
-            <button class="nav-mobile-toggle" id="mobile-toggle">
-                <i class="fas fa-bars"></i>
+            <button class="nav-mobile-toggle" id="mobile-toggle" aria-label="Menu">
+                <i class="fa-solid fa-bars"></i>
             </button>
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Section Hero -->
     <section class="hero" id="accueil">
         <div class="hero-bg">
             <div class="hero-gradient"></div>
@@ -1360,26 +973,26 @@
         <div class="hero-content">
             <div class="hero-badge">
                 <span class="hero-badge-dot"></span>
-                <span>Serveur operationnel</span>
+                <span>Serveur opérationnel</span>
             </div>
             
             <h1 class="hero-title">
-                L'Experience <span class="gradient-text">ERLC</span><br>
-                Definitive au Quebec
+                L'Expérience <span class="gradient-text">ERLC</span><br>
+                Définitive au Québec
             </h1>
             
             <p class="hero-subtitle">
-                Plongez dans un roleplay immersif, structure et realiste. Rejoignez une communaute professionnelle et des services d'urgence de haut niveau.
+                Plongez dans un jeu de rôle immersif, structuré et réaliste. Rejoignez une communauté professionnelle et des services d'urgence de haut niveau.
             </p>
             
             <div class="hero-actions">
                 <a href="https://discord.gg/UEf3epPwXS" class="btn btn-primary" target="_blank">
-                    <i class="fab fa-discord"></i>
+                    <i class="fa-brands fa-discord"></i>
                     <span>Rejoindre le Discord</span>
                 </a>
                 <a href="#fonctionnalites" class="btn btn-secondary">
                     <span>En savoir plus</span>
-                    <i class="fas fa-arrow-down"></i>
+                    <i class="fa-solid fa-arrow-down"></i>
                 </a>
             </div>
             
@@ -1400,131 +1013,131 @@
         </div>
         
         <div class="scroll-indicator">
-            <span>Defiler</span>
-            <i class="fas fa-chevron-down"></i>
+            <span>Défiler</span>
+            <i class="fa-solid fa-chevron-down"></i>
         </div>
     </section>
 
-    <!-- Fonctionnalites (Bento Grid) -->
+    <!-- Fonctionnalités (Grille Bento) -->
     <section class="section" id="fonctionnalites">
         <div class="container">
             <div class="section-header reveal">
                 <div class="section-label">
-                    <i class="fas fa-sparkles"></i>
+                    <i class="fa-solid fa-sparkles"></i>
                     <span>Pourquoi nous choisir</span>
                 </div>
                 <h2 class="section-title">Une infrastructure <span class="gradient-text">professionnelle</span></h2>
-                <p class="section-subtitle">Nous avons developpe un ecosysteme complet pour garantir la meilleure experience de roleplay possible.</p>
+                <p class="section-subtitle">Nous avons développé un écosystème complet pour garantir la meilleure expérience de jeu de rôle possible.</p>
             </div>
             
             <div class="bento-grid">
                 <div class="bento-card featured reveal">
-                    <div class="bento-icon"><i class="fas fa-shield-alt"></i></div>
-                    <h3 class="bento-title">Moderation Active 24/7</h3>
-                    <p class="bento-description">Une equipe de modérateurs formes et disponibles en permanence pour assurer le respect des regles et la qualite du roleplay. Systeme de tickets avance et reponse rapide garantie.</p>
+                    <div class="bento-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3 class="bento-title">Modération Active 24/7</h3>
+                    <p class="bento-description">Une équipe de modérateurs formés et disponibles en permanence pour assurer le respect des règles et la qualité du jeu. Système de tickets avancé et réponse rapide garantie.</p>
                     <div class="bento-metric">
                         <span class="bento-metric-value">&lt;5min</span>
-                        <span class="bento-metric-label">Temps de reponse moyen</span>
+                        <span class="bento-metric-label">Temps de réponse moyen</span>
                     </div>
                 </div>
                 
                 <div class="bento-card reveal reveal-delay-1">
-                    <div class="bento-icon"><i class="fas fa-code"></i></div>
-                    <h3 class="bento-title">Bot Personnalise</h3>
-                    <p class="bento-description">Systeme developpe sur mesure avec gestion des niveaux, economie, journaux avances et commandes exclusives.</p>
+                    <div class="bento-icon"><i class="fa-solid fa-code"></i></div>
+                    <h3 class="bento-title">Bot Personnalisé</h3>
+                    <p class="bento-description">Système développé sur mesure avec gestion des niveaux, économie, journaux avancés et commandes exclusives.</p>
                 </div>
                 
                 <div class="bento-card reveal reveal-delay-2">
-                    <div class="bento-icon"><i class="fas fa-users-cog"></i></div>
-                    <h3 class="bento-title">Communaute Elite</h3>
-                    <p class="bento-description">Processus de recrutement strict pour maintenir un niveau de jeu exceptionnel dans tous les departements.</p>
+                    <div class="bento-icon"><i class="fa-solid fa-users-gear"></i></div>
+                    <h3 class="bento-title">Communauté d'Élite</h3>
+                    <p class="bento-description">Processus de recrutement strict pour maintenir un niveau de jeu exceptionnel dans tous les départements.</p>
                 </div>
                 
                 <div class="bento-card tall reveal">
-                    <div class="bento-icon"><i class="fas fa-server"></i></div>
+                    <div class="bento-icon"><i class="fa-solid fa-server"></i></div>
                     <h3 class="bento-title">Infrastructure Premium</h3>
-                    <p class="bento-description">Hebergement sur des serveurs haute performance avec une latence minimale et une disponibilite de 99,9 pourcent. Surveillance en temps reel et sauvegardes automatiques.</p>
+                    <p class="bento-description">Hébergement sur des serveurs haute performance avec une latence minimale et une disponibilité de 99,9 pour cent. Surveillance en temps réel et sauvegardes automatiques.</p>
                     <div class="bento-metric">
                         <span class="bento-metric-value">99.9%</span>
-                        <span class="bento-metric-label">Disponibilite</span>
+                        <span class="bento-metric-label">Disponibilité</span>
                     </div>
                 </div>
                 
                 <div class="bento-card reveal reveal-delay-1">
-                    <div class="bento-icon"><i class="fas fa-chart-line"></i></div>
-                    <h3 class="bento-title">Statistiques Temps Reel</h3>
-                    <p class="bento-description">Tableau de bord en direct avec des metriques detaillees sur l'activite du serveur et les performances.</p>
+                    <div class="bento-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    <h3 class="bento-title">Statistiques Temps Réel</h3>
+                    <p class="bento-description">Tableau de bord en direct avec des métriques détaillées sur l'activité du serveur et les performances.</p>
                 </div>
                 
                 <div class="bento-card reveal reveal-delay-2">
-                    <div class="bento-icon"><i class="fas fa-gavel"></i></div>
-                    <h3 class="bento-title">Systeme Juridique</h3>
-                    <p class="bento-description">Code penal detaille et procedures judiciaires realistes pour un roleplay authentique et structure.</p>
+                    <div class="bento-icon"><i class="fa-solid fa-gavel"></i></div>
+                    <h3 class="bento-title">Système Juridique</h3>
+                    <p class="bento-description">Code pénal détaillé et procédures judiciaires réalistes pour un jeu de rôle authentique et structuré.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Departements -->
+    <!-- Départements -->
     <section class="section section-alt" id="departements">
         <div class="container">
             <div class="section-header reveal">
                 <div class="section-label">
-                    <i class="fas fa-briefcase"></i>
-                    <span>Carrieres</span>
+                    <i class="fa-solid fa-briefcase"></i>
+                    <span>Carrières</span>
                 </div>
-                <h2 class="section-title">Nos <span class="gradient-text">Departements</span></h2>
-                <p class="section-subtitle">Servez la communaute en rejoignant l'une de nos organisations d'elite.</p>
+                <h2 class="section-title">Nos <span class="gradient-text">Départements</span></h2>
+                <p class="section-subtitle">Servez la communauté en rejoignant l'une de nos organisations d'élite.</p>
             </div>
             
             <div class="departments-grid">
                 <div class="department-card reveal">
                     <div class="department-header">
-                        <i class="fas fa-car-side department-icon"></i>
+                        <i class="fa-solid fa-car-side department-icon"></i>
                         <h3 class="department-name">Service de Police</h3>
                         <div class="department-code">SPVQ</div>
                     </div>
                     <div class="department-body">
-                        <p class="department-description">Le Service de Police de la Ville de Quebec assure la securite et l'ordre public. Patrouilles, interventions et enquetes criminelles.</p>
+                        <p class="department-description">Le Service de Police de la Ville de Québec assure la sécurité et l'ordre public. Patrouilles, interventions et enquêtes criminelles.</p>
                         <ul class="department-features">
-                            <li class="department-feature"><i class="fas fa-check"></i><span>Vehicules intercepteurs exclusifs</span></li>
-                            <li class="department-feature"><i class="fas fa-check"></i><span>Equipement tactique complet</span></li>
-                            <li class="department-feature"><i class="fas fa-check"></i><span>Academie de police formelle</span></li>
-                            <li class="department-feature"><i class="fas fa-check"></i><span>Hierarchie structuree</span></li>
+                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Véhicules intercepteurs exclusifs</span></li>
+                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Équipement tactique complet</span></li>
+                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Académie de police formelle</span></li>
+                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Hiérarchie structurée</span></li>
                         </ul>
                     </div>
                 </div>
                 
                 <div class="department-card reveal reveal-delay-1">
                     <div class="department-header">
-                        <i class="fas fa-shield-halved department-icon"></i>
-                        <h3 class="department-name">Surete du Quebec</h3>
+                        <i class="fa-solid fa-shield-halved department-icon"></i>
+                        <h3 class="department-name">Sûreté du Québec</h3>
                         <div class="department-code">SQ</div>
                     </div>
                     <div class="department-body">
-                        <p class="department-description">Force provinciale intervenant sur les crimes majeurs, les operations speciales et la securite des evenements d'envergure.</p>
+                        <p class="department-description">Force provinciale intervenant sur les crimes majeurs, les opérations spéciales et la sécurité des événements d'envergure.</p>
                         <ul class="department-features">
-                            <li class="department-feature"><i class="fas fa-check"></i><span>Unite K9 et Equestre</span></li>
-                            <li class="department-feature"><i class="fas fa-check"></i><span>Equipe d'intervention tactique</span></li>
-                            <li class="department-feature"><i class="fas fa-check"></i><span>Enquetes criminelles complexes</span></li>
-                            <li class="department-feature"><i class="fas fa-check"></i><span>Avantages hierarchiques premium</span></li>
+                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Unité K9 et Équestre</span></li>
+                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Équipe d'intervention tactique</span></li>
+                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Enquêtes criminelles complexes</span></li>
+                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Avantages hiérarchiques premium</span></li>
                         </ul>
                     </div>
                 </div>
                 
                 <div class="department-card reveal reveal-delay-2">
                     <div class="department-header">
-                        <i class="fas fa-fire-extinguisher department-icon"></i>
+                        <i class="fa-solid fa-fire-extinguisher department-icon"></i>
                         <h3 class="department-name">Service Incendie</h3>
                         <div class="department-code">SPCIQ</div>
                     </div>
                     <div class="department-body">
-                        <p class="department-description">Les pompiers de la ville interviennent sur les incendies, les accidents de la route et les secours a personne d'urgence.</p>
+                        <p class="department-description">Les pompiers de la ville interviennent sur les incendies, les accidents de la route et les secours à personne d'urgence.</p>
                         <ul class="department-features">
-                            <li class="department-feature"><i class="fas fa-check"></i><span>Camions d'intervention realistes</span></li>
-                            <li class="department-feature"><i class="fas fa-check"></i><span>Materiel de desincarceration</span></li>
-                            <li class="department-feature"><i class="fas fa-check"></i><span>Formation paramedicale avancee</span></li>
-                            <li class="department-feature"><i class="fas fa-check"></i><span>Operations de sauvetage</span></li>
+                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Camions d'intervention réalistes</span></li>
+                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Matériel de désincarcération</span></li>
+                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Formation paramédicale avancée</span></li>
+                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Opérations de sauvetage</span></li>
                         </ul>
                     </div>
                 </div>
@@ -1532,16 +1145,16 @@
         </div>
     </section>
 
-    <!-- Roadmap -->
+    <!-- Feuille de route -->
     <section class="section" id="roadmap">
         <div class="container">
             <div class="section-header reveal">
                 <div class="section-label">
-                    <i class="fas fa-rocket"></i>
-                    <span>Developpement</span>
+                    <i class="fa-solid fa-rocket"></i>
+                    <span>Développement</span>
                 </div>
                 <h2 class="section-title">Feuille de <span class="gradient-text">Route</span></h2>
-                <p class="section-subtitle">Notre vision pour l'avenir du serveur et les prochaines mises a jour majeures.</p>
+                <p class="section-subtitle">Notre vision pour l'avenir du serveur et les prochaines mises à jour majeures.</p>
             </div>
             
             <div class="timeline">
@@ -1551,7 +1164,7 @@
                         <div class="timeline-phase">Phase 1</div>
                         <h3 class="timeline-title">Lancement Initial</h3>
                         <p class="timeline-description">Mise en place de l'infrastructure de base, recrutement du personnel fondateur et ouverture officielle au public.</p>
-                        <div class="timeline-status completed"><i class="fas fa-check"></i><span>Termine</span></div>
+                        <div class="timeline-status completed"><i class="fa-solid fa-check"></i><span>Terminé</span></div>
                     </div>
                 </div>
                 
@@ -1559,9 +1172,9 @@
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
                         <div class="timeline-phase">Phase 2</div>
-                        <h3 class="timeline-title">Optimisation des Systemes</h3>
-                        <p class="timeline-description">Deploiement du bot personnalise, systeme de niveaux, economie avancee et amelioration des procedures de departements.</p>
-                        <div class="timeline-status active"><i class="fas fa-spinner fa-spin"></i><span>En cours</span></div>
+                        <h3 class="timeline-title">Optimisation des Systèmes</h3>
+                        <p class="timeline-description">Déploiement du bot personnalisé, système de niveaux, économie avancée et amélioration des procédures de départements.</p>
+                        <div class="timeline-status active"><i class="fa-solid fa-spinner fa-spin"></i><span>En cours</span></div>
                     </div>
                 </div>
                 
@@ -1570,8 +1183,8 @@
                     <div class="timeline-content">
                         <div class="timeline-phase">Phase 3</div>
                         <h3 class="timeline-title">Extension Territoriale</h3>
-                        <p class="timeline-description">Ajout de nouvelles zones de jeu, vehicules personnalises et evenements communautaires majeurs.</p>
-                        <div class="timeline-status upcoming"><i class="fas fa-clock"></i><span>A venir</span></div>
+                        <p class="timeline-description">Ajout de nouvelles zones de jeu, véhicules personnalisés et événements communautaires majeurs.</p>
+                        <div class="timeline-status upcoming"><i class="fa-solid fa-clock"></i><span>À venir</span></div>
                     </div>
                 </div>
                 
@@ -1580,24 +1193,24 @@
                     <div class="timeline-content">
                         <div class="timeline-phase">Phase 4</div>
                         <h3 class="timeline-title">Partenariats et Expansion</h3>
-                        <p class="timeline-description">Collaborations avec d'autres serveurs, creation de contenu media et expansion de la communaute.</p>
-                        <div class="timeline-status upcoming"><i class="fas fa-clock"></i><span>Planifie</span></div>
+                        <p class="timeline-description">Collaborations avec d'autres serveurs, création de contenu média et expansion de la communauté.</p>
+                        <div class="timeline-status upcoming"><i class="fa-solid fa-clock"></i><span>Planifié</span></div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Equipe -->
+    <!-- Équipe -->
     <section class="section section-alt" id="equipe">
         <div class="container">
             <div class="section-header reveal">
                 <div class="section-label">
-                    <i class="fas fa-crown"></i>
+                    <i class="fa-solid fa-crown"></i>
                     <span>Direction</span>
                 </div>
-                <h2 class="section-title">L'Equipe de <span class="gradient-text">Direction</span></h2>
-                <p class="section-subtitle">Les visionnaires derriere le projet Ville de Quebec Roleplay.</p>
+                <h2 class="section-title">L'Équipe de <span class="gradient-text">Direction</span></h2>
+                <p class="section-subtitle">Les visionnaires derrière le projet Ville de Québec Roleplay.</p>
             </div>
             
             <div class="team-grid">
@@ -1607,8 +1220,8 @@
                         <div class="team-status"></div>
                     </div>
                     <h3 class="team-name">Lieutenant_Jacky</h3>
-                    <div class="team-role">Fondateur et Proprietaire</div>
-                    <p class="team-bio">Visionnaire du projet, il assure la direction strategique et le developpement global de la communaute VQC. Son leadership a permis de batir une communaute soudee et professionnelle.</p>
+                    <div class="team-role">Fondateur et Propriétaire</div>
+                    <p class="team-bio">Visionnaire du projet, il assure la direction stratégique et le développement global de la communauté VQC. Son leadership a permis de bâtir une communauté soudée et professionnelle.</p>
                 </div>
                 
                 <div class="team-card reveal reveal-delay-1">
@@ -1617,23 +1230,23 @@
                         <div class="team-status"></div>
                     </div>
                     <h3 class="team-name">Jacobin Babouain</h3>
-                    <div class="team-role">Cofondateur et Developpeur</div>
-                    <p class="team-bio">Responsable de l'architecture technique, du developpement du bot personnalise et de l'infrastructure web. Son expertise technique garantit la stabilite et l'innovation du serveur.</p>
+                    <div class="team-role">Cofondateur et Développeur</div>
+                    <p class="team-bio">Responsable de l'architecture technique, du développement du bot personnalisé et de l'infrastructure web. Son expertise technique garantit la stabilité et l'innovation du serveur.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
+    <!-- Section d'appel à l'action -->
     <section class="cta-section">
         <div class="container">
             <div class="cta-container reveal">
                 <div class="cta-content">
-                    <h2 class="cta-title">Pret a rejoindre l'aventure ?</h2>
-                    <p class="cta-description">Rejoignez des centaines de joueurs passionnes et vivez l'experience ERLC la plus immersive du Quebec.</p>
+                    <h2 class="cta-title">Prêt à rejoindre l'aventure ?</h2>
+                    <p class="cta-description">Rejoignez des centaines de joueurs passionnés et vivez l'expérience ERLC la plus immersive du Québec.</p>
                     <div class="cta-actions">
                         <a href="https://discord.gg/UEf3epPwXS" class="btn btn-white" target="_blank">
-                            <i class="fab fa-discord"></i>
+                            <i class="fa-brands fa-discord"></i>
                             <span>Rejoindre maintenant</span>
                         </a>
                         <a href="#fonctionnalites" class="btn btn-ghost">
@@ -1645,19 +1258,19 @@
         </div>
     </section>
 
-    <!-- Footer -->
+    <!-- Pied de page -->
     <footer class="footer">
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-brand">
                     <a href="#" class="footer-logo">
                         <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="VQC">
-                        <span>Ville de Quebec RP</span>
+                        <span>Ville de Québec RP</span>
                     </a>
-                    <p class="footer-description">Le serveur de roleplay ERLC de reference au Quebec. Une experience immersive, professionnelle et communautaire.</p>
+                    <p class="footer-description">Le serveur de jeu de rôle ERLC de référence au Québec. Une expérience immersive, professionnelle et communautaire.</p>
                     <div class="footer-social">
-                        <a href="https://discord.gg/UEf3epPwXS" class="footer-social-link" target="_blank">
-                            <i class="fab fa-discord"></i>
+                        <a href="https://discord.gg/UEf3epPwXS" class="footer-social-link" target="_blank" aria-label="Discord">
+                            <i class="fa-brands fa-discord"></i>
                         </a>
                     </div>
                 </div>
@@ -1666,8 +1279,8 @@
                     <h4>Ressources</h4>
                     <ul class="footer-links">
                         <li class="footer-link"><a href="https://melon.ly/form/7498354753420660736" target="_blank">Candidatures Staff</a></li>
-                        <li class="footer-link"><a href="https://melon.ly/sd/ville-de-quebec-roleplay" target="_blank">Presentation du serveur</a></li>
-                        <li class="footer-link"><a href="https://discord.com/channels/1490410149213507804/1490444001587757085" target="_blank">Regles en jeu</a></li>
+                        <li class="footer-link"><a href="https://melon.ly/sd/ville-de-quebec-roleplay" target="_blank">Présentation du serveur</a></li>
+                        <li class="footer-link"><a href="https://discord.com/channels/1490410149213507804/1490444001587757085" target="_blank">Règles en jeu</a></li>
                         <li class="footer-link"><a href="https://discord.com/channels/1490410149213507804/1490443957547827331" target="_blank">Informations Discord</a></li>
                     </ul>
                 </div>
@@ -1676,24 +1289,24 @@
                     <h4>Navigation</h4>
                     <ul class="footer-links">
                         <li class="footer-link"><a href="#accueil">Accueil</a></li>
-                        <li class="footer-link"><a href="#fonctionnalites">Fonctionnalites</a></li>
-                        <li class="footer-link"><a href="#departements">Departements</a></li>
+                        <li class="footer-link"><a href="#fonctionnalites">Fonctionnalités</a></li>
+                        <li class="footer-link"><a href="#departements">Départements</a></li>
                         <li class="footer-link"><a href="#roadmap">Feuille de route</a></li>
-                        <li class="footer-link"><a href="#equipe">Equipe</a></li>
+                        <li class="footer-link"><a href="#equipe">Équipe</a></li>
                     </ul>
                 </div>
             </div>
             
             <div class="footer-bottom">
-                <p>2026 Ville de Quebec Roleplay. Tous droits reserves.</p>
-                <p>Developpe par Jacobin Babouain</p>
+                <p>2026 Ville de Québec Roleplay. Tous droits réservés.</p>
+                <p>Développé par Jacobin Babouain</p>
             </div>
         </div>
     </footer>
 
     <script>
         // ============================================
-        // 1. CURSEUR PERSONNALISE MAGNETIQUE
+        // 1. CURSEUR PERSONNALISÉ MAGNÉTIQUE
         // ============================================
         const cursorDot = document.getElementById('cursor-dot');
         const cursorRing = document.getElementById('cursor-ring');
@@ -1702,56 +1315,57 @@
         let dotX = 0, dotY = 0;
         let ringX = 0, ringY = 0;
         
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
+        // Désactiver le curseur personnalisé sur les appareils tactiles
+        const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
         
-        function animateCursor() {
-            // Le point suit la souris immediatement
-            dotX += (mouseX - dotX) * 0.5;
-            dotY += (mouseY - dotY) * 0.5;
+        if (!isTouchDevice) {
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
             
-            // L'anneau suit avec un delai pour un effet fluide
-            ringX += (mouseX - ringX) * 0.15;
-            ringY += (mouseY - ringY) * 0.15;
+            function animateCursor() {
+                dotX += (mouseX - dotX) * 0.5;
+                dotY += (mouseY - dotY) * 0.5;
+                ringX += (mouseX - ringX) * 0.15;
+                ringY += (mouseY - ringY) * 0.15;
+                
+                cursorDot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0) translate(-50%, -50%)`;
+                cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
+                
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
             
-            cursorDot.style.transform = `translate(${dotX}px, ${dotY}px) translate(-50%, -50%)`;
-            cursorRing.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
-            
-            requestAnimationFrame(animateCursor);
+            const interactiveElements = document.querySelectorAll('a, button, .bento-card, .department-card, .team-card, .timeline-content, .footer-social-link');
+            interactiveElements.forEach(el => {
+                el.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
+                el.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
+            });
         }
-        animateCursor();
-        
-        // Effet hover sur les elements interactifs
-        const interactiveElements = document.querySelectorAll('a, button, .bento-card, .department-card, .team-card, .timeline-content, .footer-social-link');
-        interactiveElements.forEach(el => {
-            el.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
-            el.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
-        });
 
         // ============================================
-        // 2. PRELOADER
+        // 2. PRÉCHARGEUR
         // ============================================
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('preloader').classList.add('hidden');
-            }, 1800);
+            }, 1500);
         });
 
         // ============================================
-        // 3. BARRE DE PROGRESSION DU SCROLL
+        // 3. BARRE DE PROGRESSION DU DÉFILEMENT
         // ============================================
         const scrollProgress = document.getElementById('scroll-progress');
         window.addEventListener('scroll', () => {
             const scrollTop = window.pageYOffset;
             const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollPercent = scrollTop / docHeight;
+            const scrollPercent = docHeight > 0 ? scrollTop / docHeight : 0;
             scrollProgress.style.transform = `scaleX(${scrollPercent})`;
         });
 
         // ============================================
-        // 4. NAVIGATION SCROLL
+        // 4. NAVIGATION AU DÉFILEMENT
         // ============================================
         const nav = document.getElementById('nav');
         const navLinks = document.querySelectorAll('.nav-link');
@@ -1763,7 +1377,6 @@
                 nav.classList.remove('scrolled');
             }
             
-            // Detection de la section active
             let current = '';
             document.querySelectorAll('section[id]').forEach(section => {
                 const sectionTop = section.offsetTop;
@@ -1781,7 +1394,7 @@
         });
 
         // ============================================
-        // 5. SYSTEME DE PARTICULES (CANVAS)
+        // 5. SYSTÈME DE PARTICULES (CANVAS OPTIMISÉ)
         // ============================================
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
@@ -1798,10 +1411,10 @@
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
+                this.size = Math.random() * 1.5 + 0.5;
                 this.speedX = (Math.random() - 0.5) * 0.3;
                 this.speedY = (Math.random() - 0.5) * 0.3;
-                this.opacity = Math.random() * 0.5 + 0.2;
+                this.opacity = Math.random() * 0.5 + 0.1;
             }
             update() {
                 this.x += this.speedX;
@@ -1812,14 +1425,14 @@
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(77, 141, 255, ${this.opacity})`;
+                ctx.fillStyle = `rgba(59, 130, 246, ${this.opacity})`;
                 ctx.fill();
             }
         }
         
         function initParticles() {
             particles = [];
-            const numParticles = Math.min(Math.floor((canvas.width * canvas.height) / 25000), 60);
+            const numParticles = Math.min(Math.floor((canvas.width * canvas.height) / 30000), 50);
             for (let i = 0; i < numParticles; i++) particles.push(new Particle());
         }
         
@@ -1832,9 +1445,9 @@
                     const dx = particle.x - particles[j].x;
                     const dy = particle.y - particles[j].y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < 150) {
+                    if (distance < 120) {
                         ctx.beginPath();
-                        ctx.strokeStyle = `rgba(77, 141, 255, ${0.15 * (1 - distance / 150)})`;
+                        ctx.strokeStyle = `rgba(59, 130, 246, ${0.1 * (1 - distance / 120)})`;
                         ctx.lineWidth = 0.5;
                         ctx.moveTo(particle.x, particle.y);
                         ctx.lineTo(particles[j].x, particles[j].y);
@@ -1848,7 +1461,7 @@
         animateParticles();
 
         // ============================================
-        // 6. EFFET DE LUMIERE SUR LES CARTES BENTO
+        // 6. EFFET DE LUMIÈRE SUR LES CARTES BENTO
         // ============================================
         document.querySelectorAll('.bento-card').forEach(card => {
             card.addEventListener('mousemove', (e) => {
@@ -1859,7 +1472,7 @@
         });
 
         // ============================================
-        // 7. ANIMATIONS AU SCROLL (INTERSECTION OBSERVER)
+        // 7. ANIMATIONS AU DÉFILEMENT (INTERSECTION OBSERVER)
         // ============================================
         const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
         const observer = new IntersectionObserver((entries) => {
@@ -1870,13 +1483,13 @@
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
         // ============================================
-        // 8. STATISTIQUES EN DIRECT (API)
+        // 8. STATISTIQUES EN DIRECT (API) AVEC GESTION D'ERREUR
         // ============================================
         const API_URL = 'https://ville-de-quebec-roleplay.canner.app';
         
         async function fetchStats() {
             try {
-                const response = await fetch(`${API_URL}/api/stats`);
+                const response = await fetch(`${API_URL}/api/stats`, { method: 'GET', cache: 'no-cache' });
                 if (response.ok) {
                     const data = await response.json();
                     animateValue('stat-members', parseInt(document.getElementById('stat-members').innerText) || 0, data.totalMembers, 1500);
@@ -1884,14 +1497,20 @@
                     animateValue('stat-ping', parseInt(document.getElementById('stat-ping').innerText) || 0, data.botPing, 1500);
                 }
             } catch (error) {
-                console.error('Erreur API:', error);
+                console.warn('API non disponible, utilisation des valeurs par défaut.');
+                // Fallback gracieux si l'API est hors ligne
+                document.getElementById('stat-members').innerText = '---';
+                document.getElementById('stat-online').innerText = '---';
+                document.getElementById('stat-ping').innerText = '---';
             }
         }
         
         function animateValue(id, start, end, duration) {
             const obj = document.getElementById(id);
+            if (isNaN(end)) return;
             const range = end - start;
             const startTime = performance.now();
+            
             function update(currentTime) {
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / duration, 1);
@@ -1906,7 +1525,7 @@
         setInterval(fetchStats, 30000);
 
         // ============================================
-        // 9. SMOOTH SCROLL ET PARALLAXE
+        // 9. DÉFILEMENT FLUIDE ET PARALLAXE
         // ============================================
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
@@ -1920,7 +1539,7 @@
             const scrolled = window.pageYOffset;
             const heroContent = document.querySelector('.hero-content');
             if (heroContent && scrolled < window.innerHeight) {
-                heroContent.style.transform = `translateY(${scrolled * 0.3}px)`;
+                heroContent.style.transform = `translate3d(0, ${scrolled * 0.3}px, 0)`;
                 heroContent.style.opacity = 1 - (scrolled / window.innerHeight) * 0.5;
             }
         });
