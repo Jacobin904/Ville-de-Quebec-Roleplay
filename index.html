@@ -94,7 +94,7 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--accent-secondary); }
 
         /* ============================================
-           3. CURSEUR PERSONNALISÉ AVANCÉ
+           3. CURSEUR PERSONNALISÉ AVANCÉ (Sans bug)
            ============================================ */
         .custom-cursor-dot, .custom-cursor-ring {
             position: fixed;
@@ -136,14 +136,19 @@
         }
 
         /* ============================================
-           5. PRÉCHARGEUR
+           5. PRÉCHARGEUR (CORRIGÉ ET SANS BUG)
            ============================================ */
         .preloader {
             position: fixed; inset: 0; background: var(--bg-primary); z-index: 100000;
             display: flex; align-items: center; justify-content: center; flex-direction: column;
-            transition: opacity 0.8s var(--ease-out-expo), visibility 0.8s;
+            transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
         }
-        .preloader.hidden { opacity: 0; visibility: hidden; }
+        
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none; /* Empêche de bloquer les clics une fois caché */
+        }
 
         .preloader-logo {
             width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent-primary);
@@ -163,7 +168,7 @@
         .preloader-bar { width: 200px; height: 2px; background: var(--bg-tertiary); border-radius: 2px; overflow: hidden; }
         .preloader-bar-fill {
             height: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-            width: 0%; animation: load-progress 1.5s var(--ease-out-expo) forwards;
+            width: 0%; animation: load-progress 1.2s var(--ease-out-expo) forwards;
         }
         @keyframes load-progress { to { width: 100%; } }
 
@@ -441,6 +446,17 @@
             border: 3px solid var(--bg-secondary); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulse 2s infinite;
         }
         .team-name { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
+        
+        /* Lien cliquable pour le nom */
+        .team-name a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .team-name a:hover {
+            color: var(--accent-secondary);
+        }
+
         .team-role {
             display: inline-block; padding: 6px 16px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2);
             border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; color: var(--accent-secondary);
@@ -522,7 +538,7 @@
     <div class="scroll-progress" id="scroll-progress"></div>
     <div class="noise-overlay"></div>
 
-    <!-- Préchargeur -->
+    <!-- Préchargeur (Corrigé) -->
     <div class="preloader" id="preloader">
         <div class="preloader-logo">
             <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="VQC">
@@ -736,7 +752,9 @@
                         <img src="https://cdn.discordapp.com/avatars/1281784488854159421/b30ef2bb80b0832bf222e4a22287a72e.webp?size=1024" alt="Jacobin Babouain" class="team-avatar">
                         <div class="team-status"></div>
                     </div>
-                    <h3 class="team-name">Jacobin Babouain</h3>
+                    <h3 class="team-name">
+                        <a href="https://discord.com/users/1281784488854159421" target="_blank" rel="noopener noreferrer">Jacobin Babouain</a>
+                    </h3>
                     <div class="team-role">Cofondateur et Développeur</div>
                     <p class="team-bio">Responsable de l'architecture technique, du développement du bot personnalisé et de l'infrastructure web. Son expertise technique garantit la stabilité et l'innovation du serveur.</p>
                 </div>
@@ -824,21 +842,27 @@
             });
         }
 
-        // 2. PRÉCHARGEUR
-        window.addEventListener('load', () => setTimeout(() => document.getElementById('preloader').classList.add('hidden'), 1500));
+        // 2. PRÉCHARGEUR (CORRIGÉ : Synchronisé et ne bloque pas les clics)
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const preloader = document.getElementById('preloader');
+                if (preloader) {
+                    preloader.classList.add('hidden');
+                }
+            }, 1200); // Temps parfaitement synchronisé avec l'animation CSS de 1.2s
+        });
 
-        // 3. BARRE DE PROGRESSION
+        // 3. BARRE DE PROGRESSION ET NAVIGATION
         window.addEventListener('scroll', () => {
             const scrollTop = window.pageYOffset;
             const docHeight = document.documentElement.scrollHeight - window.innerHeight;
             document.getElementById('scroll-progress').style.transform = `scaleX(${docHeight > 0 ? scrollTop / docHeight : 0})`;
             
-            // Navigation scroll
             const nav = document.getElementById('nav');
             nav.classList.toggle('scrolled', scrollTop > 50);
         });
 
-        // 4. PARTICULES CANVAS (Optimisé)
+        // 4. PARTICULES CANVAS (Optimisé pour 60 FPS)
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
