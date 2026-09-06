@@ -1,20 +1,29 @@
 {
-  "name": "vqc-bot",
+  "name": "vqc-discord-bot",
   "version": "4.0.0",
-  "description": "Bot Discord officiel de Ville de Quebec Roleplay",
+  "description": "Bot Discord professionnel pour Ville de Québec Roleplay",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "node --watch index.js"
   },
   "dependencies": {
     "discord.js": "^14.14.1",
     "express": "^4.18.2",
     "axios": "^1.6.7",
     "dotenv": "^16.4.1",
-    "better-sqlite3": "^9.4.3",
-    "node-cron": "^3.0.3"
+    "better-sqlite3": "^9.4.3"
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "roleplay",
+    "quebec",
+    "erlc"
+  ],
+  "author": "Jacobin Babouain",
+  "license": "MIT"
 }
