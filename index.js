@@ -1,15 +1,21 @@
+/**
+ * VQC Discord Bot - Architecture Enterprise
+ * Développé pour Ville de Québec Roleplay
+ * Version: 5.0.0 (Premium)
+ */
+
 require('dotenv').config();
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const express = require('express');
-const axios = require('axios');
 const { 
     Client, GatewayIntentBits, EmbedBuilder, SlashCommandBuilder, 
-    REST, Routes, ChannelType, PermissionFlagsBits, Collection, ActivityType
+    REST, Routes, ChannelType, PermissionFlagsBits, Collection, ActivityType,
+    ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle
 } = require('discord.js');
 
 // ==========================================
-// 1. CONFIGURATION PROFESSIONNELLE
+// 1. CONFIGURATION CENTRALISÉE
 // ==========================================
 const CONFIG = {
     server: {
@@ -26,524 +32,511 @@ const CONFIG = {
         warning: 0xf59e0b,
         danger: 0xef4444,
         info: 0x06b6d4
+    },
+    limits: {
+        xpCooldown: 60000,
+        dailyCooldown: 86400000,
+        maxWarnings: 3
     }
 };
 
 // ==========================================
-// 2. BASE DE DONNEES JSON (100% COMPATIBLE CANNER)
+// 2. SYSTÈME DE JOURNALISATION PROFESSIONNEL
 // ==========================================
-const DB_FILE = path.join(__dirname, 'vqc_data.json');
-
-let db = {
-    users: {},
-    warnings: [],
-    tickets: {},
-    commands: {},
-    tags: {}
-};
-
-function loadDB() {
-    try {
-        if (fs.existsSync(DB_FILE)) {
-            db = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
-        } else {
-            saveDB();
-        }
-    } catch (e) {
-        console.error('[DB] Erreur de chargement:', e.message);
+class Logger {
+    static format(level, message) {
+        const timestamp = new Date().toISOString();
+        return `[${timestamp}] [${level.toUpperCase()}] ${message}`;
     }
-}
 
-function saveDB() {
-    try {
-        fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf8');
-    } catch (e) {
-        console.error('[DB] Erreur de sauvegarde:', e.message);
-    }
-}
+    static info(msg) { console.log(Logger.format('info', msg)); }
+    static warn(msg) { console.warn(Logger.format('warn', msg)); }
+    static error(msg) { console.error(Logger.format('error', msg)); }
+    static success(msg) { console.log(Logger.format('success', msg)); }
 
-// Initialisation au demarrage
-loadDB();
-
-const queries = {
-    user: {
-        get: (id) => db.users[id] || null,
-        create: (id, username) => {
-            db.users[id] = {
-                discord_id: id,
-                username,
-                level: 1,
-                xp: 0,
-                total_xp: 0,
-                coins: 100,
-                bank: 0,
-                warnings: 0,
-                last_xp: 0,
-                last_daily: 0
-            };
-            saveDB();
-        },
-        updateXP: (xp, total_xp, level, last_xp, id) => {
-            if (db.users[id]) {
-                db.users[id].xp = xp;
-                db.users[id].total_xp = total_xp;
-                db.users[id].level = level;
-                db.users[id].last_xp = last_xp;
-                saveDB();
-            }
-        },
-        updateCoins: (coins, id) => {
-            if (db.users[id]) {
-                db.users[id].coins = coins;
-                saveDB();
-            }
-        },
-        addWarning: (id) => {
-            if (db.users[id]) {
-                db.users[id].warnings = (db.users[id].warnings || 0) + 1;
-                saveDB();
-            }
-        },
-        getTop: (limit) => {
-            return Object.values(db.users)
-                .sort((a, b) => (b.total_xp || 0) - (a.total_xp || 0))
-                .slice(0, limit);
-        }
-    },
-    warning: {
-        create: (user_id, mod_id, reason) => {
-            db.warnings.push({ user_id, moderator_id: mod_id, reason, created_at: new Date().toISOString() });
-            saveDB();
-        },
-        getByUser: (user_id) => {
-            return (db.warnings || []).filter(w => w.user_id === user_id).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        }
-    },
-    ticket: {
-        create: (channel_id, user_id) => {
-            db.tickets[channel_id] = { channel_id, user_id, status: 'open', created_at: new Date().toISOString() };
-            saveDB();
-        },
-        close: (status, channel_id) => {
-            if (db.tickets[channel_id]) {
-                db.tickets[channel_id].status = status;
-                saveDB();
-            }
-        }
-    },
-    command: {
-        get: (name) => db.commands[name] || null,
-        create: (name, response, created_by) => {
-            db.commands[name] = { name, response, created_by };
-            saveDB();
-        },
-        delete: (name) => {
-            delete db.commands[name];
-            saveDB();
-        }
-    },
-    tag: {
-        get: (name) => db.tags[name] || null,
-        create: (name, content, created_by) => {
-            db.tags[name] = { name, content, created_by, uses: 0 };
-            saveDB();
-        },
-        delete: (name) => {
-            delete db.tags[name];
-            saveDB();
-        },
-        incrementUses: (name) => {
-            if (db.tags[name]) {
-                db.tags[name].uses = (db.tags[name].uses || 0) + 1;
-                saveDB();
-            }
-        }
-    }
-};
-
-// ==========================================
-// 3. SYSTEME DE LOGS
-// ==========================================
-const Logger = {
-    async log(title, description, color = CONFIG.colors.primary, fields = [], thumbnail = null) {
+    static async discord(title, description, color = CONFIG.colors.primary, fields = [], thumbnail = null) {
         const embed = new EmbedBuilder()
             .setTitle(title)
             .setDescription(description)
             .setColor(color)
             .setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon })
             .setTimestamp();
-        if (fields && fields.length > 0) embed.addFields(fields);
+        if (fields?.length) embed.addFields(fields);
         if (thumbnail) embed.setThumbnail(thumbnail);
 
         try {
-            const channel = client.channels.cache.get(CONFIG.channels.logs);
-            if (channel) {
-                await channel.send({ embeds: [embed] }).catch(() => {});
-                return;
-            }
+            const channel = bot.client.channels.cache.get(CONFIG.channels.logs);
+            if (channel) await channel.send({ embeds: [embed] }).catch(() => {});
         } catch (err) {
-            console.error('[LOGGER] Erreur canal:', err.message);
+            this.error(`Echec envoi log Discord: ${err.message}`);
         }
-        console.log(`[LOG] ${title}: ${description}`);
-    },
-    info: (msg) => console.log(`[INFO] ${msg}`),
-    warn: (msg) => console.warn(`[WARN] ${msg}`),
-    error: (msg) => console.error(`[ERROR] ${msg}`),
-    success: (msg) => console.log(`[SUCCESS] ${msg}`)
-};
-
-// ==========================================
-// 4. CLIENT DISCORD
-// ==========================================
-const client = new Client({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildModeration,
-        GatewayIntentBits.GuildVoiceStates,
-        GatewayIntentBits.GuildMessageReactions,
-        GatewayIntentBits.GuildPresences
-    ]
-});
-
-client.commands = new Collection();
-
-// ==========================================
-// 5. SERVEUR EXPRESS ET API
-// ==========================================
-const app = express();
-const PORT = process.env.PORT || 3000;
-const HOST = '0.0.0.0';
-
-app.use(express.json());
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    next();
-});
-
-app.get('/', (req, res) => {
-    res.status(200).json({
-        status: 'online',
-        name: CONFIG.server.name,
-        uptime: process.uptime(),
-        members: client.guilds.cache.get(CONFIG.server.id)?.memberCount || 0
-    });
-});
-
-const verifyAPI = (req, res, next) => {
-    const key = req.headers['x-api-key'];
-    if (key === process.env.API_SECRET) return next();
-    return res.status(401).json({ error: 'Non autorise' });
-};
-
-app.get('/api/stats', (req, res) => {
-    const guild = client.guilds.cache.get(CONFIG.server.id);
-    if (!guild) return res.status(404).json({ error: 'Serveur non trouve' });
-    const onlineCount = guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline').size;
-    res.json({
-        totalMembers: guild.memberCount,
-        onlineMembers: onlineCount,
-        botPing: client.ws.ping,
-        uptime: process.uptime()
-    });
-});
-
-app.get('/api/leaderboard', verifyAPI, (req, res) => {
-    const limit = parseInt(req.query.limit) || 10;
-    const topUsers = queries.user.getTop(limit);
-    res.json({ leaderboard: topUsers });
-});
-
-// ==========================================
-// 6. GESTION DES NIVEAUX ET ECONOMIE
-// ==========================================
-function calculateXP(level) {
-    return level * 100 + (level - 1) * 50;
+    }
 }
 
-function addXP(userId, amount) {
-    const user = queries.user.get(userId);
-    if (!user) return null;
-    const now = Date.now();
-    if (now - user.last_xp < 60000) return null; // Cooldown de 60 secondes
-
-    let newXP = user.xp + amount;
-    let newTotalXP = user.total_xp + amount;
-    let newLevel = user.level;
-
-    while (newXP >= calculateXP(newLevel)) {
-        newXP -= calculateXP(newLevel);
-        newLevel++;
+// ==========================================
+// 3. BASE DE DONNÉES JSON ATOMIQUE (SANS MODULE NATIF)
+// ==========================================
+class Database {
+    constructor(filePath) {
+        this.filePath = filePath;
+        this.data = { users: {}, warnings: [], tickets: {}, commands: {}, tags: {} };
+        this.saveTimeout = null;
     }
 
-    queries.user.updateXP(newXP, newTotalXP, newLevel, now, userId);
-    return { level: newLevel, leveledUp: newLevel > user.level };
-}
+    async init() {
+        try {
+            const content = await fs.readFile(this.filePath, 'utf8');
+            this.data = JSON.parse(content);
+            Logger.success('Base de donnees chargee avec succes');
+        } catch (err) {
+            Logger.warn('Base de donnees introuvable, creation d\'une nouvelle instance');
+            await this.save();
+        }
+    }
 
-// ==========================================
-// 7. EVENEMENTS DISCORD
-// ==========================================
-client.once('clientReady', async () => {
-    Logger.success(`Connecte en tant que ${client.user.tag}`);
-    Logger.info(`Serveurs : ${client.guilds.cache.size}`);
+    // Sauvegarde différée (Debounce) pour éviter les écritures disque excessives
+    scheduleSave() {
+        if (this.saveTimeout) clearTimeout(this.saveTimeout);
+        this.saveTimeout = setTimeout(() => this.save(), 2000);
+    }
+
+    async save() {
+        try {
+            await fs.writeFile(this.filePath, JSON.stringify(this.data, null, 2), 'utf8');
+        } catch (err) {
+            Logger.error(`Echec de sauvegarde de la base de donnees: ${err.message}`);
+        }
+    }
+
+    // --- Méthodes Utilisateurs ---
+    getUser(id) { return this.data.users[id] || null; }
     
-    client.user.setPresence({
-        activities: [{ name: 'Ville de Quebec Roleplay', type: ActivityType.Watching }],
-        status: 'online'
-    });
-
-    await Logger.log(
-        'Systeme demarre',
-        `Le bot est maintenant operationnel.\n\n**Identite :** ${client.user.tag}`,
-        CONFIG.colors.success,
-        [],
-        client.user.displayAvatarURL()
-    );
-});
-
-client.on('guildMemberAdd', async (member) => {
-    if (member.guild.id !== CONFIG.server.id) return;
-    if (!queries.user.get(member.id)) {
-        queries.user.create(member.id, member.user.tag);
-    }
-    await Logger.log(
-        'Nouveau membre',
-        `**${member.user.tag}** a rejoint le serveur.`,
-        CONFIG.colors.success,
-        [
-            { name: 'Identifiant', value: member.id, inline: true },
-            { name: 'Compte cree', value: `<t:${Math.floor(member.user.createdTimestamp / 1000)}:R>`, inline: true }
-        ],
-        member.user.displayAvatarURL()
-    );
-});
-
-client.on('messageCreate', async (message) => {
-    if (message.author.bot || message.guild?.id !== CONFIG.server.id) return;
-
-    if (!queries.user.get(message.author.id)) {
-        queries.user.create(message.author.id, message.author.tag);
+    createUser(id, username) {
+        this.data.users[id] = {
+            discord_id: id, username, level: 1, xp: 0, total_xp: 0,
+            coins: 100, bank: 0, warnings: 0, last_xp: 0, last_daily: 0
+        };
+        this.scheduleSave();
     }
 
-    const xpResult = addXP(message.author.id, Math.floor(Math.random() * 15) + 10);
-    if (xpResult && xpResult.leveledUp) {
-        await message.reply({
-            embeds: [new EmbedBuilder()
-                .setTitle('Niveau superieur')
-                .setDescription(`Felicitation ${message.author} ! Tu es passe au niveau **${xpResult.level}**.`)
-                .setColor(CONFIG.colors.success)
+    updateUserXP(id, xp, total_xp, level, last_xp) {
+        if (this.data.users[id]) {
+            Object.assign(this.data.users[id], { xp, total_xp, level, last_xp });
+            this.scheduleSave();
+        }
+    }
+
+    updateCoins(id, amount) {
+        if (this.data.users[id]) {
+            this.data.users[id].coins = amount;
+            this.scheduleSave();
+        }
+    }
+
+    addWarning(id) {
+        if (this.data.users[id]) {
+            this.data.users[id].warnings = (this.data.users[id].warnings || 0) + 1;
+            this.scheduleSave();
+        }
+    }
+
+    getTopUsers(limit = 10) {
+        return Object.values(this.data.users)
+            .sort((a, b) => (b.total_xp || 0) - (a.total_xp || 0))
+            .slice(0, limit);
+    }
+
+    // --- Méthodes Tickets ---
+    createTicket(channelId, userId) {
+        this.data.tickets[channelId] = { channel_id: channelId, user_id: userId, status: 'open', created_at: new Date().toISOString() };
+        this.scheduleSave();
+    }
+
+    closeTicket(channelId) {
+        if (this.data.tickets[channelId]) {
+            this.data.tickets[channelId].status = 'closed';
+            this.scheduleSave();
+        }
+    }
+
+    // --- Méthodes Commandes & Tags ---
+    getCommand(name) { return this.data.commands[name] || null; }
+    setCommand(name, response, createdBy) {
+        this.data.commands[name] = { name, response, created_by: createdBy };
+        this.scheduleSave();
+    }
+    deleteCommand(name) {
+        delete this.data.commands[name];
+        this.scheduleSave();
+    }
+
+    getTag(name) { return this.data.tags[name] || null; }
+    setTag(name, content, createdBy) {
+        this.data.tags[name] = { name, content, created_by: createdBy, uses: 0 };
+        this.scheduleSave();
+    }
+    deleteTag(name) {
+        delete this.data.tags[name];
+        this.scheduleSave();
+    }
+    incrementTagUses(name) {
+        if (this.data.tags[name]) {
+            this.data.tags[name].uses++;
+            this.scheduleSave();
+        }
+    }
+}
+
+const db = new Database(path.join(__dirname, 'vqc_data.json'));
+
+// ==========================================
+// 4. CLASSE PRINCIPALE DU BOT
+// ==========================================
+class VQCBot {
+    constructor() {
+        this.client = new Client({
+            intents: [
+                GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages,
+                GatewayIntentBits.MessageContent, GatewayIntentBits.GuildModeration, GatewayIntentBits.GuildVoiceStates,
+                GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildPresences
             ]
-        }).catch(() => {});
+        });
+        this.commands = new Collection();
+        this.cooldowns = new Collection();
+        this.expressApp = express();
+        
+        this.setupExpress();
+        this.setupEvents();
     }
 
-    if (message.content.startsWith('!')) {
-        const args = message.content.slice(1).trim().split(/ +/);
-        const commandName = args.shift().toLowerCase();
-        const command = queries.command.get(commandName);
-        if (command) {
-            await message.reply(command.response).catch(() => {});
+    setupExpress() {
+        this.expressApp.use(express.json());
+        this.expressApp.use((req, res, next) => {
+            res.header('Access-Control-Allow-Origin', '*');
+            res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+            next();
+        });
+
+        this.expressApp.get('/', (req, res) => {
+            res.status(200).json({
+                status: 'online',
+                name: CONFIG.server.name,
+                uptime: process.uptime(),
+                members: this.client.guilds.cache.get(CONFIG.server.id)?.memberCount || 0
+            });
+        });
+
+        this.expressApp.get('/api/stats', (req, res) => {
+            const guild = this.client.guilds.cache.get(CONFIG.server.id);
+            if (!guild) return res.status(404).json({ error: 'Serveur non trouve' });
+            const onlineCount = guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline').size;
+            res.json({ totalMembers: guild.memberCount, onlineMembers: onlineCount, botPing: this.client.ws.ping, uptime: process.uptime() });
+        });
+
+        const PORT = process.env.PORT || 3000;
+        this.expressApp.listen(PORT, '0.0.0.0', () => {
+            Logger.success(`Serveur API actif sur http://0.0.0.0:${PORT}`);
+        });
+    }
+
+    setupEvents() {
+        this.client.once('clientReady', async () => {
+            Logger.success(`Connecte en tant que ${this.client.user.tag}`);
+            this.client.user.setPresence({ activities: [{ name: 'Ville de Quebec Roleplay', type: ActivityType.Watching }], status: 'online' });
+            
+            await Logger.discord('Systeme demarre', `Le bot est operationnel.\n**Identite :** ${this.client.user.tag}`, CONFIG.colors.success, [], this.client.user.displayAvatarURL());
+            
+            // Enregistrement des commandes après la connexion
+            try {
+                const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+                await rest.put(Routes.applicationGuildCommands(this.client.user.id, CONFIG.server.id), { body: Array.from(this.commands.values()).map(cmd => cmd.toJSON()) });
+                Logger.success('Commandes slash enregistrees avec succes');
+            } catch (error) {
+                Logger.error(`Echec enregistrement commandes: ${error.message}`);
+            }
+        });
+
+        this.client.on('guildMemberAdd', async (member) => {
+            if (member.guild.id !== CONFIG.server.id) return;
+            if (!db.getUser(member.id)) db.createUser(member.id, member.user.tag);
+            
+            await Logger.discord('Nouveau membre', `**${member.user.tag}** a rejoint le serveur.`, CONFIG.colors.success, [
+                { name: 'Identifiant', value: member.id, inline: true },
+                { name: 'Compte cree', value: `<t:${Math.floor(member.user.createdTimestamp / 1000)}:R>`, inline: true }
+            ], member.user.displayAvatarURL());
+        });
+
+        this.client.on('messageCreate', async (message) => {
+            if (message.author.bot || message.guild?.id !== CONFIG.server.id) return;
+
+            if (!db.getUser(message.author.id)) db.createUser(message.author.id, message.author.tag);
+
+            // Système de niveaux avancé
+            const user = db.getUser(message.author.id);
+            const now = Date.now();
+            if (now - user.last_xp > CONFIG.limits.xpCooldown) {
+                const xpGain = Math.floor(Math.random() * 15) + 10;
+                let newXP = user.xp + xpGain;
+                let newTotalXP = user.total_xp + xpGain;
+                let newLevel = user.level;
+                const xpNeeded = newLevel * 100 + (newLevel - 1) * 50;
+
+                if (newXP >= xpNeeded) {
+                    newXP -= xpNeeded;
+                    newLevel++;
+                    message.reply({ embeds: [new EmbedBuilder().setTitle('Niveau superieur').setDescription(`Felicitation ${message.author} ! Tu es passe au niveau **${newLevel}**.`).setColor(CONFIG.colors.success)] }).catch(() => {});
+                }
+                db.updateUserXP(message.author.id, newXP, newTotalXP, newLevel, now);
+            }
+
+            // Commandes préfixées
+            if (message.content.startsWith('!')) {
+                const args = message.content.slice(1).trim().split(/ +/);
+                const cmdName = args.shift().toLowerCase();
+                const cmd = db.getCommand(cmdName);
+                if (cmd) await message.reply(cmd.response).catch(() => {});
+            }
+
+            // Système de tags
+            if (message.content.toLowerCase().startsWith('!tag ')) {
+                const tagName = message.content.slice(5).trim().toLowerCase();
+                const tag = db.getTag(tagName);
+                if (tag) {
+                    db.incrementTagUses(tagName);
+                    await message.reply(tag.content).catch(() => {});
+                }
+            }
+        });
+
+        this.client.on('interactionCreate', async (interaction) => {
+            if (interaction.isChatInputCommand()) {
+                await this.handleCommand(interaction);
+            } else if (interaction.isButton() || interaction.isModalSubmit()) {
+                await this.handleComponent(interaction);
+            }
+        });
+
+        // Arrêt gracieux
+        process.on('SIGINT', () => {
+            Logger.info('Arret du bot en cours...');
+            this.client.destroy();
+            process.exit(0);
+        });
+    }
+
+    async handleCommand(interaction) {
+        const command = this.commands.get(interaction.commandName);
+        if (!command) return;
+
+        try {
+            // Gestion des cooldowns
+            if (command.cooldown) {
+                if (!this.cooldowns.has(command.data.name)) this.cooldowns.set(command.data.name, new Collection());
+                const now = Date.now();
+                const timestamps = this.cooldowns.get(command.data.name);
+                const cooldownAmount = (command.cooldown || 3) * 1000;
+
+                if (timestamps.has(interaction.user.id)) {
+                    const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
+                    if (now < expirationTime) {
+                        const timeLeft = (expirationTime - now) / 1000;
+                        return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Cooldown').setDescription(`Veuillez attendre ${timeLeft.toFixed(1)} secondes.`).setColor(CONFIG.colors.warning)], ephemeral: true });
+                    }
+                }
+                timestamps.set(interaction.user.id, now);
+                setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
+            }
+
+            await command.execute(interaction, this.client, db);
+        } catch (error) {
+            Logger.error(`Erreur commande ${interaction.commandName}: ${error.message}`);
+            const reply = { embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Une erreur interne est survenue.').setColor(CONFIG.colors.danger)], ephemeral: true };
+            if (interaction.replied || interaction.deferred) {
+                await interaction.followUp(reply);
+            } else {
+                await interaction.reply(reply);
+            }
         }
     }
 
-    if (message.content.toLowerCase().startsWith('!tag ')) {
-        const tagName = message.content.slice(5).trim().toLowerCase();
-        const tag = queries.tag.get(tagName);
-        if (tag) {
-            queries.tag.incrementUses(tagName);
-            await message.reply(tag.content).catch(() => {});
+    async handleComponent(interaction) {
+        try {
+            if (interaction.isButton()) {
+                if (interaction.customId === 'close_ticket') {
+                    if (!interaction.channel.name.startsWith('ticket-')) {
+                        return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Cette commande ne fonctionne que dans un ticket.').setColor(CONFIG.colors.danger)], ephemeral: true });
+                    }
+                    db.closeTicket(interaction.channel.id);
+                    await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Fermeture').setDescription('Le ticket sera ferme dans 5 secondes...').setColor(CONFIG.colors.warning)], ephemeral: true });
+                    setTimeout(async () => {
+                        await interaction.channel.delete();
+                        await Logger.discord('Ticket ferme', `Le ticket a ete ferme par **${interaction.user.tag}**.`, CONFIG.colors.warning, [], interaction.user.displayAvatarURL());
+                    }, 5000);
+                }
+            } else if (interaction.isModalSubmit()) {
+                if (interaction.customId === 'create_ticket_modal') {
+                    const reason = interaction.fields.getTextInputValue('ticket_reason');
+                    const guild = interaction.guild;
+                    const ticketChannel = await guild.channels.create({
+                        name: `ticket-${interaction.user.username.toLowerCase()}`,
+                        type: ChannelType.GuildText,
+                        permissionOverwrites: [
+                            { id: guild.id, deny: [PermissionFlagsBits.ViewChannel] },
+                            { id: interaction.user.id, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory] }
+                        ]
+                    });
+                    
+                    db.createTicket(ticketChannel.id, interaction.user.id);
+                    
+                    await ticketChannel.send({ 
+                        content: `${interaction.user}`, 
+                        embeds: [new EmbedBuilder().setTitle('Nouveau ticket').setDescription(`**Raison :** ${reason}\n\nUn membre du staff va prendre en charge ta demande.`).setColor(CONFIG.colors.primary).setTimestamp()] 
+                    });
+                    
+                    await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Succes').setDescription(`Ticket cree : ${ticketChannel}`).setColor(CONFIG.colors.success)], ephemeral: true });
+                }
+            }
+        } catch (error) {
+            Logger.error(`Erreur composant: ${error.message}`);
         }
     }
-});
 
-// ==========================================
-// 8. COMMANDES SLASH
-// ==========================================
-const commands = [
-    new SlashCommandBuilder().setName('ping').setDescription('Verifie la latence du bot'),
-    new SlashCommandBuilder().setName('help').setDescription('Affiche la liste des commandes'),
-    new SlashCommandBuilder().setName('invite').setDescription('Obtenir le lien d\'invitation du bot'),
-    new SlashCommandBuilder().setName('rank').setDescription('Voir ton rang et ton experience')
-        .addUserOption(o => o.setName('utilisateur').setDescription('L\'utilisateur')),
-    new SlashCommandBuilder().setName('leaderboard').setDescription('Voir le classement de l\'experience'),
-    new SlashCommandBuilder().setName('balance').setDescription('Voir ton solde')
-        .addUserOption(o => o.setName('utilisateur').setDescription('L\'utilisateur')),
-    new SlashCommandBuilder().setName('daily').setDescription('Reclamer ta recompense quotidienne'),
-    new SlashCommandBuilder().setName('give').setDescription('Donner des pieces a quelqu\'un')
-        .addUserOption(o => o.setName('utilisateur').setDescription('L\'utilisateur').setRequired(true))
-        .addIntegerOption(o => o.setName('montant').setDescription('Montant').setRequired(true)),
-    new SlashCommandBuilder().setName('warn').setDescription('Avertir un membre')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
-        .addUserOption(o => o.setName('membre').setDescription('Le membre').setRequired(true))
-        .addStringOption(o => o.setName('raison').setDescription('Raison').setRequired(true)),
-    new SlashCommandBuilder().setName('warnings').setDescription('Voir les avertissements d\'un utilisateur')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
-        .addUserOption(o => o.setName('utilisateur').setDescription('L\'utilisateur').setRequired(true)),
-    new SlashCommandBuilder().setName('clear').setDescription('Supprime des messages')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
-        .addIntegerOption(o => o.setName('nombre').setDescription('Nombre (max 100)').setRequired(true).setMinValue(1).setMaxValue(100)),
-    new SlashCommandBuilder().setName('ticket').setDescription('Ouvre un ticket de support'),
-    new SlashCommandBuilder().setName('close').setDescription('Ferme le ticket actuel')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
-    new SlashCommandBuilder().setName('tagadd').setDescription('Creer une etiquette')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-        .addStringOption(o => o.setName('nom').setDescription('Nom').setRequired(true))
-        .addStringOption(o => o.setName('contenu').setDescription('Contenu').setRequired(true)),
-    new SlashCommandBuilder().setName('tagdelete').setDescription('Supprimer une etiquette')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-        .addStringOption(o => o.setName('nom').setDescription('Nom').setRequired(true)),
-    new SlashCommandBuilder().setName('ccadd').setDescription('Creer une commande personnalisee')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-        .addStringOption(o => o.setName('nom').setDescription('Nom (sans !)').setRequired(true))
-        .addStringOption(o => o.setName('reponse').setDescription('Reponse').setRequired(true)),
-    new SlashCommandBuilder().setName('ccdelete').setDescription('Supprimer une commande personnalisee')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-        .addStringOption(o => o.setName('nom').setDescription('Nom').setRequired(true)),
-    new SlashCommandBuilder().setName('userinfo').setDescription('Affiche les informations d\'un utilisateur')
-        .addUserOption(o => o.setName('membre').setDescription('Le membre')),
-    new SlashCommandBuilder().setName('serverinfo').setDescription('Affiche les informations du serveur'),
-    new SlashCommandBuilder().setName('scan').setDescription('Analyse complete du serveur en 5 fichiers JSON')
-];
+    async start() {
+        try {
+            await db.init();
+            this.registerCommands();
+            await this.client.login(process.env.DISCORD_TOKEN);
+            Logger.success('Connexion Discord etablie');
+        } catch (error) {
+            Logger.error(`Echec critique au demarrage: ${error.message}`);
+            process.exit(1);
+        }
+    }
 
-const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+    registerCommands() {
+        const cmds = [
+            new SlashCommandBuilder().setName('ping').setDescription('Verifie la latence du bot'),
+            new SlashCommandBuilder().setName('help').setDescription('Affiche la liste des commandes'),
+            new SlashCommandBuilder().setName('rank').setDescription('Voir ton rang et ton experience').addUserOption(o => o.setName('utilisateur').setDescription('L\'utilisateur')),
+            new SlashCommandBuilder().setName('leaderboard').setDescription('Voir le classement de l\'experience'),
+            new SlashCommandBuilder().setName('balance').setDescription('Voir ton solde').addUserOption(o => o.setName('utilisateur').setDescription('L\'utilisateur')),
+            new SlashCommandBuilder().setName('daily').setDescription('Reclamer ta recompense quotidienne'),
+            new SlashCommandBuilder().setName('give').setDescription('Donner des pieces a quelqu\'un').addUserOption(o => o.setName('utilisateur').setDescription('L\'utilisateur').setRequired(true)).addIntegerOption(o => o.setName('montant').setDescription('Montant').setRequired(true)),
+            new SlashCommandBuilder().setName('warn').setDescription('Avertir un membre').setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers).addUserOption(o => o.setName('membre').setDescription('Le membre').setRequired(true)).addStringOption(o => o.setName('raison').setDescription('Raison').setRequired(true)),
+            new SlashCommandBuilder().setName('clear').setDescription('Supprime des messages').setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages).addIntegerOption(o => o.setName('nombre').setDescription('Nombre (max 100)').setRequired(true).setMinValue(1).setMaxValue(100)),
+            new SlashCommandBuilder().setName('ticket').setDescription('Ouvre un ticket de support'),
+            new SlashCommandBuilder().setName('tagadd').setDescription('Creer une etiquette').setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild).addStringOption(o => o.setName('nom').setDescription('Nom').setRequired(true)).addStringOption(o => o.setName('contenu').setDescription('Contenu').setRequired(true)),
+            new SlashCommandBuilder().setName('tagdelete').setDescription('Supprimer une etiquette').setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild).addStringOption(o => o.setName('nom').setDescription('Nom').setRequired(true)),
+            new SlashCommandBuilder().setName('ccadd').setDescription('Creer une commande personnalisee').setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild).addStringOption(o => o.setName('nom').setDescription('Nom (sans !)').setRequired(true)).addStringOption(o => o.setName('reponse').setDescription('Reponse').setRequired(true)),
+            new SlashCommandBuilder().setName('ccdelete').setDescription('Supprimer une commande personnalisee').setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild).addStringOption(o => o.setName('nom').setDescription('Nom').setRequired(true)),
+            new SlashCommandBuilder().setName('userinfo').setDescription('Affiche les informations d\'un utilisateur').addUserOption(o => o.setName('membre').setDescription('Le membre')),
+            new SlashCommandBuilder().setName('serverinfo').setDescription('Affiche les informations du serveur'),
+            new SlashCommandBuilder().setName('scan').setDescription('Analyse complete du serveur en 5 fichiers JSON')
+        ];
 
-client.on('interactionCreate', async (interaction) => {
-    if (!interaction.isChatInputCommand()) return;
-    const { commandName, options } = interaction;
+        cmds.forEach(cmd => this.commands.set(cmd.name, {
+            data: cmd,
+            cooldown: 3,
+            execute: async (interaction, client, database) => {
+                await this.executeCommandLogic(interaction.commandName, interaction, client, database);
+            }
+        }));
+    }
 
-    try {
+    async executeCommandLogic(commandName, interaction, client, database) {
+        const { options, user, guild, member } = interaction;
+
         switch (commandName) {
             case 'ping':
-                await interaction.reply({
-                    embeds: [new EmbedBuilder().setTitle('Latence').setDescription(`Latence API : **${client.ws.ping}ms**`).setColor(CONFIG.colors.primary)]
-                });
+                await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Latence').setDescription(`Latence API : **${client.ws.ping}ms**`).setColor(CONFIG.colors.primary)] });
                 break;
 
             case 'help':
                 await interaction.reply({
-                    embeds: [new EmbedBuilder()
-                        .setTitle('Liste des commandes')
-                        .setDescription('Voici la liste complete des commandes disponibles.')
-                        .setColor(CONFIG.colors.primary)
+                    embeds: [new EmbedBuilder().setTitle('Centre de commandes').setDescription('Liste complete des fonctionnalites disponibles.').setColor(CONFIG.colors.primary)
                         .addFields(
-                            { name: 'Informations', value: '`/ping`, `/help`, `/invite`, `/userinfo`, `/serverinfo`', inline: false },
-                            { name: 'Niveaux et economie', value: '`/rank`, `/leaderboard`, `/balance`, `/daily`, `/give`', inline: false },
-                            { name: 'Moderation', value: '`/warn`, `/warnings`, `/clear`', inline: false },
-                            { name: 'Support', value: '`/ticket`, `/close`', inline: false },
-                            { name: 'Utilitaires', value: '`/tagadd`, `/tagdelete`, `/ccadd`, `/ccdelete`', inline: false }
-                        )
-                        .setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon })
-                        .setTimestamp()
+                            { name: 'Informations', value: '`/ping`, `/help`, `/userinfo`, `/serverinfo`', inline: false },
+                            { name: 'Progression', value: '`/rank`, `/leaderboard`, `/balance`, `/daily`, `/give`', inline: false },
+                            { name: 'Moderation', value: '`/warn`, `/clear`', inline: false },
+                            { name: 'Support & Utilitaires', value: '`/ticket`, `/tagadd`, `/tagdelete`, `/ccadd`, `/ccdelete`', inline: false }
+                        ).setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon }).setTimestamp()
                     ], ephemeral: true
                 });
                 break;
 
             case 'rank': {
-                const target = options.getUser('utilisateur') || interaction.user;
-                const user = queries.user.get(target.id);
-                if (!user) {
-                    return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Utilisateur non trouve.').setColor(CONFIG.colors.danger)], ephemeral: true });
-                }
-                const xpNeeded = calculateXP(user.level);
+                const target = options.getUser('utilisateur') || user;
+                const userData = database.getUser(target.id);
+                if (!userData) return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Utilisateur non trouve.').setColor(CONFIG.colors.danger)], ephemeral: true });
+                
+                const xpNeeded = userData.level * 100 + (userData.level - 1) * 50;
                 await interaction.reply({
-                    embeds: [new EmbedBuilder()
-                        .setTitle(`Rang de ${target.username}`)
-                        .setDescription(`**Niveau :** ${user.level}\n**XP :** ${user.xp}/${xpNeeded}\n**XP total :** ${user.total_xp}`)
-                        .setColor(CONFIG.colors.primary)
-                        .setThumbnail(target.displayAvatarURL())
-                        .setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon })
-                        .setTimestamp()
-                    ]
+                    embeds: [new EmbedBuilder().setTitle(`Rang de ${target.username}`).setDescription(`**Niveau :** ${userData.level}\n**XP :** ${userData.xp}/${xpNeeded}\n**XP total :** ${userData.total_xp}`).setColor(CONFIG.colors.primary).setThumbnail(target.displayAvatarURL()).setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon }).setTimestamp()]
                 });
                 break;
             }
 
             case 'balance': {
-                const target = options.getUser('utilisateur') || interaction.user;
-                const user = queries.user.get(target.id);
-                if (!user) {
-                    return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Utilisateur non trouve.').setColor(CONFIG.colors.danger)], ephemeral: true });
-                }
+                const target = options.getUser('utilisateur') || user;
+                const userData = database.getUser(target.id);
+                if (!userData) return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Utilisateur non trouve.').setColor(CONFIG.colors.danger)], ephemeral: true });
+                
                 await interaction.reply({
-                    embeds: [new EmbedBuilder()
-                        .setTitle(`Solde de ${target.username}`)
-                        .setDescription(`**Pieces :** ${user.coins}\n**Banque :** ${user.bank}\n**Total :** ${user.coins + user.bank}`)
-                        .setColor(CONFIG.colors.primary)
-                        .setThumbnail(target.displayAvatarURL())
-                        .setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon })
-                        .setTimestamp()
-                    ]
+                    embeds: [new EmbedBuilder().setTitle(`Solde de ${target.username}`).setDescription(`**Pieces :** ${userData.coins}\n**Banque :** ${userData.bank}\n**Total :** ${userData.coins + userData.bank}`).setColor(CONFIG.colors.primary).setThumbnail(target.displayAvatarURL()).setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon }).setTimestamp()]
                 });
                 break;
             }
 
             case 'daily': {
-                const user = queries.user.get(interaction.user.id);
+                const userData = database.getUser(user.id);
                 const now = Date.now();
-                if (user.last_daily && now - user.last_daily < 86400000) {
-                    const remaining = Math.ceil((86400000 - (now - user.last_daily)) / 3600000);
+                if (userData.last_daily && now - userData.last_daily < CONFIG.limits.dailyCooldown) {
+                    const remaining = Math.ceil((CONFIG.limits.dailyCooldown - (now - userData.last_daily)) / 3600000);
                     return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription(`Reviens dans **${remaining} heure(s)**.`).setColor(CONFIG.colors.danger)], ephemeral: true });
                 }
                 const reward = Math.floor(Math.random() * 100) + 50;
-                queries.user.updateCoins(user.coins + reward, interaction.user.id);
-                db.users[interaction.user.id].last_daily = now;
-                saveDB();
+                database.updateCoins(user.id, userData.coins + reward);
+                database.data.users[user.id].last_daily = now;
+                database.scheduleSave();
                 
-                await interaction.reply({
-                    embeds: [new EmbedBuilder().setTitle('Recompense quotidienne').setDescription(`Tu as recu **${reward} pieces** !`).setColor(CONFIG.colors.success).setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon }).setTimestamp()]
-                });
+                await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Recompense quotidienne').setDescription(`Tu as recu **${reward} pieces** !`).setColor(CONFIG.colors.success).setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon }).setTimestamp()] });
                 break;
             }
 
             case 'give': {
                 const target = options.getUser('utilisateur');
                 const amount = options.getInteger('montant');
-                if (target.id === interaction.user.id) {
-                    return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Tu ne peux pas te donner des pieces a toi-meme.').setColor(CONFIG.colors.danger)], ephemeral: true });
-                }
-                const sender = queries.user.get(interaction.user.id);
-                if (!sender || sender.coins < amount) {
-                    return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Tu n\'as pas assez de pieces.').setColor(CONFIG.colors.danger)], ephemeral: true });
-                }
-                if (!queries.user.get(target.id)) queries.user.create(target.id, target.tag);
+                if (target.id === user.id) return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Action interdite sur soi-meme.').setColor(CONFIG.colors.danger)], ephemeral: true });
                 
-                queries.user.updateCoins(sender.coins - amount, interaction.user.id);
-                const receiver = queries.user.get(target.id);
-                queries.user.updateCoins(receiver.coins + amount, target.id);
+                const sender = database.getUser(user.id);
+                if (!sender || sender.coins < amount) return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Fonds insuffisants.').setColor(CONFIG.colors.danger)], ephemeral: true });
                 
-                await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Transfert effectue').setDescription(`Tu as donne **${amount} pieces** a ${target}.`).setColor(CONFIG.colors.success).setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon }).setTimestamp()] });
+                if (!database.getUser(target.id)) database.createUser(target.id, target.tag);
+                const receiver = database.getUser(target.id);
+                
+                database.updateCoins(user.id, sender.coins - amount);
+                database.updateCoins(target.id, receiver.coins + amount);
+                
+                await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Transfert effectue').setDescription(`**${amount} pieces** envoyees a ${target}.`).setColor(CONFIG.colors.success).setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon }).setTimestamp()] });
                 break;
             }
 
             case 'warn': {
                 const target = options.getUser('membre');
                 const reason = options.getString('raison');
-                if (!queries.user.get(target.id)) queries.user.create(target.id, target.tag);
+                if (!database.getUser(target.id)) database.createUser(target.id, target.tag);
                 
-                queries.warning.create(target.id, interaction.user.id, reason);
-                queries.user.addWarning(target.id);
+                database.data.warnings.push({ user_id: target.id, moderator_id: user.id, reason, created_at: new Date().toISOString() });
+                database.addWarning(target.id);
                 
-                await Logger.log('Avertissement', `**${interaction.user.tag}** a averti **${target.tag}**\nRaison: ${reason}`, CONFIG.colors.warning, [], target.displayAvatarURL());
+                await Logger.discord('Avertissement', `**${user.tag}** a averti **${target.tag}**\nRaison: ${reason}`, CONFIG.colors.warning, [], target.displayAvatarURL());
                 
                 try {
-                    await target.send({ embeds: [new EmbedBuilder().setTitle('Avertissement').setDescription(`Tu as recu un avertissement sur **${interaction.guild.name}**.\nRaison : ${reason}`).setColor(CONFIG.colors.warning).setTimestamp()] });
+                    await target.send({ embeds: [new EmbedBuilder().setTitle('Avertissement').setDescription(`Tu as recu un avertissement sur **${guild.name}**.\nRaison : ${reason}`).setColor(CONFIG.colors.warning).setTimestamp()] });
                 } catch (e) {}
                 
-                const updated = queries.user.get(target.id);
+                const updated = database.getUser(target.id);
                 await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Succes').setDescription(`${target} a ete averti. (Total: ${updated.warnings})`).setColor(CONFIG.colors.success)], ephemeral: true });
-                break;
-            }
-
-            case 'warnings': {
-                const target = options.getUser('utilisateur');
-                const warnings = queries.warning.getByUser(target.id);
-                if (warnings.length === 0) {
-                    return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Avertissements').setDescription('Aucun avertissement pour cet utilisateur.').setColor(CONFIG.colors.info)], ephemeral: true });
-                }
-                const desc = warnings.map(w => `**${w.reason}** - <t:${Math.floor(new Date(w.created_at).getTime() / 1000)}:R>\nPar <@${w.moderator_id}>`).join('\n\n');
-                await interaction.reply({ embeds: [new EmbedBuilder().setTitle(`Avertissements de ${target.username}`).setDescription(desc).setColor(CONFIG.colors.warning).setThumbnail(target.displayAvatarURL()).setTimestamp()], ephemeral: true });
                 break;
             }
 
@@ -551,36 +544,15 @@ client.on('interactionCreate', async (interaction) => {
                 const amount = options.getInteger('nombre');
                 await interaction.channel.bulkDelete(amount, true);
                 await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Succes').setDescription(`${amount} messages supprimes.`).setColor(CONFIG.colors.success)], ephemeral: true });
-                await Logger.log('Messages supprimes', `**${interaction.user.tag}** a supprime **${amount}** messages.`, CONFIG.colors.warning, [], interaction.user.displayAvatarURL());
+                await Logger.discord('Messages supprimes', `**${user.tag}** a supprime **${amount}** messages.`, CONFIG.colors.warning, [], user.displayAvatarURL());
                 break;
             }
 
             case 'ticket': {
-                const existing = interaction.guild.channels.cache.find(c => c.name === `ticket-${interaction.user.username.toLowerCase()}`);
-                if (existing) return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Tu as deja un ticket ouvert.').setColor(CONFIG.colors.danger)], ephemeral: true });
-
-                const ticketChannel = await interaction.guild.channels.create({
-                    name: `ticket-${interaction.user.username.toLowerCase()}`,
-                    type: ChannelType.GuildText,
-                    permissionOverwrites: [
-                        { id: interaction.guild.id, deny: [PermissionFlagsBits.ViewChannel] },
-                        { id: interaction.user.id, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory] }
-                    ]
-                });
-                queries.ticket.create(ticketChannel.id, interaction.user.id);
-                await ticketChannel.send({ content: `${interaction.user}`, embeds: [new EmbedBuilder().setTitle('Nouveau ticket').setDescription('Un membre du staff va prendre en charge ta demande.').setColor(CONFIG.colors.primary).setTimestamp()] });
-                await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Succes').setDescription(`Ticket cree : ${ticketChannel}`).setColor(CONFIG.colors.success)], ephemeral: true });
-                break;
-            }
-
-            case 'close': {
-                if (!interaction.channel.name.startsWith('ticket-')) return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Cette commande ne fonctionne que dans un ticket.').setColor(CONFIG.colors.danger)], ephemeral: true });
-                queries.ticket.close('closed', interaction.channel.id);
-                await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Fermeture').setDescription('Le ticket sera ferme dans 5 secondes...').setColor(CONFIG.colors.warning)], ephemeral: true });
-                setTimeout(async () => {
-                    await interaction.channel.delete();
-                    await Logger.log('Ticket ferme', `Le ticket a ete ferme par **${interaction.user.tag}**.`, CONFIG.colors.warning, [], interaction.user.displayAvatarURL());
-                }, 5000);
+                const modal = new ModalBuilder().setCustomId('create_ticket_modal').setTitle('Creer un ticket');
+                const reasonInput = new TextInputBuilder().setCustomId('ticket_reason').setLabel('Raison de la demande').setStyle(TextInputStyle.Paragraph).setRequired(true);
+                modal.addComponents(new ActionRowBuilder().addComponents(reasonInput));
+                await interaction.showModal(modal);
                 break;
             }
 
@@ -588,7 +560,7 @@ client.on('interactionCreate', async (interaction) => {
                 const name = options.getString('nom');
                 const content = options.getString('contenu');
                 try {
-                    queries.tag.create(name, content, interaction.user.id);
+                    database.setTag(name, content, user.id);
                     await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Succes').setDescription(`L'etiquette **${name}** a ete creee.`).setColor(CONFIG.colors.success)], ephemeral: true });
                 } catch (e) {
                     await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Cette etiquette existe deja.').setColor(CONFIG.colors.danger)], ephemeral: true });
@@ -597,7 +569,7 @@ client.on('interactionCreate', async (interaction) => {
             }
 
             case 'tagdelete': {
-                queries.tag.delete(options.getString('nom'));
+                database.deleteTag(options.getString('nom'));
                 await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Succes').setDescription('Etiquette supprimee.').setColor(CONFIG.colors.success)], ephemeral: true });
                 break;
             }
@@ -606,7 +578,7 @@ client.on('interactionCreate', async (interaction) => {
                 const name = options.getString('nom');
                 const response = options.getString('reponse');
                 try {
-                    queries.command.create(name, response, interaction.user.id);
+                    database.setCommand(name, response, user.id);
                     await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Succes').setDescription(`La commande **!${name}** a ete creee.`).setColor(CONFIG.colors.success)], ephemeral: true });
                 } catch (e) {
                     await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Cette commande existe deja.').setColor(CONFIG.colors.danger)], ephemeral: true });
@@ -615,61 +587,38 @@ client.on('interactionCreate', async (interaction) => {
             }
 
             case 'ccdelete': {
-                queries.command.delete(options.getString('nom'));
+                database.deleteCommand(options.getString('nom'));
                 await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Succes').setDescription('Commande supprimee.').setColor(CONFIG.colors.success)], ephemeral: true });
                 break;
             }
 
             case 'userinfo': {
-                const member = options.getMember('membre') || interaction.member;
-                const roles = member.roles.cache.filter(r => r.id !== member.guild.id).map(r => r.name).join(', ') || 'Aucun';
+                const target = options.getMember('membre') || member;
+                const roles = target.roles.cache.filter(r => r.id !== guild.id).map(r => r.name).join(', ') || 'Aucun';
                 await interaction.reply({
-                    embeds: [new EmbedBuilder()
-                        .setTitle(`Informations de ${member.user.username}`)
-                        .setColor(CONFIG.colors.primary)
-                        .setThumbnail(member.user.displayAvatarURL())
-                        .addFields(
-                            { name: 'Pseudo', value: member.displayName, inline: true },
-                            { name: 'Identifiant', value: member.id, inline: true },
-                            { name: 'Compte cree', value: `<t:${Math.floor(member.user.createdTimestamp / 1000)}:D>`, inline: true },
-                            { name: 'Roles', value: roles.substring(0, 1000), inline: false }
-                        )
-                        .setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon })
-                        .setTimestamp()
-                    ]
+                    embeds: [new EmbedBuilder().setTitle(`Informations de ${target.user.username}`).setColor(CONFIG.colors.primary).setThumbnail(target.user.displayAvatarURL())
+                        .addFields({ name: 'Pseudo', value: target.displayName, inline: true }, { name: 'Identifiant', value: target.id, inline: true }, { name: 'Compte cree', value: `<t:${Math.floor(target.user.createdTimestamp / 1000)}:D>`, inline: true }, { name: 'Roles', value: roles.substring(0, 1000), inline: false })
+                        .setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon }).setTimestamp()]
                 });
                 break;
             }
 
             case 'serverinfo': {
-                const guild = interaction.guild;
                 await interaction.reply({
-                    embeds: [new EmbedBuilder()
-                        .setTitle(`Informations du serveur`)
-                        .setDescription(`Details de **${guild.name}**.`)
-                        .setColor(CONFIG.colors.primary)
-                        .setThumbnail(guild.iconURL())
-                        .addFields(
-                            { name: 'Proprietaire', value: `<@${guild.ownerId}>`, inline: true },
-                            { name: 'Membres', value: `${guild.memberCount}`, inline: true },
-                            { name: 'Salons', value: `${guild.channels.cache.size}`, inline: true },
-                            { name: 'Roles', value: `${guild.roles.cache.size}`, inline: true }
-                        )
-                        .setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon })
-                        .setTimestamp()
-                    ]
+                    embeds: [new EmbedBuilder().setTitle(`Informations du serveur`).setDescription(`Details de **${guild.name}**.`).setColor(CONFIG.colors.primary).setThumbnail(guild.iconURL())
+                        .addFields({ name: 'Proprietaire', value: `<@${guild.ownerId}>`, inline: true }, { name: 'Membres', value: `${guild.memberCount}`, inline: true }, { name: 'Salons', value: `${guild.channels.cache.size}`, inline: true }, { name: 'Roles', value: `${guild.roles.cache.size}`, inline: true })
+                        .setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon }).setTimestamp()]
                 });
                 break;
             }
 
             case 'scan': {
                 await interaction.deferReply({ ephemeral: true });
-                const guild = interaction.guild;
                 const items = [];
                 items.push({ _type: 'server_info', id: guild.id, name: guild.name, ownerId: guild.ownerId, memberCount: guild.memberCount });
                 guild.channels.cache.forEach(ch => items.push({ _type: 'channel', id: ch.id, name: ch.name, type: ChannelType[ch.type] }));
                 guild.roles.cache.forEach(role => items.push({ _type: 'role', id: role.id, name: role.name, color: role.hexColor }));
-                guild.members.cache.forEach(member => items.push({ _type: 'member', id: member.id, username: member.user.username, displayName: member.displayName }));
+                guild.members.cache.forEach(m => items.push({ _type: 'member', id: m.id, username: m.user.username, displayName: m.displayName }));
                 
                 items.sort((a, b) => JSON.stringify(b).length - JSON.stringify(a).length);
                 const buckets = Array.from({ length: 5 }, () => ({ items: [], size: 0 }));
@@ -690,53 +639,15 @@ client.on('interactionCreate', async (interaction) => {
                 await interaction.followUp({ embeds: [new EmbedBuilder().setTitle('Analyse terminee').setDescription('L\'analyse a genere **5 fichiers JSON** contenant toutes les informations du serveur.').setColor(CONFIG.colors.success).setTimestamp()], files: files, ephemeral: true });
                 break;
             }
-
-            default:
-                await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Commande non reconnue.').setColor(CONFIG.colors.danger)], ephemeral: true });
         }
-    } catch (error) {
-        Logger.error(`Erreur commande ${commandName}: ${error.message}`);
-        const reply = { embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Une erreur est survenue lors de l\'execution de cette commande.').setColor(CONFIG.colors.danger)], ephemeral: true };
-        if (interaction.replied || interaction.deferred) {
-            await interaction.followUp(reply);
-        } else {
-            await interaction.reply(reply);
-        }
-        console.error(error);
-    }
-});
-
-// ==========================================
-// 9. DEMARRAGE SECURISE (ORDRE CORRIGE)
-// ==========================================
-async function start() {
-    try {
-        // 1. D'abord, on se connecte a Discord (sinon client.user est null)
-        await client.login(process.env.DISCORD_TOKEN);
-        Logger.success('Connexion Discord etablie');
-
-        // 2. Ensuite, on enregistre les commandes (maintenant que client.user existe)
-        await rest.put(Routes.applicationGuildCommands(client.user.id, CONFIG.server.id), { body: commands.map(cmd => cmd.toJSON()) });
-        Logger.success('Commandes enregistrees avec succes');
-
-        // 3. Enfin, on lance le serveur API
-        app.listen(PORT, HOST, () => {
-            Logger.success(`Serveur API actif sur http://${HOST}:${PORT}`);
-        });
-    } catch (error) {
-        Logger.error(`Erreur de demarrage: ${error.message}`);
-        process.exit(1);
     }
 }
 
-process.on('uncaughtException', (error) => {
-    Logger.error(`Exception non capturee: ${error.message}`);
-    console.error(error);
+// ==========================================
+// 5. INITIALISATION
+// ==========================================
+const bot = new VQCBot();
+bot.start().catch(err => {
+    Logger.error(`Erreur fatale: ${err.message}`);
+    process.exit(1);
 });
-
-process.on('unhandledRejection', (reason) => {
-    Logger.error(`Promesse rejetee non geree: ${reason}`);
-    console.error(reason);
-});
-
-start();
