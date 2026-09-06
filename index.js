@@ -5,8 +5,7 @@ const express = require('express');
 const axios = require('axios');
 const { 
     Client, GatewayIntentBits, EmbedBuilder, SlashCommandBuilder, 
-    REST, Routes, ChannelType, PermissionFlagsBits, 
-    ActionRowBuilder, ButtonBuilder, ButtonStyle, Collection, ActivityType
+    REST, Routes, ChannelType, PermissionFlagsBits, Collection, ActivityType
 } = require('discord.js');
 
 // ==========================================
@@ -31,107 +30,134 @@ const CONFIG = {
 };
 
 // ==========================================
-// 2. INITIALISATION ROBUSTE DE LA BASE DE DONNEES
+// 2. BASE DE DONNEES JSON (100% COMPATIBLE CANNER)
 // ==========================================
-let db;
-try {
-    const Database = require('better-sqlite3');
-    // Essayer d'abord le dossier local
-    const localDbPath = path.join(process.cwd(), 'vqc_database.sqlite');
-    db = new Database(localDbPath);
-    console.log('[INFO] Base de donnees locale initialisee avec succes.');
-} catch (localErr) {
-    console.warn('[WARN] Impossible d ecrire dans le dossier local. Utilisation du dossier /tmp/ (compatible Canner).');
+const DB_FILE = path.join(__dirname, 'vqc_data.json');
+
+let db = {
+    users: {},
+    warnings: [],
+    tickets: {},
+    commands: {},
+    tags: {}
+};
+
+function loadDB() {
     try {
-        const Database = require('better-sqlite3');
-        // Fallback vers /tmp/ qui est toujours accessible en ecriture sur Canner/Render
-        const tmpDbPath = path.join('/tmp', 'vqc_database.sqlite');
-        db = new Database(tmpDbPath);
-        console.log('[INFO] Base de donnees /tmp initialisee avec succes.');
-    } catch (tmpErr) {
-        console.error('[ERROR] Echec total de l initialisation de la base de donnees. Utilisation de la memoire vive.');
-        const Database = require('better-sqlite3');
-        db = new Database(':memory:');
+        if (fs.existsSync(DB_FILE)) {
+            db = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+        } else {
+            saveDB();
+        }
+    } catch (e) {
+        console.error('[DB] Erreur de chargement:', e.message);
     }
 }
 
-// Configuration de la base de donnees pour la performance et la securite
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+function saveDB() {
+    try {
+        fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf8');
+    } catch (e) {
+        console.error('[DB] Erreur de sauvegarde:', e.message);
+    }
+}
 
-db.exec(`
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        discord_id TEXT UNIQUE NOT NULL,
-        username TEXT NOT NULL,
-        level INTEGER DEFAULT 1,
-        xp INTEGER DEFAULT 0,
-        total_xp INTEGER DEFAULT 0,
-        coins INTEGER DEFAULT 100,
-        bank INTEGER DEFAULT 0,
-        warnings INTEGER DEFAULT 0,
-        last_xp INTEGER DEFAULT 0,
-        last_daily INTEGER DEFAULT 0,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP
-    );
-    CREATE TABLE IF NOT EXISTS warnings (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id TEXT NOT NULL,
-        moderator_id TEXT NOT NULL,
-        reason TEXT NOT NULL,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP
-    );
-    CREATE TABLE IF NOT EXISTS tickets (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        channel_id TEXT UNIQUE NOT NULL,
-        user_id TEXT NOT NULL,
-        status TEXT DEFAULT 'open',
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP
-    );
-    CREATE TABLE IF NOT EXISTS custom_commands (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT UNIQUE NOT NULL,
-        response TEXT NOT NULL,
-        created_by TEXT NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS tags (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT UNIQUE NOT NULL,
-        content TEXT NOT NULL,
-        created_by TEXT NOT NULL,
-        uses INTEGER DEFAULT 0
-    );
-    CREATE INDEX IF NOT EXISTS idx_users_discord_id ON users(discord_id);
-`);
+// Initialisation au demarrage
+loadDB();
 
-// Requêtes préparées pour la performance
 const queries = {
     user: {
-        get: db.prepare('SELECT * FROM users WHERE discord_id = ?'),
-        create: db.prepare('INSERT INTO users (discord_id, username) VALUES (?, ?)'),
-        updateXP: db.prepare('UPDATE users SET xp = ?, total_xp = ?, level = ?, last_xp = ? WHERE discord_id = ?'),
-        updateCoins: db.prepare('UPDATE users SET coins = ? WHERE discord_id = ?'),
-        addWarning: db.prepare('UPDATE users SET warnings = warnings + 1 WHERE discord_id = ?'),
-        getTop: db.prepare('SELECT * FROM users ORDER BY total_xp DESC LIMIT ?')
+        get: (id) => db.users[id] || null,
+        create: (id, username) => {
+            db.users[id] = {
+                discord_id: id,
+                username,
+                level: 1,
+                xp: 0,
+                total_xp: 0,
+                coins: 100,
+                bank: 0,
+                warnings: 0,
+                last_xp: 0,
+                last_daily: 0
+            };
+            saveDB();
+        },
+        updateXP: (xp, total_xp, level, last_xp, id) => {
+            if (db.users[id]) {
+                db.users[id].xp = xp;
+                db.users[id].total_xp = total_xp;
+                db.users[id].level = level;
+                db.users[id].last_xp = last_xp;
+                saveDB();
+            }
+        },
+        updateCoins: (coins, id) => {
+            if (db.users[id]) {
+                db.users[id].coins = coins;
+                saveDB();
+            }
+        },
+        addWarning: (id) => {
+            if (db.users[id]) {
+                db.users[id].warnings = (db.users[id].warnings || 0) + 1;
+                saveDB();
+            }
+        },
+        getTop: (limit) => {
+            return Object.values(db.users)
+                .sort((a, b) => (b.total_xp || 0) - (a.total_xp || 0))
+                .slice(0, limit);
+        }
     },
     warning: {
-        create: db.prepare('INSERT INTO warnings (user_id, moderator_id, reason) VALUES (?, ?, ?)'),
-        getByUser: db.prepare('SELECT * FROM warnings WHERE user_id = ? ORDER BY created_at DESC')
+        create: (user_id, mod_id, reason) => {
+            db.warnings.push({ user_id, moderator_id: mod_id, reason, created_at: new Date().toISOString() });
+            saveDB();
+        },
+        getByUser: (user_id) => {
+            return (db.warnings || []).filter(w => w.user_id === user_id).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        }
     },
     ticket: {
-        create: db.prepare('INSERT INTO tickets (channel_id, user_id) VALUES (?, ?)'),
-        close: db.prepare('UPDATE tickets SET status = ? WHERE channel_id = ?')
+        create: (channel_id, user_id) => {
+            db.tickets[channel_id] = { channel_id, user_id, status: 'open', created_at: new Date().toISOString() };
+            saveDB();
+        },
+        close: (status, channel_id) => {
+            if (db.tickets[channel_id]) {
+                db.tickets[channel_id].status = status;
+                saveDB();
+            }
+        }
     },
     command: {
-        get: db.prepare('SELECT * FROM custom_commands WHERE name = ?'),
-        create: db.prepare('INSERT INTO custom_commands (name, response, created_by) VALUES (?, ?, ?)'),
-        delete: db.prepare('DELETE FROM custom_commands WHERE name = ?')
+        get: (name) => db.commands[name] || null,
+        create: (name, response, created_by) => {
+            db.commands[name] = { name, response, created_by };
+            saveDB();
+        },
+        delete: (name) => {
+            delete db.commands[name];
+            saveDB();
+        }
     },
     tag: {
-        get: db.prepare('SELECT * FROM tags WHERE name = ?'),
-        create: db.prepare('INSERT INTO tags (name, content, created_by) VALUES (?, ?, ?)'),
-        delete: db.prepare('DELETE FROM tags WHERE name = ?'),
-        incrementUses: db.prepare('UPDATE tags SET uses = uses + 1 WHERE name = ?')
+        get: (name) => db.tags[name] || null,
+        create: (name, content, created_by) => {
+            db.tags[name] = { name, content, created_by, uses: 0 };
+            saveDB();
+        },
+        delete: (name) => {
+            delete db.tags[name];
+            saveDB();
+        },
+        incrementUses: (name) => {
+            if (db.tags[name]) {
+                db.tags[name].uses = (db.tags[name].uses || 0) + 1;
+                saveDB();
+            }
+        }
     }
 };
 
@@ -146,7 +172,7 @@ const Logger = {
             .setColor(color)
             .setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon })
             .setTimestamp();
-        if (fields.length > 0) embed.addFields(fields);
+        if (fields && fields.length > 0) embed.addFields(fields);
         if (thumbnail) embed.setThumbnail(thumbnail);
 
         try {
@@ -227,7 +253,7 @@ app.get('/api/stats', (req, res) => {
 
 app.get('/api/leaderboard', verifyAPI, (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
-    const topUsers = queries.user.getTop.all(limit);
+    const topUsers = queries.user.getTop(limit);
     res.json({ leaderboard: topUsers });
 });
 
@@ -239,7 +265,7 @@ function calculateXP(level) {
 }
 
 function addXP(userId, amount) {
-    const user = queries.user.get.get(userId);
+    const user = queries.user.get(userId);
     if (!user) return null;
     const now = Date.now();
     if (now - user.last_xp < 60000) return null; // Cooldown de 60 secondes
@@ -253,7 +279,7 @@ function addXP(userId, amount) {
         newLevel++;
     }
 
-    queries.user.updateXP.run(newXP, newTotalXP, newLevel, now, userId);
+    queries.user.updateXP(newXP, newTotalXP, newLevel, now, userId);
     return { level: newLevel, leveledUp: newLevel > user.level };
 }
 
@@ -280,8 +306,8 @@ client.once('clientReady', async () => {
 
 client.on('guildMemberAdd', async (member) => {
     if (member.guild.id !== CONFIG.server.id) return;
-    if (!queries.user.get.get(member.id)) {
-        queries.user.create.run(member.id, member.user.tag);
+    if (!queries.user.get(member.id)) {
+        queries.user.create(member.id, member.user.tag);
     }
     await Logger.log(
         'Nouveau membre',
@@ -298,8 +324,8 @@ client.on('guildMemberAdd', async (member) => {
 client.on('messageCreate', async (message) => {
     if (message.author.bot || message.guild?.id !== CONFIG.server.id) return;
 
-    if (!queries.user.get.get(message.author.id)) {
-        queries.user.create.run(message.author.id, message.author.tag);
+    if (!queries.user.get(message.author.id)) {
+        queries.user.create(message.author.id, message.author.tag);
     }
 
     const xpResult = addXP(message.author.id, Math.floor(Math.random() * 15) + 10);
@@ -316,7 +342,7 @@ client.on('messageCreate', async (message) => {
     if (message.content.startsWith('!')) {
         const args = message.content.slice(1).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
-        const command = queries.command.get.get(commandName);
+        const command = queries.command.get(commandName);
         if (command) {
             await message.reply(command.response).catch(() => {});
         }
@@ -324,9 +350,9 @@ client.on('messageCreate', async (message) => {
 
     if (message.content.toLowerCase().startsWith('!tag ')) {
         const tagName = message.content.slice(5).trim().toLowerCase();
-        const tag = queries.tag.get.get(tagName);
+        const tag = queries.tag.get(tagName);
         if (tag) {
-            queries.tag.incrementUses.run(tagName);
+            queries.tag.incrementUses(tagName);
             await message.reply(tag.content).catch(() => {});
         }
     }
@@ -416,7 +442,7 @@ client.on('interactionCreate', async (interaction) => {
 
             case 'rank': {
                 const target = options.getUser('utilisateur') || interaction.user;
-                const user = queries.user.get.get(target.id);
+                const user = queries.user.get(target.id);
                 if (!user) {
                     return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Utilisateur non trouve.').setColor(CONFIG.colors.danger)], ephemeral: true });
                 }
@@ -436,7 +462,7 @@ client.on('interactionCreate', async (interaction) => {
 
             case 'balance': {
                 const target = options.getUser('utilisateur') || interaction.user;
-                const user = queries.user.get.get(target.id);
+                const user = queries.user.get(target.id);
                 if (!user) {
                     return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Utilisateur non trouve.').setColor(CONFIG.colors.danger)], ephemeral: true });
                 }
@@ -454,28 +480,50 @@ client.on('interactionCreate', async (interaction) => {
             }
 
             case 'daily': {
-                const user = queries.user.get.get(interaction.user.id);
+                const user = queries.user.get(interaction.user.id);
                 const now = Date.now();
                 if (user.last_daily && now - user.last_daily < 86400000) {
                     const remaining = Math.ceil((86400000 - (now - user.last_daily)) / 3600000);
                     return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription(`Reviens dans **${remaining} heure(s)**.`).setColor(CONFIG.colors.danger)], ephemeral: true });
                 }
                 const reward = Math.floor(Math.random() * 100) + 50;
-                queries.user.updateCoins.run(user.coins + reward, interaction.user.id);
-                queries.user.updateXP.run(user.xp, user.total_xp, user.level, user.last_xp, interaction.user.id); // Hack pour update timestamp
-                // Note: pour une vraie mise a jour de last_daily, il faudrait une requete dediee, simplifie ici
+                queries.user.updateCoins(user.coins + reward, interaction.user.id);
+                db.users[interaction.user.id].last_daily = now;
+                saveDB();
+                
                 await interaction.reply({
                     embeds: [new EmbedBuilder().setTitle('Recompense quotidienne').setDescription(`Tu as recu **${reward} pieces** !`).setColor(CONFIG.colors.success).setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon }).setTimestamp()]
                 });
                 break;
             }
 
+            case 'give': {
+                const target = options.getUser('utilisateur');
+                const amount = options.getInteger('montant');
+                if (target.id === interaction.user.id) {
+                    return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Tu ne peux pas te donner des pieces a toi-meme.').setColor(CONFIG.colors.danger)], ephemeral: true });
+                }
+                const sender = queries.user.get(interaction.user.id);
+                if (!sender || sender.coins < amount) {
+                    return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Tu n\'as pas assez de pieces.').setColor(CONFIG.colors.danger)], ephemeral: true });
+                }
+                if (!queries.user.get(target.id)) queries.user.create(target.id, target.tag);
+                
+                queries.user.updateCoins(sender.coins - amount, interaction.user.id);
+                const receiver = queries.user.get(target.id);
+                queries.user.updateCoins(receiver.coins + amount, target.id);
+                
+                await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Transfert effectue').setDescription(`Tu as donne **${amount} pieces** a ${target}.`).setColor(CONFIG.colors.success).setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon }).setTimestamp()] });
+                break;
+            }
+
             case 'warn': {
                 const target = options.getUser('membre');
                 const reason = options.getString('raison');
-                if (!queries.user.get.get(target.id)) queries.user.create.run(target.id, target.tag);
-                queries.warning.create.run(target.id, interaction.user.id, reason);
-                queries.user.addWarning.run(target.id);
+                if (!queries.user.get(target.id)) queries.user.create(target.id, target.tag);
+                
+                queries.warning.create(target.id, interaction.user.id, reason);
+                queries.user.addWarning(target.id);
                 
                 await Logger.log('Avertissement', `**${interaction.user.tag}** a averti **${target.tag}**\nRaison: ${reason}`, CONFIG.colors.warning, [], target.displayAvatarURL());
                 
@@ -483,7 +531,19 @@ client.on('interactionCreate', async (interaction) => {
                     await target.send({ embeds: [new EmbedBuilder().setTitle('Avertissement').setDescription(`Tu as recu un avertissement sur **${interaction.guild.name}**.\nRaison : ${reason}`).setColor(CONFIG.colors.warning).setTimestamp()] });
                 } catch (e) {}
                 
-                await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Succes').setDescription(`${target} a ete averti.`).setColor(CONFIG.colors.success)], ephemeral: true });
+                const updated = queries.user.get(target.id);
+                await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Succes').setDescription(`${target} a ete averti. (Total: ${updated.warnings})`).setColor(CONFIG.colors.success)], ephemeral: true });
+                break;
+            }
+
+            case 'warnings': {
+                const target = options.getUser('utilisateur');
+                const warnings = queries.warning.getByUser(target.id);
+                if (warnings.length === 0) {
+                    return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Avertissements').setDescription('Aucun avertissement pour cet utilisateur.').setColor(CONFIG.colors.info)], ephemeral: true });
+                }
+                const desc = warnings.map(w => `**${w.reason}** - <t:${Math.floor(new Date(w.created_at).getTime() / 1000)}:R>\nPar <@${w.moderator_id}>`).join('\n\n');
+                await interaction.reply({ embeds: [new EmbedBuilder().setTitle(`Avertissements de ${target.username}`).setDescription(desc).setColor(CONFIG.colors.warning).setThumbnail(target.displayAvatarURL()).setTimestamp()], ephemeral: true });
                 break;
             }
 
@@ -507,7 +567,7 @@ client.on('interactionCreate', async (interaction) => {
                         { id: interaction.user.id, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory] }
                     ]
                 });
-                queries.ticket.create.run(ticketChannel.id, interaction.user.id);
+                queries.ticket.create(ticketChannel.id, interaction.user.id);
                 await ticketChannel.send({ content: `${interaction.user}`, embeds: [new EmbedBuilder().setTitle('Nouveau ticket').setDescription('Un membre du staff va prendre en charge ta demande.').setColor(CONFIG.colors.primary).setTimestamp()] });
                 await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Succes').setDescription(`Ticket cree : ${ticketChannel}`).setColor(CONFIG.colors.success)], ephemeral: true });
                 break;
@@ -515,7 +575,7 @@ client.on('interactionCreate', async (interaction) => {
 
             case 'close': {
                 if (!interaction.channel.name.startsWith('ticket-')) return interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Cette commande ne fonctionne que dans un ticket.').setColor(CONFIG.colors.danger)], ephemeral: true });
-                queries.ticket.close.run('closed', interaction.channel.id);
+                queries.ticket.close('closed', interaction.channel.id);
                 await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Fermeture').setDescription('Le ticket sera ferme dans 5 secondes...').setColor(CONFIG.colors.warning)], ephemeral: true });
                 setTimeout(async () => {
                     await interaction.channel.delete();
@@ -528,7 +588,7 @@ client.on('interactionCreate', async (interaction) => {
                 const name = options.getString('nom');
                 const content = options.getString('contenu');
                 try {
-                    queries.tag.create.run(name, content, interaction.user.id);
+                    queries.tag.create(name, content, interaction.user.id);
                     await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Succes').setDescription(`L'etiquette **${name}** a ete creee.`).setColor(CONFIG.colors.success)], ephemeral: true });
                 } catch (e) {
                     await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Cette etiquette existe deja.').setColor(CONFIG.colors.danger)], ephemeral: true });
@@ -537,7 +597,7 @@ client.on('interactionCreate', async (interaction) => {
             }
 
             case 'tagdelete': {
-                queries.tag.delete.run(options.getString('nom'));
+                queries.tag.delete(options.getString('nom'));
                 await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Succes').setDescription('Etiquette supprimee.').setColor(CONFIG.colors.success)], ephemeral: true });
                 break;
             }
@@ -546,7 +606,7 @@ client.on('interactionCreate', async (interaction) => {
                 const name = options.getString('nom');
                 const response = options.getString('reponse');
                 try {
-                    queries.command.create.run(name, response, interaction.user.id);
+                    queries.command.create(name, response, interaction.user.id);
                     await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Succes').setDescription(`La commande **!${name}** a ete creee.`).setColor(CONFIG.colors.success)], ephemeral: true });
                 } catch (e) {
                     await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Cette commande existe deja.').setColor(CONFIG.colors.danger)], ephemeral: true });
@@ -555,7 +615,7 @@ client.on('interactionCreate', async (interaction) => {
             }
 
             case 'ccdelete': {
-                queries.command.delete.run(options.getString('nom'));
+                queries.command.delete(options.getString('nom'));
                 await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Succes').setDescription('Commande supprimee.').setColor(CONFIG.colors.success)], ephemeral: true });
                 break;
             }
@@ -642,6 +702,7 @@ client.on('interactionCreate', async (interaction) => {
         } else {
             await interaction.reply(reply);
         }
+        console.error(error);
     }
 });
 
@@ -667,10 +728,12 @@ async function start() {
 
 process.on('uncaughtException', (error) => {
     Logger.error(`Exception non capturee: ${error.message}`);
+    console.error(error);
 });
 
 process.on('unhandledRejection', (reason) => {
     Logger.error(`Promesse rejetee non geree: ${reason}`);
+    console.error(reason);
 });
 
 start();
