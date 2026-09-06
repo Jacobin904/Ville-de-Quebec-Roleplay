@@ -1,887 +1,561 @@
 <!DOCTYPE html>
 <html lang="fr-CA">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Ville de Québec Roleplay. Le serveur ERLC québécois le plus avancé. Modération 24/7, départements réalistes, économie avancée, événements réguliers et communauté d'élite.">
-    <meta property="og:title" content="Ville de Québec Roleplay | VQC">
-    <meta property="og:description" content="L'expérience ERLC ultime au Québec. Rejoignez une communauté professionnelle.">
-    <meta property="og:image" content="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp">
-    <meta name="theme-color" content="#003DA5">
-    
-    <title>Ville de Québec Roleplay | L'Expérience ERLC Définitive</title>
-    
-    <link rel="icon" type="image/webp" href="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Ville de Québec Roleplay. Le serveur ERLC québécois le plus avancé.">
+<meta property="og:title" content="Ville de Québec Roleplay | VQC">
+<meta property="og:image" content="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp">
+<meta name="theme-color" content="#003DA5">
+<title>Ville de Québec Roleplay | VQC</title>
+<link rel="icon" type="image/webp" href="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#020617;--bg2:#0f172a;--bg3:#1e293b;--bg4:#334155;
+--blue:#003DA5;--blue2:#3b82f6;--blue3:#60a5fa;--blue4:#93c5fd;
+--glow:rgba(59,130,246,.4);--glow2:rgba(59,130,246,.15);
+--green:#10b981;--red:#ef4444;--yellow:#f59e0b;
+--t1:#f8fafc;--t2:#cbd5e1;--t3:#94a3b8;--t4:#64748b;
+--fd:'Space Grotesk',sans-serif;--fb:'Inter',sans-serif;--fm:'JetBrains Mono',monospace;
+--ease:cubic-bezier(.16,1,.3,1);--max:1400px;
+}
+html{scroll-behavior:smooth;font-size:16px;-webkit-font-smoothing:antialiased}
+body{font-family:var(--fb);background:var(--bg);color:var(--t1);line-height:1.7;overflow-x:hidden;cursor:none}
+@media(max-width:768px){body{cursor:auto}.cur{display:none!important}}
+::selection{background:var(--blue);color:#fff}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:4px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:var(--blue2)}
 
-    <style>
-        :root {
-            --bg-primary: #020617;
-            --bg-secondary: #0f172a;
-            --bg-tertiary: #1e293b;
-            --bg-quaternary: #334155;
-            --bg-glass: rgba(15, 23, 42, 0.6);
-            --bg-glass-heavy: rgba(15, 23, 42, 0.85);
-            
-            --accent-primary: #003DA5;
-            --accent-secondary: #3b82f6;
-            --accent-tertiary: #60a5fa;
-            --accent-quaternary: #93c5fd;
-            --accent-glow: rgba(59, 130, 246, 0.4);
-            --accent-glow-strong: rgba(59, 130, 246, 0.6);
-            
-            --success: #10b981;
-            --success-glow: rgba(16, 185, 129, 0.4);
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --info: #06b6d4;
-            
-            --text-primary: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --text-tertiary: #94a3b8;
-            --text-muted: #64748b;
-            
-            --font-display: 'Space Grotesk', sans-serif;
-            --font-body: 'Inter', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            
-            --container-max: 1400px;
-            --section-padding: 160px;
-            --radius-sm: 8px;
-            --radius-md: 16px;
-            --radius-lg: 24px;
-            --radius-xl: 32px;
-            --radius-full: 9999px;
-            
-            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-            --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
-            --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-            --duration-fast: 0.2s;
-            --duration-normal: 0.5s;
-            --duration-slow: 0.8s;
-            --duration-slower: 1.2s;
-            
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
-            --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.5);
-            --shadow-glow: 0 0 80px rgba(59, 130, 246, 0.15);
-            --shadow-glow-strong: 0 0 120px rgba(59, 130, 246, 0.25);
-            
-            --border-subtle: rgba(255, 255, 255, 0.06);
-            --border-default: rgba(255, 255, 255, 0.1);
-            --border-strong: rgba(255, 255, 255, 0.2);
-            --border-accent: rgba(59, 130, 246, 0.3);
-        }
+/* CURSEUR */
+.cur-d,.cur-r{position:fixed;top:0;left:0;border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);will-change:transform}
+.cur-d{width:8px;height:8px;background:var(--blue2);box-shadow:0 0 12px var(--glow)}
+.cur-r{width:44px;height:44px;border:2px solid rgba(59,130,246,.5);transition:width .35s var(--ease),height .35s var(--ease),background .3s,border-color .3s}
+.cur-r.h{width:70px;height:70px;background:rgba(59,130,246,.08);border-color:transparent}
 
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+/* PRELOADER */
+#pre{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;background:var(--bg)!important;z-index:999999!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;transition:opacity .8s var(--ease),visibility .8s!important}
+#pre.h{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+.pre-logo{width:110px!important;height:110px!important;border-radius:50%!important;border:3px solid var(--blue)!important;margin-bottom:28px!important;animation:pg 2s infinite ease-in-out!important;object-fit:cover!important}
+@keyframes pg{0%,100%{box-shadow:0 0 0 0 var(--glow)}50%{box-shadow:0 0 0 30px rgba(59,130,246,0)}}
+.pre-txt{font-family:var(--fd);font-size:1.8rem;font-weight:700;margin-bottom:28px;background:linear-gradient(135deg,var(--t1),var(--blue2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.pre-bar{width:260px;height:3px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.pre-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue2),var(--blue3));width:0%;animation:lp 1.4s var(--ease) forwards}
+@keyframes lp{to{width:100%}}
 
-        html { scroll-behavior: smooth; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+/* SCROLL PROGRESS */
+.sp{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--blue2),var(--blue3));z-index:10000;transform-origin:left;transform:scaleX(0);will-change:transform;box-shadow:0 0 12px var(--glow)}
 
-        body {
-            font-family: var(--font-body);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.7;
-            overflow-x: hidden;
-            cursor: none;
-        }
+/* NOISE */
+.noise{position:fixed;inset:0;pointer-events:none;z-index:9997;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
-        @media (max-width: 768px) { body { cursor: auto; } .custom-cursor { display: none !important; } }
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:24px 0;transition:all .5s var(--ease)}
+.nav.s{padding:14px 0;background:rgba(15,23,42,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.nav-c{max-width:var(--max);margin:0 auto;padding:0 32px;display:flex;justify-content:space-between;align-items:center}
+.nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--t1);font-family:var(--fd);font-weight:700;font-size:1.3rem;transition:transform .2s}
+.nav-logo:hover{transform:scale(1.05)}
+.nav-logo img{width:42px;height:42px;border-radius:50%;border:2px solid var(--blue);box-shadow:0 0 20px var(--glow)}
+.nav-m{display:flex;gap:40px;list-style:none;align-items:center}
+.nav-l{color:var(--t3);text-decoration:none;font-size:.9rem;font-weight:500;position:relative;transition:color .2s;padding:8px 0}
+.nav-l:hover,.nav-l.a{color:var(--t1)}
+.nav-l::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue2));transition:width .5s var(--ease)}
+.nav-l:hover::after,.nav-l.a::after{width:100%}
+.nav-cta{display:inline-flex;align-items:center;gap:10px;padding:12px 26px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;text-decoration:none;border-radius:9999px;font-weight:600;font-size:.9rem;transition:all .2s;position:relative;overflow:hidden;box-shadow:0 10px 30px -10px var(--blue)}
+.nav-cta::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--blue2),var(--blue3));opacity:0;transition:opacity .2s}
+.nav-cta:hover{transform:translateY(-3px);box-shadow:0 0 60px var(--glow)}
+.nav-cta:hover::before{opacity:1}
+.nav-cta span,.nav-cta i{position:relative;z-index:1}
+.nav-tog{display:none;background:none;border:none;color:var(--t1);font-size:1.6rem;cursor:pointer}
 
-        ::selection { background: var(--accent-primary); color: white; }
+/* SECTIONS */
+.sec{padding:140px 0;position:relative}
+.sec-a{background:var(--bg2)}
+.con{max-width:var(--max);margin:0 auto;padding:0 32px}
+.sh{text-align:center;max-width:800px;margin:0 auto 100px}
+.sl{display:inline-flex;align-items:center;gap:10px;padding:10px 20px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:9999px;font-size:.8rem;font-weight:600;color:var(--blue2);text-transform:uppercase;letter-spacing:2px;margin-bottom:24px;backdrop-filter:blur(10px)}
+.st{font-family:var(--fd);font-size:clamp(2.8rem,5.5vw,4.5rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;margin-bottom:24px}
+.gt{background:linear-gradient(135deg,var(--t1) 0%,var(--blue2) 50%,var(--blue3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200% 200%;animation:gs 6s ease infinite}
+@keyframes gs{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.ss{font-size:1.2rem;color:var(--t3);line-height:1.8}
 
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: var(--bg-primary); }
-        ::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 5px; border: 2px solid var(--bg-primary); }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent-secondary); }
+/* HERO */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:140px 32px 100px;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-gr{position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(0,61,165,.3) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(59,130,246,.2) 0%,transparent 50%),radial-gradient(ellipse at 50% 20%,rgba(59,130,246,.1) 0%,transparent 40%);animation:gs 20s ease infinite}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(59,130,246,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.035) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,black 30%,transparent 70%)}
+#pc{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.hero-c{position:relative;z-index:2;max-width:1000px;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:10px;padding:10px 22px;background:rgba(15,23,42,.85);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);border-radius:9999px;font-size:.85rem;font-weight:600;color:var(--t2);margin-bottom:32px;animation:fiu .8s var(--ease) .2s both;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.hbd{width:10px;height:10px;background:var(--green);border-radius:50%;box-shadow:0 0 14px rgba(16,185,129,.5);animation:pu 2s infinite}
+@keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+.hero-t{font-family:var(--fd);font-size:clamp(3.5rem,8vw,7rem);font-weight:800;line-height:1.02;letter-spacing:-.04em;margin-bottom:24px;animation:fiu .8s var(--ease) .4s both}
+.hero-sub{font-size:clamp(1.15rem,2.2vw,1.4rem);color:var(--t3);max-width:700px;margin:0 auto 48px;line-height:1.7;animation:fiu .8s var(--ease) .6s both}
+.hero-act{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:80px;animation:fiu .8s var(--ease) .8s both}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:16px 34px;border-radius:9999px;font-weight:600;font-size:1rem;text-decoration:none;transition:all .2s;cursor:pointer;border:none;position:relative;overflow:hidden}
+.btn-p{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 12px 40px -10px var(--blue)}
+.btn-p::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--blue2),var(--blue3));opacity:0;transition:opacity .2s}
+.btn-p:hover{transform:translateY(-4px);box-shadow:0 0 80px var(--glow)}
+.btn-p:hover::before{opacity:1}
+.btn-p span,.btn-p i{position:relative;z-index:1}
+.btn-s{background:rgba(15,23,42,.85);backdrop-filter:blur(12px);color:var(--t1);border:1px solid rgba(255,255,255,.1)}
+.btn-s:hover{background:var(--bg3);border-color:rgba(255,255,255,.2);transform:translateY(-4px)}
 
-        #preloader {
-            position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100vh !important;
-            background-color: var(--bg-primary) !important; z-index: 999999 !important;
-            display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important;
-            transition: opacity 0.8s var(--ease-out-expo), visibility 0.8s var(--ease-out-expo) !important;
-        }
-        #preloader.hidden { opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
-        .preloader-logo { width: 120px !important; height: 120px !important; border-radius: 50% !important; border: 3px solid var(--accent-primary) !important; margin-bottom: 32px !important; animation: pulse-glow 2s infinite ease-in-out !important; object-fit: cover !important; }
-        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); } 50% { box-shadow: 0 0 0 30px rgba(59, 130, 246, 0); } }
-        .preloader-text { font-family: var(--font-display); font-size: 2rem; font-weight: 700; margin-bottom: 32px; background: linear-gradient(135deg, var(--text-primary), var(--accent-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; }
-        .preloader-bar { width: 280px; height: 4px; background: var(--bg-tertiary); border-radius: 2px; overflow: hidden; }
-        .preloader-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary)); width: 0%; animation: load-progress 1.5s var(--ease-out-expo) forwards; }
-        @keyframes load-progress { to { width: 100%; } }
+/* HERO STATS INLINE */
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;max-width:700px;margin:0 auto;background:rgba(255,255,255,.06);border-radius:20px;overflow:hidden;animation:fiu .8s var(--ease) 1s both;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.hs{padding:36px 24px;text-align:center;background:rgba(15,23,42,.8);backdrop-filter:blur(20px);transition:background .3s}
+.hs:hover{background:rgba(59,130,246,.08)}
+.hsv{font-family:var(--fd);font-size:2.8rem;font-weight:800;background:linear-gradient(135deg,var(--t1),var(--blue2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.hsl{font-size:.8rem;color:var(--t4);text-transform:uppercase;letter-spacing:2px;font-weight:600}
 
-        .custom-cursor-dot, .custom-cursor-ring { position: fixed; top: 0; left: 0; border-radius: 50%; pointer-events: none; z-index: 99998; transform: translate(-50%, -50%); will-change: transform; }
-        .custom-cursor-dot { width: 8px; height: 8px; background: var(--accent-secondary); box-shadow: 0 0 10px var(--accent-glow); }
-        .custom-cursor-ring { width: 40px; height: 40px; border: 2px solid var(--accent-secondary); transition: width 0.3s var(--ease-out-expo), height 0.3s var(--ease-out-expo), background 0.3s var(--ease-out-expo), border-color 0.3s var(--ease-out-expo); }
-        .custom-cursor-ring.hover { width: 64px; height: 64px; background: rgba(59, 130, 246, 0.1); border-color: transparent; }
+@keyframes fiu{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+.si{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--t4);font-size:.75rem;letter-spacing:3px;text-transform:uppercase;animation:bo 2s infinite}
+@keyframes bo{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-12px)}}
 
-        .noise-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 9997; opacity: 0.04; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); }
-        .scroll-progress { position: fixed; top: 0; left: 0; height: 4px; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary)); z-index: 10000; transform-origin: left; transform: scaleX(0); will-change: transform; box-shadow: 0 0 10px var(--accent-glow); }
+/* BENTO */
+.bg{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(300px,auto);gap:24px}
+.bc{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:44px;position:relative;overflow:hidden;transition:all .5s var(--ease);cursor:pointer}
+.bc::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(59,130,246,.15) 0%,transparent 60%);opacity:0;transition:opacity .5s;pointer-events:none}
+.bc::after{content:'';position:absolute;top:-100%;left:-100%;width:300%;height:300%;background:conic-gradient(from 0deg,transparent,rgba(59,130,246,.08),transparent 30%);animation:none;pointer-events:none}
+.bc:hover{transform:translateY(-10px) scale(1.02);border-color:var(--blue2);box-shadow:0 0 80px var(--glow)}
+.bc:hover::before{opacity:1}
+.bc:hover::after{animation:spin 4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bc.f{grid-column:span 2}
+.bc.t{grid-row:span 2}
+.bi{width:60px;height:60px;background:linear-gradient(135deg,var(--blue),var(--blue2));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:#fff;margin-bottom:24px;transition:transform .5s var(--ease);box-shadow:0 10px 30px -10px var(--blue)}
+.bc:hover .bi{transform:scale(1.15) rotate(-8deg)}
+.bt{font-family:var(--fd);font-size:1.6rem;font-weight:700;margin-bottom:14px}
+.bd{color:var(--t3);line-height:1.8;margin-bottom:24px;font-size:1rem}
+.bm{display:flex;align-items:baseline;gap:10px;margin-top:auto}
+.bmv{font-family:var(--fd);font-size:2.8rem;font-weight:800;color:var(--blue2)}
+.bml{font-size:.95rem;color:var(--t4)}
 
-        .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 28px 0; transition: all var(--duration-normal) var(--ease-out-expo); }
-        .nav.scrolled { padding: 16px 0; background: var(--bg-glass-heavy); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-bottom: 1px solid var(--border-subtle); box-shadow: var(--shadow-md); }
-        .nav-container { max-width: var(--container-max); margin: 0 auto; padding: 0 32px; display: flex; justify-content: space-between; align-items: center; }
-        .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; transition: transform var(--duration-fast); }
-        .nav-logo:hover { transform: scale(1.05); }
-        .nav-logo img { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-primary); box-shadow: 0 0 20px var(--accent-glow); }
-        .nav-menu { display: flex; gap: 48px; list-style: none; align-items: center; }
-        .nav-link { color: var(--text-tertiary); text-decoration: none; font-size: 0.95rem; font-weight: 500; position: relative; transition: color var(--duration-fast); padding: 8px 0; }
-        .nav-link:hover, .nav-link.active { color: var(--text-primary); }
-        .nav-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); transition: width var(--duration-normal) var(--ease-out-expo); }
-        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
-        .nav-cta { display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); color: white; text-decoration: none; border-radius: var(--radius-full); font-weight: 600; font-size: 0.95rem; transition: all var(--duration-fast); border: 1px solid transparent; position: relative; overflow: hidden; box-shadow: 0 10px 30px -10px var(--accent-primary); }
-        .nav-cta::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--accent-secondary), var(--accent-tertiary)); opacity: 0; transition: opacity var(--duration-fast); }
-        .nav-cta:hover { transform: translateY(-3px); box-shadow: var(--shadow-glow); }
-        .nav-cta:hover::before { opacity: 1; }
-        .nav-cta span, .nav-cta i { position: relative; z-index: 1; }
-        .nav-mobile-toggle { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.8rem; cursor: pointer; }
+/* DEPARTMENTS */
+.dg{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:32px}
+.dc{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:20px;overflow:hidden;transition:all .5s var(--ease);position:relative}
+.dc::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(59,130,246,.08));opacity:0;transition:opacity .5s;pointer-events:none}
+.dc:hover{transform:translateY(-14px) perspective(1000px) rotateX(2deg);border-color:var(--blue2);box-shadow:0 20px 60px rgba(59,130,246,.15)}
+.dc:hover::after{opacity:1}
+.dh{padding:48px 40px 36px;background:linear-gradient(135deg,rgba(0,61,165,.2),rgba(59,130,246,.06));border-bottom:1px solid rgba(255,255,255,.06)}
+.di{font-size:3rem;color:var(--blue2);margin-bottom:20px;display:block;transition:transform .5s var(--ease)}
+.dc:hover .di{transform:scale(1.15) rotate(-8deg)}
+.dn{font-family:var(--fd);font-size:1.8rem;font-weight:700;margin-bottom:8px}
+.dco{font-family:var(--fm);font-size:.85rem;color:var(--t4);letter-spacing:3px;font-weight:600}
+.db{padding:40px}
+.dd{color:var(--t3);line-height:1.8;margin-bottom:28px;font-size:1rem}
+.df{list-style:none}
+.dfi{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);color:var(--t2);font-size:.95rem;transition:all .2s}
+.dfi:last-child{border-bottom:none}
+.dfi:hover{padding-left:10px;color:var(--t1)}
+.dfi i{color:var(--green);font-size:.9rem;transition:transform .2s}
+.dfi:hover i{transform:scale(1.3)}
 
-        .section { padding: var(--section-padding) 0; position: relative; }
-        .section-alt { background: var(--bg-secondary); }
-        .container { max-width: var(--container-max); margin: 0 auto; padding: 0 32px; }
-        .section-header { text-align: center; max-width: 800px; margin: 0 auto 120px; }
-        .section-label { display: inline-flex; align-items: center; gap: 10px; padding: 10px 20px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: var(--radius-full); font-size: 0.85rem; font-weight: 600; color: var(--accent-secondary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 28px; backdrop-filter: blur(10px); }
-        .section-title { font-family: var(--font-display); font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 28px; }
-        .gradient-text { background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 200% 200%; animation: gradient-shift 6s ease infinite; }
-        @keyframes gradient-shift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-        .section-subtitle { font-size: 1.25rem; color: var(--text-tertiary); line-height: 1.8; }
+/* TIMELINE */
+.tl{position:relative;max-width:900px;margin:0 auto;padding:40px 0}
+.tl::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,var(--blue),var(--blue2),transparent);transform:translateX(-50%)}
+.ti{position:relative;margin-bottom:72px;width:50%;padding:0 52px}
+.ti:nth-child(odd){left:0;text-align:right}
+.ti:nth-child(even){left:50%}
+.td{position:absolute;top:8px;width:22px;height:22px;background:var(--blue2);border:4px solid var(--bg);border-radius:50%;box-shadow:0 0 0 5px rgba(59,130,246,.2),0 0 20px var(--glow);z-index:2;transition:all .5s}
+.ti:hover .td{transform:scale(1.4);box-shadow:0 0 0 10px rgba(59,130,246,.2),0 0 40px var(--glow)}
+.ti:nth-child(odd) .td{right:-11px}
+.ti:nth-child(even) .td{left:-11px}
+.tc{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:36px;transition:all .5s}
+.tc:hover{border-color:var(--blue2);transform:translateY(-5px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.tp{font-family:var(--fm);font-size:.8rem;font-weight:700;color:var(--blue2);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:12px}
+.tt{font-family:var(--fd);font-size:1.6rem;font-weight:700;margin-bottom:12px}
+.tde{color:var(--t3);line-height:1.8;font-size:1rem}
+.ts{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:9999px;font-size:.8rem;font-weight:700;margin-top:16px}
+.ts.c{background:rgba(16,185,129,.12);color:var(--green)}
+.ts.a{background:rgba(59,130,246,.12);color:var(--blue2);animation:pu 2s infinite}
+.ts.u{background:rgba(148,163,184,.12);color:var(--t4)}
 
-        .hero { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 140px 32px 100px; overflow: hidden; }
-        .hero-bg { position: absolute; inset: 0; z-index: 0; }
-        .hero-gradient { position: absolute; inset: 0; background: radial-gradient(circle at 20% 50%, rgba(0, 61, 165, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.2) 0%, transparent 50%); animation: gradient-shift 20s ease infinite; }
-        .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px); background-size: 100px 100px; mask-image: radial-gradient(circle at center, black 30%, transparent 80%); -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%); }
-        #particles-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
-        .hero-content { position: relative; z-index: 2; max-width: 1000px; text-align: center; }
-        .hero-badge { display: inline-flex; align-items: center; gap: 12px; padding: 10px 24px; background: var(--bg-glass-heavy); backdrop-filter: blur(12px); border: 1px solid var(--border-default); border-radius: var(--radius-full); font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 36px; animation: fadeInUp 0.8s var(--ease-out-expo) 0.2s both; box-shadow: var(--shadow-md); }
-        .hero-badge-dot { width: 10px; height: 10px; background: var(--success); border-radius: 50%; box-shadow: 0 0 16px var(--success-glow); animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.3); } }
-        .hero-title { font-family: var(--font-display); font-size: clamp(3.5rem, 8vw, 7rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.04em; margin-bottom: 28px; animation: fadeInUp 0.8s var(--ease-out-expo) 0.4s both; }
-        .hero-subtitle { font-size: clamp(1.2rem, 2.5vw, 1.5rem); color: var(--text-tertiary); max-width: 750px; margin: 0 auto 56px; line-height: 1.7; animation: fadeInUp 0.8s var(--ease-out-expo) 0.6s both; }
-        .hero-actions { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 100px; animation: fadeInUp 0.8s var(--ease-out-expo) 0.8s both; }
-        .btn { display: inline-flex; align-items: center; gap: 12px; padding: 18px 36px; border-radius: var(--radius-full); font-weight: 600; font-size: 1.05rem; text-decoration: none; transition: all var(--duration-fast); cursor: pointer; border: none; position: relative; overflow: hidden; }
-        .btn-primary { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); color: white; box-shadow: 0 12px 40px -10px var(--accent-primary); }
-        .btn-primary::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--accent-secondary), var(--accent-tertiary)); opacity: 0; transition: opacity var(--duration-fast); }
-        .btn-primary:hover { transform: translateY(-4px); box-shadow: var(--shadow-glow); }
-        .btn-primary:hover::before { opacity: 1; }
-        .btn-primary span, .btn-primary i { position: relative; z-index: 1; }
-        .btn-secondary { background: var(--bg-glass-heavy); backdrop-filter: blur(12px); color: var(--text-primary); border: 1px solid var(--border-default); }
-        .btn-secondary:hover { background: var(--bg-tertiary); border-color: var(--border-strong); transform: translateY(-4px); box-shadow: var(--shadow-md); }
-        .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; max-width: 800px; margin: 0 auto; padding: 40px; background: var(--bg-glass-heavy); backdrop-filter: blur(24px); border: 1px solid var(--border-default); border-radius: var(--radius-xl); animation: fadeInUp 0.8s var(--ease-out-expo) 1s both; box-shadow: var(--shadow-lg); }
-        .hero-stat { text-align: center; position: relative; }
-        .hero-stat:not(:last-child)::after { content: ''; position: absolute; right: -20px; top: 50%; transform: translateY(-50%); width: 1px; height: 50px; background: var(--border-default); }
-        .hero-stat-value { font-family: var(--font-display); font-size: 3rem; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; background: linear-gradient(135deg, var(--text-primary), var(--accent-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-stat-label { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-        .scroll-indicator { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--text-muted); font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; animation: bounce 2s infinite; }
-        @keyframes bounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-12px); } }
+/* TEAM */
+.tg{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:36px;max-width:900px;margin:0 auto}
+.tk{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:52px 44px;text-align:center;position:relative;overflow:hidden;transition:all .5s var(--ease)}
+.tk::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--blue),var(--blue2));transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
+.tk:hover{transform:translateY(-10px);border-color:var(--blue2);box-shadow:0 0 80px var(--glow)}
+.tk:hover::before{transform:scaleX(1)}
+.taw{position:relative;width:130px;height:130px;margin:0 auto 24px}
+.ta{width:100%;height:100%;border-radius:50%;object-fit:cover;border:4px solid var(--blue);transition:transform .5s;box-shadow:0 10px 30px -10px var(--blue)}
+.tk:hover .ta{transform:scale(1.08)}
+.tst{position:absolute;bottom:8px;right:8px;width:22px;height:22px;background:var(--green);border:4px solid var(--bg2);border-radius:50%;box-shadow:0 0 12px rgba(16,185,129,.5);animation:pu 2s infinite}
+.tn{font-family:var(--fd);font-size:1.6rem;font-weight:700;margin-bottom:10px}
+.tn a{color:inherit;text-decoration:none;transition:color .3s}
+.tn a:hover{color:var(--blue2)}
+.tr{display:inline-block;padding:8px 18px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);border-radius:9999px;font-size:.8rem;font-weight:700;color:var(--blue2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px}
+.tb{color:var(--t3);line-height:1.8;font-size:1rem}
 
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px; margin-top: 80px; }
-        .stat-card { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 48px 40px; text-align: center; transition: all var(--duration-normal) var(--ease-out-expo); position: relative; overflow: hidden; }
-        .stat-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(59, 130, 246, 0.15) 0%, transparent 60%); opacity: 0; transition: opacity var(--duration-normal); pointer-events: none; }
-        .stat-card:hover { transform: translateY(-8px); border-color: var(--accent-secondary); box-shadow: var(--shadow-glow); }
-        .stat-card:hover::before { opacity: 1; }
-        .stat-icon { width: 72px; height: 72px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; margin: 0 auto 28px; box-shadow: 0 10px 30px -10px var(--accent-primary); }
-        .stat-value { font-family: var(--font-display); font-size: 3.5rem; font-weight: 800; color: var(--accent-secondary); margin-bottom: 12px; }
-        .stat-label { font-size: 1rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+/* FAQ */
+.faq{max-width:860px;margin:0 auto}
+.fi{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:16px;margin-bottom:16px;overflow:hidden;transition:all .5s}
+.fi:hover{border-color:rgba(59,130,246,.3)}
+.fq{padding:24px 28px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .2s}
+.fq:hover{background:rgba(59,130,246,.04)}
+.fq h3{font-family:var(--fd);font-size:1.15rem;font-weight:600;color:var(--t1)}
+.fq i{color:var(--blue2);transition:transform .5s var(--ease);font-size:.9rem}
+.fi.ac .fq i{transform:rotate(180deg)}
+.fa{max-height:0;overflow:hidden;transition:max-height .5s var(--ease)}
+.fi.ac .fa{max-height:400px}
+.fac{padding:0 28px 24px;color:var(--t3);line-height:1.8;font-size:1rem}
 
-        .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(320px, auto); gap: 28px; }
-        .bento-card { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 48px; position: relative; overflow: hidden; transition: all var(--duration-normal) var(--ease-out-expo); cursor: pointer; }
-        .bento-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(59, 130, 246, 0.18) 0%, transparent 60%); opacity: 0; transition: opacity var(--duration-normal); pointer-events: none; }
-        .bento-card:hover { transform: translateY(-10px); border-color: var(--accent-secondary); box-shadow: var(--shadow-glow); }
-        .bento-card:hover::before { opacity: 1; }
-        .bento-card.featured { grid-column: span 2; }
-        .bento-card.tall { grid-row: span 2; }
-        .bento-icon { width: 64px; height: 64px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white; margin-bottom: 28px; transition: transform var(--duration-normal) var(--ease-out-expo); box-shadow: 0 10px 30px -10px var(--accent-primary); }
-        .bento-card:hover .bento-icon { transform: scale(1.15) rotate(-5deg); }
-        .bento-title { font-family: var(--font-display); font-size: 1.75rem; font-weight: 700; margin-bottom: 16px; }
-        .bento-description { color: var(--text-tertiary); line-height: 1.8; margin-bottom: 28px; font-size: 1.05rem; }
-        .bento-metric { display: flex; align-items: baseline; gap: 10px; margin-top: auto; }
-        .bento-metric-value { font-family: var(--font-display); font-size: 3rem; font-weight: 800; color: var(--accent-secondary); }
-        .bento-metric-label { font-size: 1rem; color: var(--text-muted); }
+/* CTA */
+.cta-s{padding:140px 0;position:relative;overflow:hidden}
+.cta-c{max-width:1000px;margin:0 auto;padding:90px 70px;background:linear-gradient(135deg,var(--blue),var(--bg3));border-radius:28px;text-align:center;position:relative;overflow:hidden;border:1px solid rgba(59,130,246,.35);box-shadow:0 0 120px rgba(59,130,246,.2)}
+.cta-c::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,rgba(59,130,246,.35),transparent 60%);animation:cg 6s ease infinite}
+@keyframes cg{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.15)}}
+.cta-co{position:relative;z-index:1}
+.cta-t{font-family:var(--fd);font-size:clamp(2.2rem,4.5vw,3.2rem);font-weight:800;margin-bottom:20px}
+.cta-d{font-size:1.2rem;color:var(--t2);max-width:650px;margin:0 auto 44px;line-height:1.8}
+.cta-a{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+.btn-w{background:#fff;color:var(--blue);font-weight:700}
+.btn-w:hover{background:var(--t1);transform:translateY(-4px);box-shadow:0 25px 50px rgba(0,0,0,.4)}
+.btn-g{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.35);font-weight:700}
+.btn-g:hover{background:rgba(255,255,255,.12);border-color:#fff;transform:translateY(-4px)}
 
-        .departments-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 36px; }
-        .department-card { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; transition: all var(--duration-normal) var(--ease-out-expo); position: relative; }
-        .department-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent, rgba(59, 130, 246, 0.1)); opacity: 0; transition: opacity var(--duration-normal); pointer-events: none; }
-        .department-card:hover { transform: translateY(-14px); border-color: var(--accent-secondary); box-shadow: var(--shadow-glow); }
-        .department-card:hover::after { opacity: 1; }
-        .department-header { padding: 56px 48px 40px; background: linear-gradient(135deg, rgba(0, 61, 165, 0.25), rgba(59, 130, 246, 0.08)); border-bottom: 1px solid var(--border-subtle); }
-        .department-icon { font-size: 3.5rem; color: var(--accent-secondary); margin-bottom: 24px; display: block; transition: transform var(--duration-normal) var(--ease-out-expo); }
-        .department-card:hover .department-icon { transform: scale(1.15) rotate(-5deg); }
-        .department-name { font-family: var(--font-display); font-size: 2rem; font-weight: 700; margin-bottom: 10px; }
-        .department-code { font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-muted); letter-spacing: 3px; font-weight: 600; }
-        .department-body { padding: 48px; }
-        .department-description { color: var(--text-tertiary); line-height: 1.8; margin-bottom: 36px; font-size: 1.05rem; }
-        .department-features { list-style: none; }
-        .department-feature { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: 1rem; transition: all var(--duration-fast); }
-        .department-feature:last-child { border-bottom: none; }
-        .department-feature:hover { padding-left: 10px; color: var(--text-primary); }
-        .department-feature i { color: var(--success); font-size: 1rem; transition: transform var(--duration-fast); }
-        .department-feature:hover i { transform: scale(1.3); }
+/* FOOTER */
+.ft{background:var(--bg2);border-top:1px solid rgba(255,255,255,.06);padding:90px 0 40px}
+.fg{display:grid;grid-template-columns:2.5fr 1fr 1fr 1fr;gap:60px;margin-bottom:70px}
+.fbr{max-width:380px}
+.fl{display:flex;align-items:center;gap:12px;margin-bottom:20px;font-family:var(--fd);font-weight:700;font-size:1.3rem;color:var(--t1);text-decoration:none}
+.fl img{width:44px;height:44px;border-radius:50%;border:2px solid var(--blue)}
+.fd{color:var(--t3);line-height:1.8;margin-bottom:24px;font-size:1rem}
+.fs{display:flex;gap:14px}
+.fsl{width:44px;height:44px;background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--t3);text-decoration:none;transition:all .2s;font-size:1.1rem}
+.fsl:hover{background:var(--blue);border-color:var(--blue);color:#fff;transform:translateY(-4px);box-shadow:0 0 40px var(--glow)}
+.fc h4{font-family:var(--fd);font-size:1rem;font-weight:700;margin-bottom:24px;color:var(--t1)}
+.fls{list-style:none}
+.fli{margin-bottom:14px}
+.fli a{color:var(--t3);text-decoration:none;font-size:.95rem;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.fli a:hover{color:var(--blue2);padding-left:8px}
+.fli a::before{content:'\2192';font-size:.85rem;opacity:0;transform:translateX(-10px);transition:all .2s}
+.fli a:hover::before{opacity:1;transform:translateX(0)}
+.fb{padding-top:40px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;color:var(--t4);font-size:.9rem}
 
-        .timeline { position: relative; max-width: 1000px; margin: 0 auto; padding: 50px 0; }
-        .timeline::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: linear-gradient(to bottom, var(--accent-primary), var(--accent-secondary), transparent); transform: translateX(-50%); }
-        .timeline-item { position: relative; margin-bottom: 80px; width: 50%; padding: 0 56px; }
-        .timeline-item:nth-child(odd) { left: 0; text-align: right; }
-        .timeline-item:nth-child(even) { left: 50%; }
-        .timeline-dot { position: absolute; top: 10px; width: 24px; height: 24px; background: var(--accent-secondary); border: 5px solid var(--bg-primary); border-radius: 50%; box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.25), 0 0 25px var(--accent-glow); z-index: 2; transition: all var(--duration-normal); }
-        .timeline-item:hover .timeline-dot { transform: scale(1.4); box-shadow: 0 0 0 10px rgba(59, 130, 246, 0.25), 0 0 50px var(--accent-glow); }
-        .timeline-item:nth-child(odd) .timeline-dot { right: -12px; }
-        .timeline-item:nth-child(even) .timeline-dot { left: -12px; }
-        .timeline-content { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 40px; transition: all var(--duration-normal); }
-        .timeline-content:hover { border-color: var(--accent-secondary); transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
-        .timeline-phase { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; color: var(--accent-secondary); letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 14px; }
-        .timeline-title { font-family: var(--font-display); font-size: 1.75rem; font-weight: 700; margin-bottom: 14px; }
-        .timeline-description { color: var(--text-tertiary); line-height: 1.8; font-size: 1.05rem; }
-        .timeline-status { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 700; margin-top: 20px; }
-        .timeline-status.completed { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-        .timeline-status.active { background: rgba(59, 130, 246, 0.15); color: var(--accent-secondary); animation: pulse 2s infinite; }
-        .timeline-status.upcoming { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); }
+/* REVEAL */
+.rv{opacity:0;transform:translateY(50px);transition:all 1s var(--ease)}
+.rv.v{opacity:1;transform:translateY(0)}
+.rv1{transition-delay:.1s}.rv2{transition-delay:.2s}.rv3{transition-delay:.3s}.rv4{transition-delay:.4s}
 
-        .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 36px; max-width: 1000px; margin: 0 auto; }
-        .team-card { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 56px 48px; text-align: center; position: relative; overflow: hidden; transition: all var(--duration-normal) var(--ease-out-expo); }
-        .team-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); transform: scaleX(0); transform-origin: left; transition: transform var(--duration-normal) var(--ease-out-expo); }
-        .team-card:hover { transform: translateY(-10px); border-color: var(--accent-secondary); box-shadow: var(--shadow-glow); }
-        .team-card:hover::before { transform: scaleX(1); }
-        .team-avatar-wrapper { position: relative; width: 140px; height: 140px; margin: 0 auto 28px; }
-        .team-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid var(--accent-primary); transition: transform var(--duration-normal); box-shadow: 0 10px 30px -10px var(--accent-primary); }
-        .team-card:hover .team-avatar { transform: scale(1.08); }
-        .team-status { position: absolute; bottom: 10px; right: 10px; width: 24px; height: 24px; background: var(--success); border: 4px solid var(--bg-secondary); border-radius: 50%; box-shadow: 0 0 12px var(--success-glow); animation: pulse 2s infinite; }
-        .team-name { font-family: var(--font-display); font-size: 1.75rem; font-weight: 700; margin-bottom: 10px; }
-        .team-name a { color: inherit; text-decoration: none; transition: color 0.3s ease; }
-        .team-name a:hover { color: var(--accent-secondary); }
-        .team-role { display: inline-block; padding: 8px 20px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: var(--radius-full); font-size: 0.85rem; font-weight: 700; color: var(--accent-secondary); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 24px; }
-        .team-bio { color: var(--text-tertiary); line-height: 1.8; font-size: 1.05rem; }
-
-        .faq-container { max-width: 900px; margin: 0 auto; }
-        .faq-item { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); margin-bottom: 20px; overflow: hidden; transition: all var(--duration-normal); }
-        .faq-item:hover { border-color: var(--accent-secondary); }
-        .faq-question { padding: 28px 32px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background var(--duration-fast); }
-        .faq-question:hover { background: rgba(59, 130, 246, 0.05); }
-        .faq-question h3 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: var(--text-primary); }
-        .faq-question i { color: var(--accent-secondary); transition: transform var(--duration-normal); }
-        .faq-item.active .faq-question i { transform: rotate(180deg); }
-        .faq-answer { max-height: 0; overflow: hidden; transition: max-height var(--duration-normal) var(--ease-out-expo); }
-        .faq-item.active .faq-answer { max-height: 500px; }
-        .faq-answer-content { padding: 0 32px 28px; color: var(--text-tertiary); line-height: 1.8; font-size: 1.05rem; }
-
-        .cta-section { padding: var(--section-padding) 0; position: relative; overflow: hidden; }
-        .cta-container { max-width: 1100px; margin: 0 auto; padding: 100px 80px; background: linear-gradient(135deg, var(--accent-primary), var(--bg-tertiary)); border-radius: var(--radius-xl); text-align: center; position: relative; overflow: hidden; border: 1px solid rgba(59, 130, 246, 0.4); box-shadow: var(--shadow-glow-strong); }
-        .cta-container::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 50%, rgba(59, 130, 246, 0.4), transparent 60%); animation: cta-glow 6s ease infinite; }
-        @keyframes cta-glow { 0%, 100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.15); } }
-        .cta-content { position: relative; z-index: 1; }
-        .cta-title { font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; margin-bottom: 24px; }
-        .cta-description { font-size: 1.3rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto 48px; line-height: 1.8; }
-        .cta-actions { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
-        .btn-white { background: white; color: var(--accent-primary); font-weight: 700; }
-        .btn-white:hover { background: var(--text-primary); transform: translateY(-4px); box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4); }
-        .btn-ghost { background: transparent; color: white; border: 2px solid rgba(255, 255, 255, 0.4); font-weight: 700; }
-        .btn-ghost:hover { background: rgba(255, 255, 255, 0.15); border-color: white; transform: translateY(-4px); }
-
-        .footer { background: var(--bg-secondary); border-top: 1px solid var(--border-subtle); padding: 100px 0 50px; }
-        .footer-grid { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr; gap: 80px; margin-bottom: 80px; }
-        .footer-brand { max-width: 400px; }
-        .footer-logo { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; font-family: var(--font-display); font-weight: 700; font-size: 1.4rem; color: var(--text-primary); text-decoration: none; }
-        .footer-logo img { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--accent-primary); }
-        .footer-description { color: var(--text-tertiary); line-height: 1.8; margin-bottom: 28px; font-size: 1.05rem; }
-        .footer-social { display: flex; gap: 16px; }
-        .footer-social-link { width: 48px; height: 48px; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-tertiary); text-decoration: none; transition: all var(--duration-fast); font-size: 1.2rem; }
-        .footer-social-link:hover { background: var(--accent-primary); border-color: var(--accent-primary); color: white; transform: translateY(-4px); box-shadow: var(--shadow-glow); }
-        .footer-column h4 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; margin-bottom: 28px; color: var(--text-primary); }
-        .footer-links { list-style: none; }
-        .footer-link { margin-bottom: 16px; }
-        .footer-link a { color: var(--text-tertiary); text-decoration: none; font-size: 1rem; transition: all var(--duration-fast); display: inline-flex; align-items: center; gap: 10px; }
-        .footer-link a:hover { color: var(--accent-secondary); padding-left: 10px; }
-        .footer-link a::before { content: '→'; font-size: 0.9rem; opacity: 0; transform: translateX(-12px); transition: all var(--duration-fast); }
-        .footer-link a:hover::before { opacity: 1; transform: translateX(0); }
-        .footer-bottom { padding-top: 50px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; color: var(--text-muted); font-size: 1rem; }
-
-        .reveal { opacity: 0; transform: translateY(50px); transition: all 1s var(--ease-out-expo); }
-        .reveal.visible { opacity: 1; transform: translateY(0); }
-        .reveal-delay-1 { transition-delay: 0.1s; }
-        .reveal-delay-2 { transition-delay: 0.2s; }
-        .reveal-delay-3 { transition-delay: 0.3s; }
-        .reveal-delay-4 { transition-delay: 0.4s; }
-
-        @media (max-width: 1024px) { .bento-grid { grid-template-columns: repeat(2, 1fr); } .bento-card.featured { grid-column: span 2; } .footer-grid { grid-template-columns: 1fr 1fr; gap: 60px; } }
-        @media (max-width: 768px) { :root { --section-padding: 100px; } .nav-menu { display: none; } .nav-mobile-toggle { display: block; } .hero-stats { grid-template-columns: 1fr; gap: 32px; } .hero-stat:not(:last-child)::after { display: none; } .bento-grid { grid-template-columns: 1fr; } .bento-card.featured, .bento-card.tall { grid-column: span 1; grid-row: span 1; } .timeline::before { left: 24px; } .timeline-item { width: 100%; left: 0 !important; padding-left: 72px; text-align: left !important; } .timeline-dot { left: 12px !important; right: auto !important; } .footer-grid { grid-template-columns: 1fr; gap: 48px; } .footer-bottom { flex-direction: column; text-align: center; } .cta-container { padding: 60px 40px; } }
-        @media (max-width: 480px) { .hero-actions { flex-direction: column; width: 100%; } .btn { width: 100%; justify-content: center; } }
-    </style>
+/* RESPONSIVE */
+@media(max-width:1024px){.bg{grid-template-columns:repeat(2,1fr)}.bc.f{grid-column:span 2}.fg{grid-template-columns:1fr 1fr;gap:50px}}
+@media(max-width:768px){
+.sec{padding:100px 0}.nav-m{display:none}.nav-tog{display:block}
+.hero-stats{grid-template-columns:1fr}.bg{grid-template-columns:1fr}.bc.f,.bc.t{grid-column:span 1;grid-row:span 1}
+.tl::before{left:20px}.ti{width:100%;left:0!important;padding-left:60px;text-align:left!important}.td{left:9px!important;right:auto!important}
+.fg{grid-template-columns:1fr;gap:40px}.fb{flex-direction:column;text-align:center}.cta-c{padding:50px 30px}
+}
+@media(max-width:480px){.hero-act{flex-direction:column;width:100%}.btn{width:100%;justify-content:center}}
+</style>
 </head>
 <body>
-    <div class="custom-cursor-dot" id="cursor-dot"></div>
-    <div class="custom-cursor-ring" id="cursor-ring"></div>
-    <div class="scroll-progress" id="scroll-progress"></div>
-    <div class="noise-overlay"></div>
+<div class="cur-d" id="cd"></div>
+<div class="cur-r" id="cr"></div>
+<div class="sp" id="sp"></div>
+<div class="noise"></div>
 
-    <div id="preloader">
-        <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="VQC" class="preloader-logo">
-        <div class="preloader-text">Ville de Québec Roleplay</div>
-        <div class="preloader-bar"><div class="preloader-bar-fill"></div></div>
-    </div>
+<div id="pre">
+<img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="VQC" class="pre-logo">
+<div class="pre-txt">Ville de Québec Roleplay</div>
+<div class="pre-bar"><div class="pre-fill"></div></div>
+</div>
 
-    <nav class="nav" id="nav">
-        <div class="nav-container">
-            <a href="#" class="nav-logo">
-                <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="VQC">
-                <span>VQC</span>
-            </a>
-            <ul class="nav-menu">
-                <li><a href="#accueil" class="nav-link">Accueil</a></li>
-                <li><a href="#apropos" class="nav-link">À propos</a></li>
-                <li><a href="#fonctionnalites" class="nav-link">Fonctionnalités</a></li>
-                <li><a href="#departements" class="nav-link">Départements</a></li>
-                <li><a href="#roadmap" class="nav-link">Feuille de route</a></li>
-                <li><a href="#equipe" class="nav-link">Équipe</a></li>
-                <li><a href="#faq" class="nav-link">FAQ</a></li>
-            </ul>
-            <a href="https://discord.gg/UEf3epPwXS" class="nav-cta" target="_blank">
-                <i class="fa-brands fa-discord"></i><span>Rejoindre</span>
-            </a>
-            <button class="nav-mobile-toggle" id="mobile-toggle" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
-        </div>
-    </nav>
+<nav class="nav" id="nav">
+<div class="nav-c">
+<a href="#" class="nav-logo"><img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="VQC"><span>VQC</span></a>
+<ul class="nav-m">
+<li><a href="#accueil" class="nav-l">Accueil</a></li>
+<li><a href="#fonctionnalites" class="nav-l">Fonctionnalités</a></li>
+<li><a href="#departements" class="nav-l">Départements</a></li>
+<li><a href="#roadmap" class="nav-l">Feuille de route</a></li>
+<li><a href="#equipe" class="nav-l">Équipe</a></li>
+<li><a href="#faq" class="nav-l">FAQ</a></li>
+</ul>
+<a href="https://discord.gg/UEf3epPwXS" class="nav-cta" target="_blank"><i class="fa-brands fa-discord"></i><span>Rejoindre</span></a>
+<button class="nav-tog" id="mt" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+</div>
+</nav>
 
-    <section class="hero" id="accueil">
-        <div class="hero-bg"><div class="hero-gradient"></div><div class="hero-grid"></div><canvas id="particles-canvas"></canvas></div>
-        <div class="hero-content">
-            <div class="hero-badge"><span class="hero-badge-dot"></span><span>Serveur opérationnel</span></div>
-            <h1 class="hero-title">L'Expérience <span class="gradient-text">ERLC</span><br>Définitive au Québec</h1>
-            <p class="hero-subtitle">Plongez dans un jeu de rôle immersif, structuré et réaliste. Rejoignez une communauté professionnelle et des services d'urgence de haut niveau.</p>
-            <div class="hero-actions">
-                <a href="https://discord.gg/UEf3epPwXS" class="btn btn-primary" target="_blank"><i class="fa-brands fa-discord"></i><span>Rejoindre le Discord</span></a>
-                <a href="#fonctionnalites" class="btn btn-secondary"><span>En savoir plus</span><i class="fa-solid fa-arrow-down"></i></a>
-            </div>
-            <div class="hero-stats">
-                <div class="hero-stat"><div class="hero-stat-value" id="stat-members">0</div><div class="hero-stat-label">Membres</div></div>
-                <div class="hero-stat"><div class="hero-stat-value" id="stat-online">0</div><div class="hero-stat-label">En ligne</div></div>
-                <div class="hero-stat"><div class="hero-stat-value" id="stat-ping">0</div><div class="hero-stat-label">Latence (ms)</div></div>
-            </div>
-        </div>
-        <div class="scroll-indicator"><span>Défiler</span><i class="fa-solid fa-chevron-down"></i></div>
-    </section>
+<section class="hero" id="accueil">
+<div class="hero-bg"><div class="hero-gr"></div><div class="hero-grid"></div><canvas id="pc"></canvas></div>
+<div class="hero-c">
+<div class="hero-badge"><span class="hbd"></span><span>Serveur opérationnel depuis 2026</span></div>
+<h1 class="hero-t">L'Expérience <span class="gt">ERLC</span><br>Définitive au Québec</h1>
+<p class="hero-sub">Plongez dans un jeu de rôle immersif, structuré et réaliste. Rejoignez une communauté professionnelle et des services d'urgence de haut niveau.</p>
+<div class="hero-act">
+<a href="https://discord.gg/UEf3epPwXS" class="btn btn-p" target="_blank"><i class="fa-brands fa-discord"></i><span>Rejoindre le Discord</span></a>
+<a href="#fonctionnalites" class="btn btn-s"><span>En savoir plus</span><i class="fa-solid fa-arrow-down"></i></a>
+</div>
+<div class="hero-stats">
+<div class="hs"><div class="hsv" id="sm">0</div><div class="hsl">Membres</div></div>
+<div class="hs"><div class="hsv" id="so">0</div><div class="hsl">En ligne</div></div>
+<div class="hs"><div class="hsv" id="sp2">0</div><div class="hsl">Latence (ms)</div></div>
+</div>
+</div>
+<div class="si"><span>Défiler</span><i class="fa-solid fa-chevron-down"></i></div>
+</section>
 
-    <section class="section section-alt" id="apropos">
-        <div class="container">
-            <div class="section-header reveal">
-                <div class="section-label"><i class="fa-solid fa-info-circle"></i><span>À propos</span></div>
-                <h2 class="section-title">Qu'est-ce que <span class="gradient-text">Ville de Québec Roleplay</span> ?</h2>
-                <p class="section-subtitle">Un serveur Emergency Response: Liberty County (ERLC) basé sur Roblox, offrant une expérience de jeu de rôle immersive et réaliste dans la ville de Québec.</p>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-card reveal">
-                    <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
-                    <div class="stat-value" id="stat-members-2">0</div>
-                    <div class="stat-label">Membres actifs</div>
-                </div>
-                <div class="stat-card reveal reveal-delay-1">
-                    <div class="stat-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                    <div class="stat-value">24/7</div>
-                    <div class="stat-label">Modération active</div>
-                </div>
-                <div class="stat-card reveal reveal-delay-2">
-                    <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
-                    <div class="stat-value">2024</div>
-                    <div class="stat-label">Année de création</div>
-                </div>
-                <div class="stat-card reveal reveal-delay-3">
-                    <div class="stat-icon"><i class="fa-solid fa-car"></i></div>
-                    <div class="stat-value">3</div>
-                    <div class="stat-label">Départements</div>
-                </div>
-            </div>
-        </div>
-    </section>
+<section class="sec" id="fonctionnalites">
+<div class="con">
+<div class="sh rv">
+<div class="sl"><i class="fa-solid fa-sparkles"></i><span>Pourquoi nous choisir</span></div>
+<h2 class="st">Une infrastructure <span class="gt">professionnelle</span></h2>
+<p class="ss">Un écosystème complet développé sur mesure pour garantir la meilleure expérience de jeu de rôle possible.</p>
+</div>
+<div class="bg">
+<div class="bc f rv">
+<div class="bi"><i class="fa-solid fa-shield-halved"></i></div>
+<h3 class="bt">Modération Active 24/7</h3>
+<p class="bd">Une équipe de modérateurs formés et disponibles en permanence. Système de tickets avancé, réponse rapide garantie et application rigoureuse du règlement pour maintenir un environnement sain.</p>
+<div class="bm"><span class="bmv">&lt;5min</span><span class="bml">Temps de réponse moyen</span></div>
+</div>
+<div class="bc rv rv1">
+<div class="bi"><i class="fa-solid fa-code"></i></div>
+<h3 class="bt">Bot Personnalisé</h3>
+<p class="bd">Système développé sur mesure avec gestion des niveaux, économie, journaux avancés, commandes exclusives et intégration UptimeRobot.</p>
+</div>
+<div class="bc rv rv2">
+<div class="bi"><i class="fa-solid fa-users-gear"></i></div>
+<h3 class="bt">Communauté d'Élite</h3>
+<p class="bd">Processus de recrutement strict pour maintenir un niveau de jeu exceptionnel dans tous les départements.</p>
+</div>
+<div class="bc t rv">
+<div class="bi"><i class="fa-solid fa-server"></i></div>
+<h3 class="bt">Infrastructure Premium</h3>
+<p class="bd">Hébergement haute performance avec latence minimale et disponibilité de 99,9%. Surveillance en temps réel, sauvegardes automatiques et base de données SQLite persistante.</p>
+<div class="bm"><span class="bmv">99.9%</span><span class="bml">Disponibilité garantie</span></div>
+</div>
+<div class="bc rv rv1">
+<div class="bi"><i class="fa-solid fa-chart-line"></i></div>
+<h3 class="bt">Statistiques Temps Réel</h3>
+<p class="bd">Tableau de bord en direct avec métriques détaillées sur l'activité du serveur et les performances du bot.</p>
+</div>
+<div class="bc rv rv2">
+<div class="bi"><i class="fa-solid fa-gavel"></i></div>
+<h3 class="bt">Système Juridique</h3>
+<p class="bd">Code pénal détaillé et procédures judiciaires réalistes pour un jeu de rôle authentique et structuré.</p>
+</div>
+<div class="bc rv rv3">
+<div class="bi"><i class="fa-solid fa-coins"></i></div>
+<h3 class="bt">Économie Avancée</h3>
+<p class="bd">Système économique complet avec salaires, transactions, banque et récompenses quotidiennes pour une immersion totale.</p>
+</div>
+<div class="bc rv rv4">
+<div class="bi"><i class="fa-solid fa-trophy"></i></div>
+<h3 class="bt">Événements Réguliers</h3>
+<p class="bd">Compétitions, scénarios spéciaux et événements communautaires organisés chaque semaine pour maintenir l'engagement.</p>
+</div>
+</div>
+</div>
+</section>
 
-    <section class="section" id="fonctionnalites">
-        <div class="container">
-            <div class="section-header reveal">
-                <div class="section-label"><i class="fa-solid fa-sparkles"></i><span>Pourquoi nous choisir</span></div>
-                <h2 class="section-title">Une infrastructure <span class="gradient-text">professionnelle</span></h2>
-                <p class="section-subtitle">Nous avons développé un écosystème complet pour garantir la meilleure expérience de jeu de rôle possible.</p>
-            </div>
-            <div class="bento-grid">
-                <div class="bento-card featured reveal">
-                    <div class="bento-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                    <h3 class="bento-title">Modération Active 24/7</h3>
-                    <p class="bento-description">Une équipe de modérateurs formés et disponibles en permanence pour assurer le respect des règles et la qualité du jeu. Système de tickets avancé et réponse rapide garantie.</p>
-                    <div class="bento-metric">
-                        <span class="bento-metric-value">&lt;5min</span>
-                        <span class="bento-metric-label">Temps de réponse moyen</span>
-                    </div>
-                </div>
-                <div class="bento-card reveal reveal-delay-1">
-                    <div class="bento-icon"><i class="fa-solid fa-code"></i></div>
-                    <h3 class="bento-title">Bot Personnalisé</h3>
-                    <p class="bento-description">Système développé sur mesure avec gestion des niveaux, économie, journaux avancés et commandes exclusives.</p>
-                </div>
-                <div class="bento-card reveal reveal-delay-2">
-                    <div class="bento-icon"><i class="fa-solid fa-users-gear"></i></div>
-                    <h3 class="bento-title">Communauté d'Élite</h3>
-                    <p class="bento-description">Processus de recrutement strict pour maintenir un niveau de jeu exceptionnel dans tous les départements.</p>
-                </div>
-                <div class="bento-card tall reveal">
-                    <div class="bento-icon"><i class="fa-solid fa-server"></i></div>
-                    <h3 class="bento-title">Infrastructure Premium</h3>
-                    <p class="bento-description">Hébergement sur des serveurs haute performance avec une latence minimale et une disponibilité de 99,9 pour cent. Surveillance en temps réel et sauvegardes automatiques.</p>
-                    <div class="bento-metric">
-                        <span class="bento-metric-value">99.9%</span>
-                        <span class="bento-metric-label">Disponibilité</span>
-                    </div>
-                </div>
-                <div class="bento-card reveal reveal-delay-1">
-                    <div class="bento-icon"><i class="fa-solid fa-chart-line"></i></div>
-                    <h3 class="bento-title">Statistiques Temps Réel</h3>
-                    <p class="bento-description">Tableau de bord en direct avec des métriques détaillées sur l'activité du serveur et les performances.</p>
-                </div>
-                <div class="bento-card reveal reveal-delay-2">
-                    <div class="bento-icon"><i class="fa-solid fa-gavel"></i></div>
-                    <h3 class="bento-title">Système Juridique</h3>
-                    <p class="bento-description">Code pénal détaillé et procédures judiciaires réalistes pour un jeu de rôle authentique et structuré.</p>
-                </div>
-                <div class="bento-card reveal reveal-delay-3">
-                    <div class="bento-icon"><i class="fa-solid fa-coins"></i></div>
-                    <h3 class="bento-title">Économie Avancée</h3>
-                    <p class="bento-description">Système économique complet avec salaires, transactions, banque et investissements pour une immersion totale.</p>
-                </div>
-                <div class="bento-card reveal reveal-delay-4">
-                    <div class="bento-icon"><i class="fa-solid fa-trophy"></i></div>
-                    <h3 class="bento-title">Événements Réguliers</h3>
-                    <p class="bento-description">Compétitions, scénarios spéciaux et événements communautaires organisés chaque semaine pour maintenir l'engagement.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+<section class="sec sec-a" id="departements">
+<div class="con">
+<div class="sh rv">
+<div class="sl"><i class="fa-solid fa-briefcase"></i><span>Carrières</span></div>
+<h2 class="st">Nos <span class="gt">Départements</span></h2>
+<p class="ss">Servez la communauté en rejoignant l'une de nos organisations d'élite.</p>
+</div>
+<div class="dg">
+<div class="dc rv">
+<div class="dh"><i class="fa-solid fa-car-side di"></i><h3 class="dn">Service de Police</h3><div class="dco">SPVQ</div></div>
+<div class="db">
+<p class="dd">Le Service de Police de la Ville de Québec assure la sécurité et l'ordre public. Patrouilles, interventions et enquêtes criminelles.</p>
+<ul class="df">
+<li class="dfi"><i class="fa-solid fa-check"></i><span>Véhicules intercepteurs exclusifs</span></li>
+<li class="dfi"><i class="fa-solid fa-check"></i><span>Équipement tactique complet</span></li>
+<li class="dfi"><i class="fa-solid fa-check"></i><span>Académie de police formelle</span></li>
+<li class="dfi"><i class="fa-solid fa-check"></i><span>Hiérarchie structurée et formations</span></li>
+</ul>
+</div>
+</div>
+<div class="dc rv rv1">
+<div class="dh"><i class="fa-solid fa-shield-halved di"></i><h3 class="dn">Sûreté du Québec</h3><div class="dco">SQ</div></div>
+<div class="db">
+<p class="dd">Force provinciale intervenant sur les crimes majeurs, les opérations spéciales et la sécurité des événements d'envergure.</p>
+<ul class="df">
+<li class="dfi"><i class="fa-solid fa-check"></i><span>Unité K9 et Équestre</span></li>
+<li class="dfi"><i class="fa-solid fa-check"></i><span>Équipe d'intervention tactique</span></li>
+<li class="dfi"><i class="fa-solid fa-check"></i><span>Enquêtes criminelles complexes</span></li>
+<li class="dfi"><i class="fa-solid fa-check"></i><span>Avantages hiérarchiques premium</span></li>
+</ul>
+</div>
+</div>
+<div class="dc rv rv2">
+<div class="dh"><i class="fa-solid fa-fire-extinguisher di"></i><h3 class="dn">Service Incendie</h3><div class="dco">SPCIQ</div></div>
+<div class="db">
+<p class="dd">Les pompiers interviennent sur les incendies, les accidents de la route et les secours à personne d'urgence.</p>
+<ul class="df">
+<li class="dfi"><i class="fa-solid fa-check"></i><span>Camions d'intervention réalistes</span></li>
+<li class="dfi"><i class="fa-solid fa-check"></i><span>Matériel de désincarcération</span></li>
+<li class="dfi"><i class="fa-solid fa-check"></i><span>Formation paramédicale avancée</span></li>
+<li class="dfi"><i class="fa-solid fa-check"></i><span>Opérations de sauvetage spécialisées</span></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section>
 
-    <section class="section section-alt" id="departements">
-        <div class="container">
-            <div class="section-header reveal">
-                <div class="section-label"><i class="fa-solid fa-briefcase"></i><span>Carrières</span></div>
-                <h2 class="section-title">Nos <span class="gradient-text">Départements</span></h2>
-                <p class="section-subtitle">Servez la communauté en rejoignant l'une de nos organisations d'élite.</p>
-            </div>
-            <div class="departments-grid">
-                <div class="department-card reveal">
-                    <div class="department-header">
-                        <i class="fa-solid fa-car-side department-icon"></i>
-                        <h3 class="department-name">Service de Police</h3>
-                        <div class="department-code">SPVQ</div>
-                    </div>
-                    <div class="department-body">
-                        <p class="department-description">Le Service de Police de la Ville de Québec assure la sécurité et l'ordre public. Patrouilles, interventions et enquêtes criminelles.</p>
-                        <ul class="department-features">
-                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Véhicules intercepteurs exclusifs</span></li>
-                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Équipement tactique complet</span></li>
-                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Académie de police formelle</span></li>
-                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Hiérarchie structurée</span></li>
-                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Formations spécialisées</span></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="department-card reveal reveal-delay-1">
-                    <div class="department-header">
-                        <i class="fa-solid fa-shield-halved department-icon"></i>
-                        <h3 class="department-name">Sûreté du Québec</h3>
-                        <div class="department-code">SQ</div>
-                    </div>
-                    <div class="department-body">
-                        <p class="department-description">Force provinciale intervenant sur les crimes majeurs, les opérations spéciales et la sécurité des événements d'envergure.</p>
-                        <ul class="department-features">
-                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Unité K9 et Équestre</span></li>
-                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Équipe d'intervention tactique</span></li>
-                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Enquêtes criminelles complexes</span></li>
-                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Avantages hiérarchiques premium</span></li>
-                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Accès prioritaire aux opérations</span></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="department-card reveal reveal-delay-2">
-                    <div class="department-header">
-                        <i class="fa-solid fa-fire-extinguisher department-icon"></i>
-                        <h3 class="department-name">Service Incendie</h3>
-                        <div class="department-code">SPCIQ</div>
-                    </div>
-                    <div class="department-body">
-                        <p class="department-description">Les pompiers de la ville interviennent sur les incendies, les accidents de la route et les secours à personne d'urgence.</p>
-                        <ul class="department-features">
-                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Camions d'intervention réalistes</span></li>
-                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Matériel de désincarcération</span></li>
-                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Formation paramédicale avancée</span></li>
-                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Opérations de sauvetage</span></li>
-                            <li class="department-feature"><i class="fa-solid fa-check"></i><span>Interventions spécialisées</span></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<section class="sec" id="roadmap">
+<div class="con">
+<div class="sh rv">
+<div class="sl"><i class="fa-solid fa-rocket"></i><span>Développement</span></div>
+<h2 class="st">Feuille de <span class="gt">Route</span></h2>
+<p class="ss">Notre vision pour l'avenir du serveur et les prochaines mises à jour majeures.</p>
+</div>
+<div class="tl">
+<div class="ti rv"><div class="td"></div><div class="tc"><div class="tp">Phase 1</div><h3 class="tt">Lancement Initial</h3><p class="tde">Mise en place de l'infrastructure de base, recrutement du personnel fondateur et ouverture officielle au public.</p><div class="ts c"><i class="fa-solid fa-check"></i><span>Terminé</span></div></div></div>
+<div class="ti rv"><div class="td"></div><div class="tc"><div class="tp">Phase 2</div><h3 class="tt">Optimisation des Systèmes</h3><p class="tde">Déploiement du bot personnalisé, système de niveaux, économie avancée et amélioration des procédures de départements.</p><div class="ts a"><i class="fa-solid fa-spinner fa-spin"></i><span>En cours</span></div></div></div>
+<div class="ti rv"><div class="td"></div><div class="tc"><div class="tp">Phase 3</div><h3 class="tt">Extension Territoriale</h3><p class="tde">Ajout de nouvelles zones de jeu, véhicules personnalisés et événements communautaires majeurs.</p><div class="ts u"><i class="fa-solid fa-clock"></i><span>À venir</span></div></div></div>
+<div class="ti rv"><div class="td"></div><div class="tc"><div class="tp">Phase 4</div><h3 class="tt">Partenariats et Expansion</h3><p class="tde">Collaborations avec d'autres serveurs, création de contenu média et expansion de la communauté.</p><div class="ts u"><i class="fa-solid fa-clock"></i><span>Planifié</span></div></div></div>
+</div>
+</div>
+</section>
 
-    <section class="section" id="roadmap">
-        <div class="container">
-            <div class="section-header reveal">
-                <div class="section-label"><i class="fa-solid fa-rocket"></i><span>Développement</span></div>
-                <h2 class="section-title">Feuille de <span class="gradient-text">Route</span></h2>
-                <p class="section-subtitle">Notre vision pour l'avenir du serveur et les prochaines mises à jour majeures.</p>
-            </div>
-            <div class="timeline">
-                <div class="timeline-item reveal">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-phase">Phase 1</div>
-                        <h3 class="timeline-title">Lancement Initial</h3>
-                        <p class="timeline-description">Mise en place de l'infrastructure de base, recrutement du personnel fondateur et ouverture officielle au public.</p>
-                        <div class="timeline-status completed"><i class="fa-solid fa-check"></i><span>Terminé</span></div>
-                    </div>
-                </div>
-                <div class="timeline-item reveal">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-phase">Phase 2</div>
-                        <h3 class="timeline-title">Optimisation des Systèmes</h3>
-                        <p class="timeline-description">Déploiement du bot personnalisé, système de niveaux, économie avancée et amélioration des procédures de départements.</p>
-                        <div class="timeline-status active"><i class="fa-solid fa-spinner fa-spin"></i><span>En cours</span></div>
-                    </div>
-                </div>
-                <div class="timeline-item reveal">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-phase">Phase 3</div>
-                        <h3 class="timeline-title">Extension Territoriale</h3>
-                        <p class="timeline-description">Ajout de nouvelles zones de jeu, véhicules personnalisés et événements communautaires majeurs.</p>
-                        <div class="timeline-status upcoming"><i class="fa-solid fa-clock"></i><span>À venir</span></div>
-                    </div>
-                </div>
-                <div class="timeline-item reveal">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-phase">Phase 4</div>
-                        <h3 class="timeline-title">Partenariats et Expansion</h3>
-                        <p class="timeline-description">Collaborations avec d'autres serveurs, création de contenu média et expansion de la communauté.</p>
-                        <div class="timeline-status upcoming"><i class="fa-solid fa-clock"></i><span>Planifié</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<section class="sec sec-a" id="equipe">
+<div class="con">
+<div class="sh rv">
+<div class="sl"><i class="fa-solid fa-crown"></i><span>Direction</span></div>
+<h2 class="st">L'Équipe de <span class="gt">Direction</span></h2>
+<p class="ss">Les visionnaires derrière le projet Ville de Québec Roleplay.</p>
+</div>
+<div class="tg">
+<div class="tk rv">
+<div class="taw"><img src="https://cdn.discordapp.com/avatars/1271541606759006332/cea78458445000372d4a4fef56b9ab52.webp?size=1024" alt="Lieutenant_Jacky" class="ta"><div class="tst"></div></div>
+<h3 class="tn">Lieutenant_Jacky</h3>
+<div class="tr">Fondateur et Propriétaire</div>
+<p class="tb">Visionnaire du projet, il assure la direction stratégique et le développement global de la communauté VQC. Son leadership a permis de bâtir une communauté soudée et professionnelle.</p>
+</div>
+<div class="tk rv rv1">
+<div class="taw"><img src="https://cdn.discordapp.com/avatars/1281784488854159421/b30ef2bb80b0832bf222e4a22287a72e.webp?size=1024" alt="Jacobin Babouain" class="ta"><div class="tst"></div></div>
+<h3 class="tn"><a href="https://discord.com/users/1281784488854159421" target="_blank" rel="noopener noreferrer">Jacobin Babouain</a></h3>
+<div class="tr">Cofondateur et Développeur</div>
+<p class="tb">Responsable de l'architecture technique, du développement du bot personnalisé et de l'infrastructure web. Son expertise technique garantit la stabilité et l'innovation du serveur.</p>
+</div>
+</div>
+</div>
+</section>
 
-    <section class="section section-alt" id="equipe">
-        <div class="container">
-            <div class="section-header reveal">
-                <div class="section-label"><i class="fa-solid fa-crown"></i><span>Direction</span></div>
-                <h2 class="section-title">L'Équipe de <span class="gradient-text">Direction</span></h2>
-                <p class="section-subtitle">Les visionnaires derrière le projet Ville de Québec Roleplay.</p>
-            </div>
-            <div class="team-grid">
-                <div class="team-card reveal">
-                    <div class="team-avatar-wrapper">
-                        <img src="https://cdn.discordapp.com/avatars/1271541606759006332/cea78458445000372d4a4fef56b9ab52.webp?size=1024" alt="Lieutenant_Jacky" class="team-avatar">
-                        <div class="team-status"></div>
-                    </div>
-                    <h3 class="team-name">Lieutenant_Jacky</h3>
-                    <div class="team-role">Fondateur et Propriétaire</div>
-                    <p class="team-bio">Visionnaire du projet, il assure la direction stratégique et le développement global de la communauté VQC. Son leadership a permis de bâtir une communauté soudée et professionnelle.</p>
-                </div>
-                <div class="team-card reveal reveal-delay-1">
-                    <div class="team-avatar-wrapper">
-                        <img src="https://cdn.discordapp.com/avatars/1281784488854159421/b30ef2bb80b0832bf222e4a22287a72e.webp?size=1024" alt="Jacobin Babouain" class="team-avatar">
-                        <div class="team-status"></div>
-                    </div>
-                    <h3 class="team-name">
-                        <a href="https://discord.com/users/1281784488854159421" target="_blank" rel="noopener noreferrer">Jacobin Babouain</a>
-                    </h3>
-                    <div class="team-role">Cofondateur et Développeur</div>
-                    <p class="team-bio">Responsable de l'architecture technique, du développement du bot personnalisé et de l'infrastructure web. Son expertise technique garantit la stabilité et l'innovation du serveur.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+<section class="sec" id="faq">
+<div class="con">
+<div class="sh rv">
+<div class="sl"><i class="fa-solid fa-circle-question"></i><span>FAQ</span></div>
+<h2 class="st">Questions <span class="gt">Fréquentes</span></h2>
+<p class="ss">Trouvez rapidement les réponses à vos questions les plus courantes.</p>
+</div>
+<div class="faq">
+<div class="fi rv"><div class="fq"><h3>Comment rejoindre un département whitelisted ?</h3><i class="fa-solid fa-chevron-down"></i></div><div class="fa"><div class="fac">Pour rejoindre un département whitelisted (SPVQ, SQ, SPCIQ), rejoignez d'abord notre serveur Discord. Rendez-vous ensuite dans le salon dédié aux recrutements et suivez les instructions spécifiques au département choisi. Chaque département a son propre processus de sélection incluant une candidature écrite et une formation pratique.</div></div></div>
+<div class="fi rv rv1"><div class="fq"><h3>Quelles sont les règles principales du serveur ?</h3><i class="fa-solid fa-chevron-down"></i></div><div class="fa"><div class="fac">Les règles principales incluent : rester respectueux envers tous les membres, ne pas spammer ni faire de publicité, éviter le contenu inapproprié, ne pas usurper l'identité d'autres personnes et utiliser les mentions de manière raisonnable. Le non-respect peut entraîner des avertissements, des mute temporaires ou des bannissements permanents.</div></div></div>
+<div class="fi rv rv2"><div class="fq"><h3>Comment devenir modérateur ?</h3><i class="fa-solid fa-chevron-down"></i></div><div class="fa"><div class="fac">Les recrutements sont ouverts périodiquement. Vous devez être membre actif depuis au moins 14 jours, avoir un comportement exemplaire et remplir le formulaire de candidature sur notre plateforme Melonly. Les candidats retenus passent par une période de formation avant d'obtenir leurs permissions complètes.</div></div></div>
+<div class="fi rv rv3"><div class="fq"><h3>Le serveur est-il gratuit ?</h3><i class="fa-solid fa-chevron-down"></i></div><div class="fa"><div class="fac">Oui, le serveur est entièrement gratuit. Vous avez seulement besoin d'un compte Discord et du jeu Emergency Response: Liberty County sur Roblox. Toutes les fonctionnalités, départements et événements sont accessibles sans frais.</div></div></div>
+<div class="fi rv rv4"><div class="fq"><h3>Comment signaler un problème ou un joueur ?</h3><i class="fa-solid fa-chevron-down"></i></div><div class="fa"><div class="fac">Utilisez le système de tickets dans notre serveur Discord. Rendez-vous dans le salon dédié, créez un nouveau ticket et décrivez votre problème en détail avec des captures d'écran si possible. Un modérateur vous répondra dans les plus brefs délais.</div></div></div>
+<div class="fi rv"><div class="fq"><h3>Quels sont les horaires du serveur ?</h3><i class="fa-solid fa-chevron-down"></i></div><div class="fa"><div class="fac">Le serveur est accessible 24h/24, 7j/7. Les événements officiels et sessions de roleplay structurées ont lieu à des horaires spécifiques annoncés dans le salon des annonces. Consultez régulièrement les annonces pour ne rien manquer.</div></div></div>
+</div>
+</div>
+</section>
 
-    <section class="section" id="faq">
-        <div class="container">
-            <div class="section-header reveal">
-                <div class="section-label"><i class="fa-solid fa-question-circle"></i><span>FAQ</span></div>
-                <h2 class="section-title">Questions <span class="gradient-text">Fréquentes</span></h2>
-                <p class="section-subtitle">Trouvez rapidement les réponses à vos questions les plus courantes.</p>
-            </div>
-            <div class="faq-container">
-                <div class="faq-item reveal">
-                    <div class="faq-question">
-                        <h3>Comment rejoindre un département whitelisted ?</h3>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <div class="faq-answer-content">
-                            Pour rejoindre un département whitelisted (SPVQ, SQ, SPCIQ), vous devez d'abord rejoindre notre serveur Discord principal. Ensuite, rendez-vous dans le salon dédié aux recrutements et suivez les instructions spécifiques au département choisi. Chaque département a son propre processus de sélection, incluant généralement une candidature écrite et une formation pratique.
-                        </div>
-                    </div>
-                </div>
-                <div class="faq-item reveal reveal-delay-1">
-                    <div class="faq-question">
-                        <h3>Quelles sont les règles principales du serveur ?</h3>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <div class="faq-answer-content">
-                            Les règles principales incluent : rester respectueux envers tous les membres, ne pas spammer ou faire de publicité, éviter le contenu inapproprié (18+, gore, violent), ne pas usurper l'identité d'autres personnes, et utiliser les mentions (@) de manière raisonnable. Le non-respect de ces règles peut entraîner des avertissements, des mute temporaires ou des bannissements permanents selon la gravité.
-                        </div>
-                    </div>
-                </div>
-                <div class="faq-item reveal reveal-delay-2">
-                    <div class="faq-question">
-                        <h3>Comment devenir modérateur ?</h3>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <div class="faq-answer-content">
-                            Les recrutements de modérateurs sont ouverts périodiquement. Pour postuler, vous devez être membre actif du serveur depuis au moins 14 jours, avoir un comportement exemplaire et remplir le formulaire de candidature disponible sur notre plateforme Melonly. Les candidatures sont examinées par l'équipe de direction et les candidats retenus passent par une période de formation avant d'obtenir leurs permissions complètes.
-                        </div>
-                    </div>
-                </div>
-                <div class="faq-item reveal reveal-delay-3">
-                    <div class="faq-question">
-                        <h3>Le serveur est-il gratuit ?</h3>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <div class="faq-answer-content">
-                            Oui, le serveur est entièrement gratuit. Vous avez seulement besoin d'un compte Discord et du jeu Emergency Response: Liberty County (ERLC) sur Roblox pour participer. Toutes les fonctionnalités, départements et événements sont accessibles sans frais supplémentaires.
-                        </div>
-                    </div>
-                </div>
-                <div class="faq-item reveal reveal-delay-4">
-                    <div class="faq-question">
-                        <h3>Comment signaler un problème ou un joueur ?</h3>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <div class="faq-answer-content">
-                            Pour signaler un problème ou un joueur, utilisez le système de tickets dans notre serveur Discord. Rendez-vous dans le salon dédié aux tickets, cliquez sur le bouton pour créer un nouveau ticket, et décrivez votre problème en détail. Fournissez des captures d'écran ou des vidéos si possible. Un modérateur vous répondra dans les plus brefs délais.
-                        </div>
-                    </div>
-                </div>
-                <div class="faq-item reveal">
-                    <div class="faq-question">
-                        <h3>Quels sont les horaires d'ouverture du serveur ?</h3>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <div class="faq-answer-content">
-                            Le serveur est accessible 24 heures sur 24, 7 jours sur 7. Cependant, les événements officiels et les sessions de roleplay structurées ont lieu à des horaires spécifiques annoncés dans le salon des annonces. Consultez régulièrement les annonces pour ne pas manquer les événements importants.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<section class="cta-s">
+<div class="con">
+<div class="cta-c rv">
+<div class="cta-co">
+<h2 class="cta-t">Prêt à rejoindre l'aventure ?</h2>
+<p class="cta-d">Rejoignez des centaines de joueurs passionnés et vivez l'expérience ERLC la plus immersive du Québec.</p>
+<div class="cta-a">
+<a href="https://discord.gg/UEf3epPwXS" class="btn btn-w" target="_blank"><i class="fa-brands fa-discord"></i><span>Rejoindre maintenant</span></a>
+<a href="#fonctionnalites" class="btn btn-g"><span>En savoir plus</span></a>
+</div>
+</div>
+</div>
+</div>
+</section>
 
-    <section class="cta-section">
-        <div class="container">
-            <div class="cta-container reveal">
-                <div class="cta-content">
-                    <h2 class="cta-title">Prêt à rejoindre l'aventure ?</h2>
-                    <p class="cta-description">Rejoignez des centaines de joueurs passionnés et vivez l'expérience ERLC la plus immersive du Québec.</p>
-                    <div class="cta-actions">
-                        <a href="https://discord.gg/UEf3epPwXS" class="btn btn-white" target="_blank"><i class="fa-brands fa-discord"></i><span>Rejoindre maintenant</span></a>
-                        <a href="#fonctionnalites" class="btn btn-ghost"><span>En savoir plus</span></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<footer class="ft">
+<div class="con">
+<div class="fg">
+<div class="fbr">
+<a href="#" class="fl"><img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="VQC"><span>Ville de Québec RP</span></a>
+<p class="fd">Le serveur de jeu de rôle ERLC de référence au Québec. Une expérience immersive, professionnelle et communautaire depuis 2026.</p>
+<div class="fs">
+<a href="https://discord.gg/UEf3epPwXS" class="fsl" target="_blank" aria-label="Discord"><i class="fa-brands fa-discord"></i></a>
+<a href="https://www.tiktok.com/@vqcrp" class="fsl" target="_blank" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+</div>
+</div>
+<div class="fc"><h4>Ressources</h4><ul class="fls">
+<li class="fli"><a href="https://melon.ly/form/7498354753420660736" target="_blank">Candidatures</a></li>
+<li class="fli"><a href="https://melon.ly/sd/ville-de-quebec-roleplay" target="_blank">Présentation</a></li>
+<li class="fli"><a href="https://discord.com/channels/1490410149213507804/1490444001587757085" target="_blank">Règles en jeu</a></li>
+<li class="fli"><a href="https://discord.com/channels/1490410149213507804/1490443957547827331" target="_blank">Informations Discord</a></li>
+</ul></div>
+<div class="fc"><h4>Navigation</h4><ul class="fls">
+<li class="fli"><a href="#accueil">Accueil</a></li>
+<li class="fli"><a href="#fonctionnalites">Fonctionnalités</a></li>
+<li class="fli"><a href="#departements">Départements</a></li>
+<li class="fli"><a href="#roadmap">Feuille de route</a></li>
+<li class="fli"><a href="#equipe">Équipe</a></li>
+<li class="fli"><a href="#faq">FAQ</a></li>
+</ul></div>
+<div class="fc"><h4>Contact</h4><ul class="fls">
+<li class="fli"><a href="https://discord.gg/UEf3epPwXS" target="_blank">Discord</a></li>
+<li class="fli"><a href="https://www.tiktok.com/@vqcrp" target="_blank">TikTok</a></li>
+</ul></div>
+</div>
+<div class="fb">
+<p>2026 Ville de Québec Roleplay. Tous droits réservés.</p>
+<p>Développé par <a href="https://discord.com/users/1281784488854159421" target="_blank" style="color:var(--blue2);text-decoration:none">Jacobin Babouain</a></p>
+</div>
+</div>
+</footer>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <a href="#" class="footer-logo">
-                        <img src="https://cdn.discordapp.com/icons/1490410149213507804/0b1aa46a2fdb33b133a0feb1234739f6.webp?size=1024" alt="VQC">
-                        <span>Ville de Québec RP</span>
-                    </a>
-                    <p class="footer-description">Le serveur de jeu de rôle ERLC de référence au Québec. Une expérience immersive, professionnelle et communautaire.</p>
-                    <div class="footer-social">
-                        <a href="https://discord.gg/UEf3epPwXS" class="footer-social-link" target="_blank" aria-label="Discord"><i class="fa-brands fa-discord"></i></a>
-                        <a href="https://www.tiktok.com/@vqcrp" class="footer-social-link" target="_blank" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
-                    </div>
-                </div>
-                <div class="footer-column">
-                    <h4>Ressources</h4>
-                    <ul class="footer-links">
-                        <li class="footer-link"><a href="https://melon.ly/form/7498354753420660736" target="_blank">Candidatures</a></li>
-                        <li class="footer-link"><a href="https://melon.ly/sd/ville-de-quebec-roleplay" target="_blank">Présentation</a></li>
-                        <li class="footer-link"><a href="https://discord.com/channels/1490410149213507804/1490444001587757085" target="_blank">Règles en jeu</a></li>
-                        <li class="footer-link"><a href="https://discord.com/channels/1490410149213507804/1490443957547827331" target="_blank">Informations Discord</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h4>Navigation</h4>
-                    <ul class="footer-links">
-                        <li class="footer-link"><a href="#accueil">Accueil</a></li>
-                        <li class="footer-link"><a href="#apropos">À propos</a></li>
-                        <li class="footer-link"><a href="#fonctionnalites">Fonctionnalités</a></li>
-                        <li class="footer-link"><a href="#departements">Départements</a></li>
-                        <li class="footer-link"><a href="#roadmap">Feuille de route</a></li>
-                        <li class="footer-link"><a href="#equipe">Équipe</a></li>
-                        <li class="footer-link"><a href="#faq">FAQ</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h4>Contact</h4>
-                    <ul class="footer-links">
-                        <li class="footer-link"><a href="https://discord.gg/UEf3epPwXS" target="_blank">Discord</a></li>
-                        <li class="footer-link"><a href="https://www.tiktok.com/@vqcrp" target="_blank">TikTok</a></li>
-                        <li class="footer-link"><a href="mailto:contact@vqc-rp.com">Courriel</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>2026 Ville de Québec Roleplay. Tous droits réservés.</p>
-                <p>Développé par <a href="https://discord.com/users/1281784488854159421" target="_blank" style="color: var(--accent-secondary); text-decoration: none;">Jacobin Babouain</a></p>
-            </div>
-        </div>
-    </footer>
+<script>
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+let mx=0,my=0,dx=0,dy=0,rx=0,ry=0;
+const it=window.matchMedia('(pointer:coarse)').matches;
+if(!it){
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function ac(){dx+=(mx-dx)*.5;dy+=(my-dy)*.5;rx+=(mx-rx)*.15;ry+=(my-ry)*.15;cd.style.transform=`translate3d(${dx}px,${dy}px,0) translate(-50%,-50%)`;cr.style.transform=`translate3d(${rx}px,${ry}px,0) translate(-50%,-50%)`;requestAnimationFrame(ac)})();
+document.querySelectorAll('a,button,.bc,.dc,.tk,.fi,.fsl').forEach(el=>{el.addEventListener('mouseenter',()=>cr.classList.add('h'));el.addEventListener('mouseleave',()=>cr.classList.remove('h'))});
+}
 
-    <script>
-        const cursorDot = document.getElementById('cursor-dot');
-        const cursorRing = document.getElementById('cursor-ring');
-        let mouseX = 0, mouseY = 0, dotX = 0, dotY = 0, ringX = 0, ringY = 0;
-        const isTouch = window.matchMedia('(pointer: coarse)').matches;
+window.addEventListener('load',()=>setTimeout(()=>{const p=document.getElementById('pre');if(p)p.classList.add('h')},1400));
 
-        if (!isTouch) {
-            document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
-            function animateCursor() {
-                dotX += (mouseX - dotX) * 0.5; dotY += (mouseY - dotY) * 0.5;
-                ringX += (mouseX - ringX) * 0.15; ringY += (mouseY - ringY) * 0.15;
-                cursorDot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0) translate(-50%, -50%)`;
-                cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
-                requestAnimationFrame(animateCursor);
-            }
-            animateCursor();
-            document.querySelectorAll('a, button, .bento-card, .department-card, .team-card, .timeline-content, .faq-item, .footer-social-link').forEach(el => {
-                el.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
-                el.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
-            });
-        }
+window.addEventListener('scroll',()=>{
+const st=window.pageYOffset,dh=document.documentElement.scrollHeight-window.innerHeight;
+document.getElementById('sp').style.transform=`scaleX(${dh>0?st/dh:0})`;
+document.getElementById('nav').classList.toggle('s',st>50);
+let c='';document.querySelectorAll('section[id]').forEach(s=>{if(st>=s.offsetTop-200)c=s.id});
+document.querySelectorAll('.nav-l').forEach(l=>{l.classList.toggle('a',l.getAttribute('href')==='#'+c)});
+});
 
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const preloader = document.getElementById('preloader');
-                if (preloader) preloader.classList.add('hidden');
-            }, 1500);
-        });
+const cv=document.getElementById('pc'),cx=cv.getContext('2d');let pts=[];
+function rc(){cv.width=innerWidth;cv.height=innerHeight}
+addEventListener('resize',rc);rc();
+class P{constructor(){this.x=Math.random()*cv.width;this.y=Math.random()*cv.height;this.s=Math.random()*1.5+.5;this.vx=(Math.random()-.5)*.3;this.vy=(Math.random()-.5)*.3;this.o=Math.random()*.5+.1}
+update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>cv.width)this.vx*=-1;if(this.y<0||this.y>cv.height)this.vy*=-1}
+draw(){cx.beginPath();cx.arc(this.x,this.y,this.s,0,Math.PI*2);cx.fillStyle=`rgba(59,130,246,${this.o})`;cx.fill()}}
+function ip(){pts=[];const n=Math.min(Math.floor(cv.width*cv.height/25000),60);for(let i=0;i<n;i++)pts.push(new P)}
+function ap(){cx.clearRect(0,0,cv.width,cv.height);pts.forEach((p,i)=>{p.update();p.draw();for(let j=i+1;j<pts.length;j++){const dx=p.x-pts[j].x,dy=p.y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<130){cx.beginPath();cx.strokeStyle=`rgba(59,130,246,${.12*(1-d/130)})`;cx.lineWidth=.5;cx.moveTo(p.x,p.y);cx.lineTo(pts[j].x,pts[j].y);cx.stroke()}}});requestAnimationFrame(ap)}
+ip();ap();
 
-        window.addEventListener('scroll', () => {
-            const scrollTop = window.pageYOffset;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            document.getElementById('scroll-progress').style.transform = `scaleX(${docHeight > 0 ? scrollTop / docHeight : 0})`;
-            
-            const nav = document.getElementById('nav');
-            nav.classList.toggle('scrolled', scrollTop > 50);
-        });
+document.querySelectorAll('.bc').forEach(c=>{c.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect();c.style.setProperty('--mx',`${e.clientX-r.left}px`);c.style.setProperty('--my',`${e.clientY-r.top}px`)})});
 
-        const canvas = document.getElementById('particles-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+const ob=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('v')})},{threshold:.1,rootMargin:'0px 0px -50px 0px'});
+document.querySelectorAll('.rv').forEach(el=>ob.observe(el));
 
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 1.5 + 0.5; this.speedX = (Math.random() - 0.5) * 0.3;
-                this.speedY = (Math.random() - 0.5) * 0.3; this.opacity = Math.random() * 0.5 + 0.1;
-            }
-            update() {
-                this.x += this.speedX; this.y += this.speedY;
-                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-            }
-            draw() {
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(59, 130, 246, ${this.opacity})`; ctx.fill();
-            }
-        }
-        function initParticles() {
-            particles = [];
-            const num = Math.min(Math.floor((canvas.width * canvas.height) / 30000), 50);
-            for (let i = 0; i < num; i++) particles.push(new Particle());
-        }
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach((p, i) => {
-                p.update(); p.draw();
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = p.x - particles[j].x, dy = p.y - particles[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 120) {
-                        ctx.beginPath(); ctx.strokeStyle = `rgba(59, 130, 246, ${0.1 * (1 - dist / 120)})`;
-                        ctx.lineWidth = 0.5; ctx.moveTo(p.x, p.y); ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke();
-                    }
-                }
-            });
-            requestAnimationFrame(animateParticles);
-        }
-        initParticles(); animateParticles();
+document.querySelectorAll('.fi').forEach(i=>{i.querySelector('.fq').addEventListener('click',()=>i.classList.toggle('ac'))});
 
-        document.querySelectorAll('.bento-card, .stat-card').forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
-                card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
-            });
-        });
+async function fs(){try{const r=await fetch('https://ville-de-quebec-roleplay.canner.app/api/stats',{cache:'no-cache'});if(r.ok){const d=await r.json();av('sm',parseInt(document.getElementById('sm').innerText)||0,d.totalMembers,1500);av('so',parseInt(document.getElementById('so').innerText)||0,d.onlineMembers,1500);av('sp2',parseInt(document.getElementById('sp2').innerText)||0,d.botPing,1500)}}catch(e){document.getElementById('sm').innerText='---';document.getElementById('so').innerText='---';document.getElementById('sp2').innerText='---'}}
+function av(id,s,e,d){if(isNaN(e))return;const o=document.getElementById(id),r=e-s,st=performance.now();(function u(ct){const el=ct-st,p=Math.min(el/d,1);o.innerHTML=Math.floor(s+r*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(u)})(performance.now())}
+fs();setInterval(fs,30000);
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
-        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-        document.querySelectorAll('.faq-item').forEach(item => {
-            item.querySelector('.faq-question').addEventListener('click', () => {
-                item.classList.toggle('active');
-            });
-        });
-
-        async function fetchStats() {
-            try {
-                const response = await fetch('https://ville-de-quebec-roleplay.canner.app/api/stats', { cache: 'no-cache' });
-                if (response.ok) {
-                    const data = await response.json();
-                    animateValue('stat-members', parseInt(document.getElementById('stat-members').innerText) || 0, data.totalMembers, 1500);
-                    animateValue('stat-online', parseInt(document.getElementById('stat-online').innerText) || 0, data.onlineMembers, 1500);
-                    animateValue('stat-ping', parseInt(document.getElementById('stat-ping').innerText) || 0, data.botPing, 1500);
-                    animateValue('stat-members-2', parseInt(document.getElementById('stat-members-2').innerText) || 0, data.totalMembers, 1500);
-                }
-            } catch (error) {
-                document.getElementById('stat-members').innerText = '---';
-                document.getElementById('stat-online').innerText = '---';
-                document.getElementById('stat-ping').innerText = '---';
-                document.getElementById('stat-members-2').innerText = '---';
-            }
-        }
-        function animateValue(id, start, end, duration) {
-            if (isNaN(end)) return;
-            const obj = document.getElementById(id);
-            const range = end - start; const startTime = performance.now();
-            function update(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                obj.innerHTML = Math.floor(start + range * (1 - Math.pow(1 - progress, 3)));
-                if (progress < 1) requestAnimationFrame(update);
-            }
-            requestAnimationFrame(update);
-        }
-        fetchStats(); setInterval(fetchStats, 30000);
-
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
-        });
-    </script>
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',function(e){e.preventDefault();const t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+</script>
 </body>
 </html>
