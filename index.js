@@ -707,16 +707,19 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 // ==========================================
-// 9. DEMARRAGE SECURISE
+// 9. DEMARRAGE SECURISE (ORDRE CORRIGE)
 // ==========================================
 async function start() {
     try {
-        await rest.put(Routes.applicationGuildCommands(client.user.id, CONFIG.server.id), { body: commands.map(cmd => cmd.toJSON()) });
-        Logger.success('Commandes enregistrees avec succes');
-
+        // 1. D'abord, on se connecte a Discord (sinon client.user est null)
         await client.login(process.env.DISCORD_TOKEN);
         Logger.success('Connexion Discord etablie');
 
+        // 2. Ensuite, on enregistre les commandes (maintenant que client.user existe)
+        await rest.put(Routes.applicationGuildCommands(client.user.id, CONFIG.server.id), { body: commands.map(cmd => cmd.toJSON()) });
+        Logger.success('Commandes enregistrees avec succes');
+
+        // 3. Enfin, on lance le serveur API
         app.listen(PORT, HOST, () => {
             Logger.success(`Serveur API actif sur http://${HOST}:${PORT}`);
         });
