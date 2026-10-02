@@ -1,7 +1,11 @@
 /**
  * VQC Discord Bot - Ultimate Enterprise Edition
- * Architecture: Modular Monolith with Atomic Operations
- * Version: 9.0.0 (Production Hardened)
+ * Architecture: Modular Monolith with Atomic Operations & JSDoc Typing
+ * Version: 10.0.0 (Production Hardened)
+ * 
+ * @author Jacobin Babouain
+ * @description Bot Discord professionnel pour Ville de Québec Roleplay
+ * @license MIT
  */
 
 'use strict';
@@ -12,11 +16,12 @@ const path = require('path');
 const express = require('express');
 const { 
     Client, GatewayIntentBits, EmbedBuilder, SlashCommandBuilder, 
-    REST, Routes, ChannelType, PermissionFlagsBits, Collection, ActivityType
+    REST, Routes, ChannelType, PermissionFlagsBits, Collection, ActivityType,
+    ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle
 } = require('discord.js');
 
 // ==========================================
-// 1. CONFIGURATION IMMUTABLE
+// 1. CONFIGURATION IMMUTABLE & VALIDÉE
 // ==========================================
 const CONFIG = Object.freeze({
     prefix: process.env.BOT_PREFIX || '.',
@@ -39,26 +44,59 @@ const CONFIG = Object.freeze({
 // 2. SYSTÈME DE JOURNALISATION & CACHE
 // ==========================================
 class Logger {
-    static info(msg) { console.log(`[${new Date().toISOString()}] [INFO] ${msg}`); }
-    static warn(msg) { console.warn(`[${new Date().toISOString()}] [WARN] ${msg}`); }
-    static error(msg, err = null) { console.error(`[${new Date().toISOString()}] [ERROR] ${msg}`, err ? err.stack : ''); }
-    static success(msg) { console.log(`[${new Date().toISOString()}] [SUCCESS] ${msg}`); }
+    static LEVELS = Object.freeze({ DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3, FATAL: 4 });
+    static currentLevel = Logger.LEVELS.INFO;
+    static logs = [];
+    static maxLogs = 10000;
+
+    /**
+     * @param {string} level 
+     * @param {string} message 
+     * @param {Object} [meta={}]
+     */
+    static format(level, message, meta = {}) {
+        const timestamp = new Date().toISOString();
+        const logEntry = { timestamp, level, message, ...meta };
+        this.logs.push(logEntry);
+        if (this.logs.length > this.maxLogs) this.logs.shift();
+        return `[${timestamp}] [${level}] ${message}`;
+    }
+
+    static info(msg, meta = {}) { if (Logger.currentLevel <= Logger.LEVELS.INFO) console.log(Logger.format('INFO', msg, meta)); }
+    static warn(msg, meta = {}) { if (Logger.currentLevel <= Logger.LEVELS.WARN) console.warn(Logger.format('WARN', msg, meta)); }
+    static error(msg, err = null, meta = {}) {
+        const errorMeta = err ? { errorName: err.name, errorMessage: err.message, errorStack: err.stack, ...meta } : meta;
+        console.error(Logger.format('ERROR', msg, errorMeta));
+    }
+    static fatal(msg, err = null, meta = {}) {
+        const errorMeta = err ? { errorName: err.name, errorMessage: err.message, errorStack: err.stack, ...meta } : meta;
+        console.error(Logger.format('FATAL', msg, errorMeta));
+    }
 
     static async discord(title, desc, color = CONFIG.colors.primary, fields = [], thumb = null) {
         try {
-            const embed = new EmbedBuilder().setTitle(title).setDescription(desc).setColor(color).setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon }).setTimestamp();
+            const embed = new EmbedBuilder().setTitle(title).setDescription(desc).setColor(color)
+                .setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon }).setTimestamp();
             if (fields?.length) embed.addFields(fields);
             if (thumb) embed.setThumbnail(thumb);
             const channel = bot?.client?.channels?.cache?.get(CONFIG.channels.logs);
-            if (channel) await channel.send({ embeds: [embed] }).catch(() => {});
-        } catch (err) { Logger.error('Échec journal Discord', err); }
+            if (channel) await channel.send({ embeds: [embed] }).catch(e => Logger.error('Échec journal Discord', e));
+        } catch (err) { Logger.error('Erreur système de journalisation Discord', err); }
     }
 }
 
 class Cache {
-    constructor(ttl = 60000) { this.store = new Map(); this.ttl = ttl; }
-    get(key) { const item = this.store.get(key); if (!item || Date.now() > item.expiry) { this.store.delete(key); return null; } return item.value; }
-    set(key, value) { this.store.set(key, { value, expiry: Date.now() + this.ttl }); }
+    constructor(ttl = 60000) { this.store = new Map(); this.ttl = ttl; this.stats = { hits: 0, misses: 0, sets: 0 }; }
+    get(key) { 
+        const item = this.store.get(key); 
+        if (!item || Date.now() > item.expiry) { this.store.delete(key); this.stats.misses++; return null; } 
+        this.stats.hits++; return item.value; 
+    }
+    set(key, value) { this.store.set(key, { value, expiry: Date.now() + this.ttl }); this.stats.sets++; }
+    getStats() { 
+        const total = this.stats.hits + this.stats.misses; 
+        return { ...this.stats, size: this.store.size, hitRate: total > 0 ? (this.stats.hits / total * 100).toFixed(2) + '%' : '0%' }; 
+    }
 }
 const cache = new Cache();
 
@@ -77,10 +115,19 @@ class AtomicDatabase {
         try {
             const content = await fs.readFile(this.filePath, 'utf8');
             this.data = { ...this.data, ...JSON.parse(content) };
+            this._validateSchema();
             Logger.success('Base de données chargée et validée.');
         } catch (err) {
             if (err.code === 'ENOENT') { await this.save(); Logger.warn('Nouvelle base de données créée.'); }
             else { Logger.error('Corruption de la base de données', err); throw err; }
+        }
+    }
+
+    _validateSchema() {
+        // Validation simple pour s'assurer que les structures de base existent
+        const required = ['users', 'warnings', 'tickets', 'commands', 'tags', 'stats'];
+        for (const key of required) {
+            if (!(key in this.data)) this.data[key] = Array.isArray(this.data[key]) ? [] : {};
         }
     }
 
@@ -98,7 +145,6 @@ class AtomicDatabase {
         }
     }
 
-    // Helpers
     getUser(id) { return this.data.users[id] || null; }
     createUser(id, username) {
         this.data.users[id] = { id, username, level: 1, xp: 0, total_xp: 0, coins: 100, warnings: 0, last_xp: 0, last_daily: 0 };
@@ -109,7 +155,9 @@ class AtomicDatabase {
     }
     updateCoins(id, amount) { if (this.data.users[id]) { this.data.users[id].coins = amount; this.save(); } }
     addWarning(id) { if (this.data.users[id]) { this.data.users[id].warnings++; this.save(); } }
-    getTopUsers(limit = 10) { return Object.values(this.data.users).sort((a, b) => b.total_xp - a.total_xp).slice(0, limit); }
+    getTopUsers(limit = 10) { return Object.values(this.data.users).sort((a, b) => (b.total_xp || 0) - (a.total_xp || 0)).slice(0, limit); }
+    
+    incrementStat(stat) { if (this.data.stats[stat] !== undefined) { this.data.stats[stat]++; this.save(); } }
 }
 
 const db = new AtomicDatabase(path.join(__dirname, 'vqc_data.json'));
@@ -133,21 +181,22 @@ class CommandRegistry {
             const now = Date.now();
             const timestamps = this.cooldowns.get(command.name);
             const cooldown = (command.cooldown || CONFIG.limits.commandCooldown) * 1000;
-            if (timestamps.has(interaction.user?.id || interaction.author.id)) {
-                const exp = timestamps.get(interaction.user?.id || interaction.author.id) + cooldown;
+            const userId = interaction.user?.id || interaction.author.id;
+
+            if (timestamps.has(userId)) {
+                const exp = timestamps.get(userId) + cooldown;
                 if (now < exp) {
                     const reply = isPrefix ? await message.channel.send(`Cooldown: ${(exp - now)/1000}s`) : await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Cooldown').setDescription(`Attendez **${((exp - now)/1000).toFixed(1)}s**`).setColor(CONFIG.colors.warning)], ephemeral: true });
                     return;
                 }
             }
-            timestamps.set(interaction.user?.id || interaction.author.id, now);
-            setTimeout(() => timestamps.delete(interaction.user?.id || interaction.author.id), cooldown);
+            timestamps.set(userId, now);
+            setTimeout(() => timestamps.delete(userId), cooldown);
         }
 
         try {
             await command.execute(interaction, bot.client, db, isPrefix, message);
-            db.data.stats.commands++;
-            db.save();
+            db.incrementStat('commands');
         } catch (err) {
             Logger.error(`Erreur commande ${cmdName}`, err);
             const errEmbed = new EmbedBuilder().setTitle('Erreur Critique').setDescription('Une erreur interne est survenue.').setColor(CONFIG.colors.danger);
@@ -208,7 +257,7 @@ function setupCommands() {
         name: 'promote',
         slashData: new SlashCommandBuilder().setName('promote').setDescription('Promouvoir un membre (Directeurs uniquement).').addUserOption(o => o.setName('utilisateur').setRequired(true)).addStringOption(o => o.setName('département').setRequired(true).addChoices({name:'SPVQ',value:'spvq'},{name:'SPCIQ',value:'spciq'},{name:'SQ',value:'sq'})).addStringOption(o => o.setName('grade').setRequired(true)),
         cooldown: 5,
-        execute: async (ctx, client) => {
+        execute: async (ctx) => {
             const target = ctx.options.getMember('utilisateur');
             const deptKey = ctx.options.getString('département');
             const grade = ctx.options.getString('grade');
@@ -261,13 +310,6 @@ function setupCommands() {
         }
     });
 
-    // Commandes supplémentaires essentielles (Ping, Warn, Daily, etc.)
-    registry.register({
-        name: 'ping',
-        slashData: new SlashCommandBuilder().setName('ping').setDescription('Vérifie la latence.'),
-        execute: async (ctx, client) => await ctx.reply({ embeds: [new EmbedBuilder().setTitle('Latence').setDescription(`API: **${client.ws.ping}ms**`).setColor(CONFIG.colors.primary)] })
-    });
-    
     registry.register({
         name: 'warn',
         slashData: new SlashCommandBuilder().setName('warn').setDescription('Avertit un membre.').addUserOption(o=>o.setName('membre').setRequired(true)).addStringOption(o=>o.setName('raison').setRequired(true)),
@@ -279,8 +321,15 @@ function setupCommands() {
             db.data.warnings.push({ user: target.id, mod: ctx.user.id, reason, date: new Date().toISOString() });
             db.save();
             await Logger.discord('Avertissement', `**${target.tag}** averti par **${ctx.user.tag}**.`, CONFIG.colors.warning, [{name:'Raison', value: reason}], target.displayAvatarURL());
-            await ctx.reply({ embeds: [new EmbedBuilder().setTitle('Succès').setDescription(`${target} a été averti.`).setColor(CONFIG.colors.success)] });
+            try { await target.send({ embeds: [new EmbedBuilder().setTitle('Avertissement').setDescription(`Motif : ${reason}`).setColor(CONFIG.colors.warning)] }); } catch (e) {}
+            await ctx.reply({ embeds: [new EmbedBuilder().setTitle('Succès').setDescription(`${target} a été averti. (Total : ${db.getUser(target.id).warnings})`).setColor(CONFIG.colors.success)] });
         }
+    });
+
+    registry.register({
+        name: 'ping',
+        slashData: new SlashCommandBuilder().setName('ping').setDescription('Vérifie la latence.'),
+        execute: async (ctx, client) => await ctx.reply({ embeds: [new EmbedBuilder().setTitle('Latence').setDescription(`API: **${client.ws.ping}ms**`).setColor(CONFIG.colors.primary)] })
     });
 }
 
@@ -298,7 +347,7 @@ class VQCBot {
 
     setupExpress() {
         this.expressApp.use(express.json());
-        this.expressApp.get('/', (req, res) => res.json({ status: 'online', uptime: Math.floor((Date.now() - this.startTime)/1000), version: '9.0.0' }));
+        this.expressApp.get('/', (req, res) => res.json({ status: 'online', uptime: Math.floor((Date.now() - this.startTime)/1000), version: '10.0.0', cache: cache.getStats() }));
         this.expressApp.get('/api/stats', (req, res) => {
             const guild = this.client.guilds.cache.get(CONFIG.server.id);
             if (!guild) return res.status(404).json({ error: 'Introuvable' });
@@ -320,7 +369,7 @@ class VQCBot {
 
         this.client.on('messageCreate', async (msg) => {
             if (msg.author.bot || msg.guild?.id !== CONFIG.server.id) return;
-            db.data.stats.messages++;
+            db.incrementStat('messages');
             
             if (msg.content.startsWith(CONFIG.prefix)) {
                 const args = msg.content.slice(CONFIG.prefix.length).trim().split(/ +/);
@@ -337,6 +386,7 @@ class VQCBot {
         });
 
         process.on('SIGINT', () => { Logger.info('Arrêt...'); this.client.destroy(); process.exit(0); });
+        process.on('SIGTERM', () => { Logger.info('Arrêt...'); this.client.destroy(); process.exit(0); });
     }
 
     async start() {
