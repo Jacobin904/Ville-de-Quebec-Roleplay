@@ -1,10 +1,10 @@
 /**
- * VQC Discord Bot - Ultimate Enterprise Edition
- * Architecture: Modular Monolith with Atomic Operations & JSDoc Typing
- * Version: 10.0.0 (Production Hardened)
+ * VQC Discord Bot - Enterprise Framework Edition
+ * Architecture: Modular Class-Based with Atomic Operations
+ * Version: 11.0.0 (Ultimate Production)
  * 
  * @author Jacobin Babouain
- * @description Bot Discord professionnel pour Ville de Québec Roleplay
+ * @description Système de gestion professionnel pour Ville de Québec Roleplay
  * @license MIT
  */
 
@@ -17,11 +17,11 @@ const express = require('express');
 const { 
     Client, GatewayIntentBits, EmbedBuilder, SlashCommandBuilder, 
     REST, Routes, ChannelType, PermissionFlagsBits, Collection, ActivityType,
-    ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle
+    ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ButtonBuilder, ButtonStyle
 } = require('discord.js');
 
 // ==========================================
-// 1. CONFIGURATION IMMUTABLE & VALIDÉE
+// 1. CONFIGURATION & CONSTANTES IMMUTABLES
 // ==========================================
 const CONFIG = Object.freeze({
     prefix: process.env.BOT_PREFIX || '.',
@@ -41,36 +41,26 @@ const CONFIG = Object.freeze({
 });
 
 // ==========================================
-// 2. SYSTÈME DE JOURNALISATION & CACHE
+// 2. SYSTÈME DE JOURNALISATION PROFESSIONNEL (Logger)
 // ==========================================
 class Logger {
-    static LEVELS = Object.freeze({ DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3, FATAL: 4 });
+    static LEVELS = { DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3, FATAL: 4 };
     static currentLevel = Logger.LEVELS.INFO;
-    static logs = [];
-    static maxLogs = 10000;
 
-    /**
-     * @param {string} level 
-     * @param {string} message 
-     * @param {Object} [meta={}]
-     */
-    static format(level, message, meta = {}) {
+    static _format(level, message, meta = {}) {
         const timestamp = new Date().toISOString();
-        const logEntry = { timestamp, level, message, ...meta };
-        this.logs.push(logEntry);
-        if (this.logs.length > this.maxLogs) this.logs.shift();
-        return `[${timestamp}] [${level}] ${message}`;
+        return `[${timestamp}] [${level}] ${message} ${Object.keys(meta).length ? JSON.stringify(meta) : ''}`;
     }
 
-    static info(msg, meta = {}) { if (Logger.currentLevel <= Logger.LEVELS.INFO) console.log(Logger.format('INFO', msg, meta)); }
-    static warn(msg, meta = {}) { if (Logger.currentLevel <= Logger.LEVELS.WARN) console.warn(Logger.format('WARN', msg, meta)); }
+    static info(msg, meta = {}) { if (Logger.currentLevel <= Logger.LEVELS.INFO) console.log(Logger._format('INFO', msg, meta)); }
+    static warn(msg, meta = {}) { if (Logger.currentLevel <= Logger.LEVELS.WARN) console.warn(Logger._format('WARN', msg, meta)); }
     static error(msg, err = null, meta = {}) {
-        const errorMeta = err ? { errorName: err.name, errorMessage: err.message, errorStack: err.stack, ...meta } : meta;
-        console.error(Logger.format('ERROR', msg, errorMeta));
+        const errorMeta = err ? { error: err.message, stack: err.stack, ...meta } : meta;
+        console.error(Logger._format('ERROR', msg, errorMeta));
     }
     static fatal(msg, err = null, meta = {}) {
-        const errorMeta = err ? { errorName: err.name, errorMessage: err.message, errorStack: err.stack, ...meta } : meta;
-        console.error(Logger.format('FATAL', msg, errorMeta));
+        const errorMeta = err ? { error: err.message, stack: err.stack, ...meta } : meta;
+        console.error(Logger._format('FATAL', msg, errorMeta));
     }
 
     static async discord(title, desc, color = CONFIG.colors.primary, fields = [], thumb = null) {
@@ -79,29 +69,14 @@ class Logger {
                 .setFooter({ text: CONFIG.server.name, iconURL: CONFIG.server.icon }).setTimestamp();
             if (fields?.length) embed.addFields(fields);
             if (thumb) embed.setThumbnail(thumb);
-            const channel = bot?.client?.channels?.cache?.get(CONFIG.channels.logs);
+            const channel = global.bot?.client?.channels?.cache?.get(CONFIG.channels.logs);
             if (channel) await channel.send({ embeds: [embed] }).catch(e => Logger.error('Échec journal Discord', e));
-        } catch (err) { Logger.error('Erreur système de journalisation Discord', err); }
+        } catch (err) { Logger.error('Erreur système journalisation', err); }
     }
 }
-
-class Cache {
-    constructor(ttl = 60000) { this.store = new Map(); this.ttl = ttl; this.stats = { hits: 0, misses: 0, sets: 0 }; }
-    get(key) { 
-        const item = this.store.get(key); 
-        if (!item || Date.now() > item.expiry) { this.store.delete(key); this.stats.misses++; return null; } 
-        this.stats.hits++; return item.value; 
-    }
-    set(key, value) { this.store.set(key, { value, expiry: Date.now() + this.ttl }); this.stats.sets++; }
-    getStats() { 
-        const total = this.stats.hits + this.stats.misses; 
-        return { ...this.stats, size: this.store.size, hitRate: total > 0 ? (this.stats.hits / total * 100).toFixed(2) + '%' : '0%' }; 
-    }
-}
-const cache = new Cache();
 
 // ==========================================
-// 3. BASE DE DONNÉES ATOMIQUE (Anti-Corruption)
+// 3. BASE DE DONNÉES ATOMIQUE & ROBUSTE
 // ==========================================
 class AtomicDatabase {
     constructor(filePath) {
@@ -116,18 +91,22 @@ class AtomicDatabase {
             const content = await fs.readFile(this.filePath, 'utf8');
             this.data = { ...this.data, ...JSON.parse(content) };
             this._validateSchema();
-            Logger.success('Base de données chargée et validée.');
+            Logger.info('Base de données chargée et validée avec succès.');
         } catch (err) {
-            if (err.code === 'ENOENT') { await this.save(); Logger.warn('Nouvelle base de données créée.'); }
-            else { Logger.error('Corruption de la base de données', err); throw err; }
+            if (err.code === 'ENOENT') { 
+                await this.save(); 
+                Logger.warn('Nouvelle base de données initialisée.'); 
+            } else { 
+                Logger.fatal('Corruption critique de la base de données', err); 
+                throw err; 
+            }
         }
     }
 
     _validateSchema() {
-        // Validation simple pour s'assurer que les structures de base existent
-        const required = ['users', 'warnings', 'tickets', 'commands', 'tags', 'stats'];
-        for (const key of required) {
-            if (!(key in this.data)) this.data[key] = Array.isArray(this.data[key]) ? [] : {};
+        const required = { users: {}, warnings: [], tickets: {}, commands: {}, tags: {}, stats: { messages: 0, commands: 0 } };
+        for (const [key, defaultValue] of Object.entries(required)) {
+            if (!(key in this.data)) this.data[key] = defaultValue;
         }
     }
 
@@ -137,7 +116,7 @@ class AtomicDatabase {
         try {
             const tempPath = `${this.filePath}.tmp`;
             await fs.writeFile(tempPath, JSON.stringify(this.data, null, 2), 'utf8');
-            await fs.rename(tempPath, this.filePath); // Opération atomique
+            await fs.rename(tempPath, this.filePath); // Opération atomique garantissant l'intégrité
         } catch (err) { Logger.error('Échec sauvegarde BDD', err); }
         finally {
             this.isSaving = false;
@@ -145,6 +124,7 @@ class AtomicDatabase {
         }
     }
 
+    // Méthodes Utilisateurs
     getUser(id) { return this.data.users[id] || null; }
     createUser(id, username) {
         this.data.users[id] = { id, username, level: 1, xp: 0, total_xp: 0, coins: 100, warnings: 0, last_xp: 0, last_daily: 0 };
@@ -157,16 +137,20 @@ class AtomicDatabase {
     addWarning(id) { if (this.data.users[id]) { this.data.users[id].warnings++; this.save(); } }
     getTopUsers(limit = 10) { return Object.values(this.data.users).sort((a, b) => (b.total_xp || 0) - (a.total_xp || 0)).slice(0, limit); }
     
+    // Méthodes Statistiques
     incrementStat(stat) { if (this.data.stats[stat] !== undefined) { this.data.stats[stat]++; this.save(); } }
 }
 
 const db = new AtomicDatabase(path.join(__dirname, 'vqc_data.json'));
 
 // ==========================================
-// 4. REGISTRE DE COMMANDES AVANCÉ
+// 4. GESTIONNAIRE DE COMMANDES AVANCÉ
 // ==========================================
-class CommandRegistry {
-    constructor() { this.commands = new Collection(); this.cooldowns = new Collection(); }
+class CommandHandler {
+    constructor() {
+        this.commands = new Collection();
+        this.cooldowns = new Collection();
+    }
 
     register(cmd) { this.commands.set(cmd.name, cmd); }
 
@@ -175,7 +159,7 @@ class CommandRegistry {
         const command = this.commands.get(cmdName);
         if (!command) return;
 
-        // Rate Limiting
+        // Système de Cooldown robuste
         if (command.cooldown) {
             if (!this.cooldowns.has(command.name)) this.cooldowns.set(command.name, new Collection());
             const now = Date.now();
@@ -186,7 +170,8 @@ class CommandRegistry {
             if (timestamps.has(userId)) {
                 const exp = timestamps.get(userId) + cooldown;
                 if (now < exp) {
-                    const reply = isPrefix ? await message.channel.send(`Cooldown: ${(exp - now)/1000}s`) : await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Cooldown').setDescription(`Attendez **${((exp - now)/1000).toFixed(1)}s**`).setColor(CONFIG.colors.warning)], ephemeral: true });
+                    const timeLeft = ((exp - now) / 1000).toFixed(1);
+                    const reply = isPrefix ? await message.channel.send(`Veuillez patienter **${timeLeft}s**.`) : await interaction.reply({ embeds: [new EmbedBuilder().setTitle('Cooldown Actif').setDescription(`Veuillez patienter **${timeLeft} secondes**.`).setColor(CONFIG.colors.warning)], ephemeral: true });
                     return;
                 }
             }
@@ -195,20 +180,21 @@ class CommandRegistry {
         }
 
         try {
-            await command.execute(interaction, bot.client, db, isPrefix, message);
+            await command.execute(interaction, global.bot.client, db, isPrefix, message);
             db.incrementStat('commands');
         } catch (err) {
-            Logger.error(`Erreur commande ${cmdName}`, err);
-            const errEmbed = new EmbedBuilder().setTitle('Erreur Critique').setDescription('Une erreur interne est survenue.').setColor(CONFIG.colors.danger);
+            Logger.error(`Erreur exécution commande: ${cmdName}`, err);
+            const errEmbed = new EmbedBuilder().setTitle('Erreur Système').setDescription('Une erreur inattendue s\'est produite. L\'équipe a été notifiée.').setColor(CONFIG.colors.danger);
             if (isPrefix) await message.channel.send({ embeds: [errEmbed] });
             else await (interaction.replied || interaction.deferred ? interaction.followUp({ embeds: [errEmbed], ephemeral: true }) : interaction.reply({ embeds: [errEmbed], ephemeral: true }));
         }
     }
 }
-const registry = new CommandRegistry();
+
+const cmdHandler = new CommandHandler();
 
 // ==========================================
-// 5. SERVICES MÉTIER
+// 5. SERVICES MÉTIER COMPLEXES
 // ==========================================
 const Services = {
     User: {
@@ -241,7 +227,10 @@ const Services = {
             const roleId = dept.roles[gradeKey.toLowerCase()];
             if (!roleId) return { ok: false, msg: 'Grade invalide.' };
             try {
-                for (const rId of Object.values(dept.roles)) if (target.roles.cache.has(rId)) await target.roles.remove(rId);
+                // Nettoyage des anciens rôles du département pour éviter les conflits
+                for (const rId of Object.values(dept.roles)) {
+                    if (target.roles.cache.has(rId)) await target.roles.remove(rId);
+                }
                 await target.roles.add(roleId);
                 return { ok: true, grade: gradeKey, dept: dept.name };
             } catch (e) { return { ok: false, msg: e.message }; }
@@ -250,43 +239,51 @@ const Services = {
 };
 
 // ==========================================
-// 6. DÉFINITION DES COMMANDES
+// 6. ENREGISTREMENT DES COMMANDES
 // ==========================================
 function setupCommands() {
-    registry.register({
+    cmdHandler.register({
         name: 'promote',
-        slashData: new SlashCommandBuilder().setName('promote').setDescription('Promouvoir un membre (Directeurs uniquement).').addUserOption(o => o.setName('utilisateur').setRequired(true)).addStringOption(o => o.setName('département').setRequired(true).addChoices({name:'SPVQ',value:'spvq'},{name:'SPCIQ',value:'spciq'},{name:'SQ',value:'sq'})).addStringOption(o => o.setName('grade').setRequired(true)),
+        slashData: new SlashCommandBuilder().setName('promote').setDescription('Promouvoir un membre (Réservé aux directeurs).')
+            .addUserOption(o => o.setName('utilisateur').setDescription('Le membre à promouvoir').setRequired(true))
+            .addStringOption(o => o.setName('département').setDescription('Le département').setRequired(true).addChoices({name:'SPVQ',value:'spvq'},{name:'SPCIQ',value:'spciq'},{name:'SQ',value:'sq'}))
+            .addStringOption(o => o.setName('grade').setDescription('Le nouveau grade').setRequired(true)),
         cooldown: 5,
         execute: async (ctx) => {
             const target = ctx.options.getMember('utilisateur');
             const deptKey = ctx.options.getString('département');
             const grade = ctx.options.getString('grade');
-            if (!Services.Department.isDirector(ctx.member, deptKey)) return ctx.reply({ embeds: [new EmbedBuilder().setTitle('Accès Refusé').setDescription('Seul le directeur de ce département peut effectuer cette action.').setColor(CONFIG.colors.danger)], ephemeral: true });
+            
+            if (!Services.Department.isDirector(ctx.member, deptKey)) {
+                return ctx.reply({ embeds: [new EmbedBuilder().setTitle('Accès Refusé').setDescription('Seul le directeur de ce département est autorisé à effectuer cette action.').setColor(CONFIG.colors.danger)], ephemeral: true });
+            }
             
             const result = await Services.Department.promote(target, deptKey, grade);
             if (!result.ok) return ctx.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription(result.msg).setColor(CONFIG.colors.danger)], ephemeral: true });
             
-            await Logger.discord('Promotion', `**${target.user.tag}** promu **${result.grade}** en **${result.dept}**.`, CONFIG.colors.success, [{name:'Par', value: ctx.user.tag}], target.user.displayAvatarURL());
-            await ctx.reply({ embeds: [new EmbedBuilder().setTitle('Succès').setDescription(`${target} est maintenant **${result.grade}**.`).setColor(CONFIG.colors.success)] });
+            await Logger.discord('Promotion Départementale', `**${target.user.tag}** a été promu **${result.grade}** au sein du **${result.dept}**.`, CONFIG.colors.success, [{name:'Autorisé par', value: ctx.user.tag}], target.user.displayAvatarURL());
+            await ctx.reply({ embeds: [new EmbedBuilder().setTitle('Promotion Réussie').setDescription(`${target} est désormais **${result.grade}**.`).setColor(CONFIG.colors.success)] });
         }
     });
 
-    registry.register({
+    cmdHandler.register({
         name: 'scan',
-        slashData: new SlashCommandBuilder().setName('scan').setDescription('Analyse complète du serveur (10 fichiers JSON équilibrés).'),
+        slashData: new SlashCommandBuilder().setName('scan').setDescription('Analyse complète et génération de 10 fichiers JSON parfaitement équilibrés.'),
         cooldown: 120,
         execute: async (ctx) => {
             await ctx.deferReply({ ephemeral: true });
             try {
                 const guild = ctx.guild;
                 const items = [];
-                items.push({ type: 'info', id: guild.id, name: guild.name, members: guild.memberCount });
-                guild.channels.cache.forEach(c => items.push({ type: 'channel', id: c.id, name: c.name, type: ChannelType[c.type] }));
-                guild.roles.cache.forEach(r => items.push({ type: 'role', id: r.id, name: r.name, color: r.hexColor }));
-                guild.members.cache.forEach(m => items.push({ type: 'member', id: m.id, name: m.user.username, display: m.displayName }));
+                items.push({ type: 'info', id: guild.id, name: guild.name, members: guild.memberCount, createdAt: guild.createdAt.toISOString() });
+                guild.channels.cache.forEach(c => items.push({ type: 'channel', id: c.id, name: c.name, type: ChannelType[c.type], parentId: c.parentId }));
+                guild.roles.cache.forEach(r => items.push({ type: 'role', id: r.id, name: r.name, color: r.hexColor, position: r.position }));
+                guild.members.cache.forEach(m => items.push({ type: 'member', id: m.id, name: m.user.username, display: m.displayName, roles: m.roles.cache.filter(r => r.id !== guild.id).map(r => r.name) }));
 
+                // Algorithme de Bin Packing pour un équilibrage parfait des fichiers
                 items.sort((a, b) => JSON.stringify(b).length - JSON.stringify(a).length);
                 const buckets = Array.from({ length: CONFIG.limits.scanFiles }, () => ({ items: [], size: 0 }));
+                
                 for (const item of items) {
                     const size = JSON.stringify(item).length;
                     const smallest = buckets.reduce((prev, curr) => prev.size < curr.size ? prev : curr);
@@ -296,23 +293,48 @@ function setupCommands() {
 
                 const files = [];
                 const ts = Date.now();
-                const safeName = guild.name.replace(/\s+/g, '_');
+                const safeName = guild.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+                
                 for (let i = 0; i < CONFIG.limits.scanFiles; i++) {
-                    const meta = { _meta: { file: i+1, total: CONFIG.limits.scanFiles, server: guild.name, items: buckets[i].items.length, size_kb: Math.round(buckets[i].size/1024) }, data: buckets[i].items };
-                    files.push({ attachment: Buffer.from(JSON.stringify(meta, null, 2), 'utf-8'), name: `scan_${safeName}_part${String(i+1).padStart(2,'0')}_${ts}.json` });
+                    const meta = { 
+                        _meta: { file: i+1, total: CONFIG.limits.scanFiles, server: guild.name, items: buckets[i].items.length, size_kb: Math.round(buckets[i].size/1024) }, 
+                        data: buckets[i].items 
+                    };
+                    files.push({ 
+                        attachment: Buffer.from(JSON.stringify(meta, null, 2), 'utf-8'), 
+                        name: `scan_${safeName}_part${String(i+1).padStart(2,'0')}_${ts}.json` 
+                    });
                 }
 
-                await ctx.followUp({ embeds: [new EmbedBuilder().setTitle('Analyse Terminée').setDescription(`Génération de **${CONFIG.limits.scanFiles} fichiers** réussie.`).setColor(CONFIG.colors.success)], files, ephemeral: true });
-                await Logger.discord('Scan Serveur', `**${ctx.user.tag}** a analysé le serveur.`, CONFIG.colors.info, [{name:'Fichiers', value: CONFIG.limits.scanFiles, inline:true}, {name:'Éléments', value: items.length, inline:true}], ctx.user.displayAvatarURL());
+                await ctx.followUp({ 
+                    embeds: [new EmbedBuilder().setTitle('Analyse Terminée').setDescription(`Génération de **${CONFIG.limits.scanFiles} fichiers JSON** réussie avec équilibrage de charge.`).setColor(CONFIG.colors.success)], 
+                    files, 
+                    ephemeral: true 
+                });
+                await Logger.discord('Scan Serveur', `**${ctx.user.tag}** a généré une analyse complète du serveur.`, CONFIG.colors.info, [{name:'Fichiers', value: CONFIG.limits.scanFiles, inline:true}, {name:'Éléments', value: items.length, inline:true}], ctx.user.displayAvatarURL());
             } catch (e) {
-                await ctx.followUp({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription(e.message).setColor(CONFIG.colors.danger)], ephemeral: true });
+                Logger.error('Échec de la commande scan', e);
+                await ctx.followUp({ embeds: [new EmbedBuilder().setTitle('Erreur Critique').setDescription(e.message).setColor(CONFIG.colors.danger)], ephemeral: true });
             }
         }
     });
 
-    registry.register({
+    cmdHandler.register({
+        name: 'ticket',
+        slashData: new SlashCommandBuilder().setName('ticket').setDescription('Ouvre un ticket de support avec formulaire.'),
+        cooldown: 10,
+        execute: async (ctx) => {
+            const modal = new ModalBuilder().setCustomId('ticket_modal').setTitle('Création de Ticket');
+            const reason = new TextInputBuilder().setCustomId('reason').setLabel('Motif de votre demande').setStyle(TextInputStyle.Paragraph).setRequired(true);
+            modal.addComponents(new ActionRowBuilder().addComponents(reason));
+            await ctx.showModal(modal);
+        }
+    });
+
+    cmdHandler.register({
         name: 'warn',
-        slashData: new SlashCommandBuilder().setName('warn').setDescription('Avertit un membre.').addUserOption(o=>o.setName('membre').setRequired(true)).addStringOption(o=>o.setName('raison').setRequired(true)),
+        slashData: new SlashCommandBuilder().setName('warn').setDescription('Avertit un membre (Modération).').addUserOption(o=>o.setName('membre').setRequired(true)).addStringOption(o=>o.setName('raison').setRequired(true)),
+        cooldown: 5,
         execute: async (ctx) => {
             const target = ctx.options.getUser('membre');
             const reason = ctx.options.getString('raison');
@@ -320,25 +342,27 @@ function setupCommands() {
             db.addWarning(target.id);
             db.data.warnings.push({ user: target.id, mod: ctx.user.id, reason, date: new Date().toISOString() });
             db.save();
-            await Logger.discord('Avertissement', `**${target.tag}** averti par **${ctx.user.tag}**.`, CONFIG.colors.warning, [{name:'Raison', value: reason}], target.displayAvatarURL());
+            await Logger.discord('Avertissement', `**${target.tag}** a été averti par **${ctx.user.tag}**.`, CONFIG.colors.warning, [{name:'Motif', value: reason}], target.displayAvatarURL());
             try { await target.send({ embeds: [new EmbedBuilder().setTitle('Avertissement').setDescription(`Motif : ${reason}`).setColor(CONFIG.colors.warning)] }); } catch (e) {}
             await ctx.reply({ embeds: [new EmbedBuilder().setTitle('Succès').setDescription(`${target} a été averti. (Total : ${db.getUser(target.id).warnings})`).setColor(CONFIG.colors.success)] });
         }
     });
 
-    registry.register({
+    cmdHandler.register({
         name: 'ping',
-        slashData: new SlashCommandBuilder().setName('ping').setDescription('Vérifie la latence.'),
-        execute: async (ctx, client) => await ctx.reply({ embeds: [new EmbedBuilder().setTitle('Latence').setDescription(`API: **${client.ws.ping}ms**`).setColor(CONFIG.colors.primary)] })
+        slashData: new SlashCommandBuilder().setName('ping').setDescription('Vérifie la latence du système.'),
+        execute: async (ctx, client) => await ctx.reply({ embeds: [new EmbedBuilder().setTitle('Latence Système').setDescription(`API Discord: **${client.ws.ping}ms**`).setColor(CONFIG.colors.primary)] })
     });
 }
 
 // ==========================================
-// 7. CLASSE PRINCIPALE DU BOT
+// 7. CLASSE PRINCIPALE DU BOT (Framework)
 // ==========================================
 class VQCBot {
     constructor() {
-        this.client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildModeration, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildPresences] });
+        this.client = new Client({ 
+            intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildModeration, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildPresences] 
+        });
         this.expressApp = express();
         this.startTime = Date.now();
         this.setupExpress();
@@ -347,24 +371,41 @@ class VQCBot {
 
     setupExpress() {
         this.expressApp.use(express.json());
-        this.expressApp.get('/', (req, res) => res.json({ status: 'online', uptime: Math.floor((Date.now() - this.startTime)/1000), version: '10.0.0', cache: cache.getStats() }));
+        this.expressApp.use((req, res, next) => {
+            res.header('Access-Control-Allow-Origin', '*');
+            res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+            next();
+        });
+
+        this.expressApp.get('/', (req, res) => res.json({ status: 'online', uptime: Math.floor((Date.now() - this.startTime)/1000), version: '11.0.0' }));
+        
         this.expressApp.get('/api/stats', (req, res) => {
             const guild = this.client.guilds.cache.get(CONFIG.server.id);
-            if (!guild) return res.status(404).json({ error: 'Introuvable' });
-            res.json({ members: guild.memberCount, online: guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline').size, ping: this.client.ws.ping });
+            if (!guild) return res.status(404).json({ error: 'Serveur introuvable' });
+            res.json({ 
+                members: guild.memberCount, 
+                online: guild.members.cache.filter(m => !m.user.bot && m.presence?.status !== 'offline').size, 
+                ping: this.client.ws.ping 
+            });
         });
-        this.expressApp.listen(process.env.PORT || 3000, '0.0.0.0', () => Logger.success(`API active sur le port ${process.env.PORT || 3000}`));
+
+        const PORT = process.env.PORT || 3000;
+        this.expressApp.listen(PORT, '0.0.0.0', () => Logger.info(`Serveur API actif sur le port ${PORT}`));
     }
 
     setupEvents() {
         this.client.once('clientReady', async () => {
-            Logger.success(`Connecté: ${this.client.user.tag}`);
+            Logger.info(`Connexion établie: ${this.client.user.tag}`);
             this.client.user.setPresence({ activities: [{ name: 'Ville de Québec Roleplay', type: ActivityType.Watching }], status: 'online' });
-            await Logger.discord('Démarrage', 'Système opérationnel.', CONFIG.colors.success, [], this.client.user.displayAvatarURL());
+            await Logger.discord('Système Opérationnel', 'Le bot est maintenant en ligne et pleinement fonctionnel.', CONFIG.colors.success, [], this.client.user.displayAvatarURL());
+            
             try {
-                await new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN).put(Routes.applicationGuildCommands(this.client.user.id, CONFIG.server.id), { body: Array.from(registry.commands.values()).map(c => c.slashData.toJSON()) });
-                Logger.success('Commandes enregistrées.');
-            } catch (e) { Logger.error('Échec commandes', e); }
+                await new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN).put(
+                    Routes.applicationGuildCommands(this.client.user.id, CONFIG.server.id), 
+                    { body: Array.from(cmdHandler.commands.values()).map(c => c.slashData.toJSON()) }
+                );
+                Logger.info('Commandes slash enregistrées avec succès.');
+            } catch (e) { Logger.error('Échec enregistrement commandes', e); }
         });
 
         this.client.on('messageCreate', async (msg) => {
@@ -373,31 +414,68 @@ class VQCBot {
             
             if (msg.content.startsWith(CONFIG.prefix)) {
                 const args = msg.content.slice(CONFIG.prefix.length).trim().split(/ +/);
-                await registry.execute(args, true, msg);
+                await cmdHandler.execute(args, true, msg);
                 return;
             }
 
             const xp = await Services.User.addXP(msg.author.id, Math.floor(Math.random() * 15) + 10);
-            if (xp?.leveledUp) msg.reply({ embeds: [new EmbedBuilder().setTitle('Niveau Supérieur').setDescription(`Félicitations ${msg.author}, niveau **${xp.level}** !`).setColor(CONFIG.colors.success)] }).catch(() => {});
+            if (xp?.leveledUp) {
+                msg.reply({ embeds: [new EmbedBuilder().setTitle('Niveau Supérieur').setDescription(`Félicitations ${msg.author}, vous avez atteint le niveau **${xp.level}** !`).setColor(CONFIG.colors.success)] }).catch(() => {});
+            }
         });
 
         this.client.on('interactionCreate', async (i) => {
-            if (i.isChatInputCommand()) await registry.execute(i);
+            if (i.isChatInputCommand()) {
+                await cmdHandler.execute(i);
+            } else if (i.isModalSubmit() && i.customId === 'ticket_modal') {
+                const reason = i.fields.getTextInputValue('reason');
+                const guild = i.guild;
+                try {
+                    const ticketChannel = await guild.channels.create({
+                        name: `ticket-${i.user.username.toLowerCase()}`,
+                        type: ChannelType.GuildText,
+                        permissionOverwrites: [
+                            { id: guild.id, deny: [PermissionFlagsBits.ViewChannel] },
+                            { id: i.user.id, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory] }
+                        ]
+                    });
+                    db.data.tickets[ticketChannel.id] = { user: i.user.id, reason, status: 'open', date: new Date().toISOString() };
+                    db.save();
+                    
+                    await ticketChannel.send({ 
+                        content: `${i.user}`, 
+                        embeds: [new EmbedBuilder().setTitle('Nouveau Ticket de Support').setDescription(`**Motif :** ${reason}\n\nUn membre de l'équipe de direction va prendre en charge votre demande dans les plus brefs délais.`).setColor(CONFIG.colors.primary).setTimestamp()] 
+                    });
+                    await i.reply({ embeds: [new EmbedBuilder().setTitle('Succès').setDescription(`Votre ticket a été créé : ${ticketChannel}`).setColor(CONFIG.colors.success)], ephemeral: true });
+                } catch (e) {
+                    Logger.error('Échec création ticket', e);
+                    await i.reply({ embeds: [new EmbedBuilder().setTitle('Erreur').setDescription('Impossible de créer le ticket.').setColor(CONFIG.colors.danger)], ephemeral: true });
+                }
+            }
         });
 
-        process.on('SIGINT', () => { Logger.info('Arrêt...'); this.client.destroy(); process.exit(0); });
-        process.on('SIGTERM', () => { Logger.info('Arrêt...'); this.client.destroy(); process.exit(0); });
+        process.on('SIGINT', () => { Logger.info('Arrêt gracieux du système...'); this.client.destroy(); process.exit(0); });
+        process.on('SIGTERM', () => { Logger.info('Arrêt gracieux du système...'); this.client.destroy(); process.exit(0); });
     }
 
     async start() {
         try {
+            Logger.info('Initialisation de la base de données...');
             await db.init();
+            Logger.info('Configuration des modules de commandes...');
             setupCommands();
+            Logger.info('Tentative de connexion à Discord...');
             await this.client.login(process.env.DISCORD_TOKEN);
-            Logger.success('Bot démarré avec succès.');
-        } catch (e) { Logger.fatal('Échec critique', e); process.exit(1); }
+            Logger.info('Bot démarré avec succès.');
+        } catch (e) { 
+            Logger.fatal('Échec critique au démarrage', e); 
+            process.exit(1); 
+        }
     }
 }
 
-const bot = new VQCBot();
-bot.start();
+// ==========================================
+// 8. INITIALISATION GLOBALE
+// ==========================================
+global.bot = new VQCBot();
+global.bot.start();
